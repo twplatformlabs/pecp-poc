@@ -34,3 +34,5 @@ class ResourceRecord(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
+    provider_metadata: Mapped[str | None] = mapped_column(Text, nullable=True, default="{}")
+    activity_log: Mapped[str | None] = mapped_column(Text, nullable=True, default="[]")
