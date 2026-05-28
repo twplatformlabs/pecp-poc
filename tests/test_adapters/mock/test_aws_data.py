@@ -6,7 +6,7 @@ import pytest
 
 from pecp.adapters.mock.aws_data import AwsDataMockAdapter
 from pecp.models.enums import ResourceStatus
-from pecp.models.resource_spec import DataServiceSubtype, ResourceSpec
+from pecp.models.resource_spec import ResourceSpec
 
 
 def _build_spec(subtype: str, name: str = "my-data") -> ResourceSpec:
