@@ -20,18 +20,18 @@
 
 ### Resource Kinds
 
-- [ ] **KINDS-01**: `PECPLambda` — serverless function with `exposure` (public/private), `api-gateway` path, and `source-code` reference (e.g. `github://myorg/repo`)
-- [ ] **KINDS-02**: `PECPContainer` — container workload with `exposure` (public/private), `image`, and deployment context
-- [ ] **KINDS-03**: `PECPDataService` — managed data resource with `subtype` field (s3, sqs, sns, rds, dynamodb) and relevant config
-- [ ] **KINDS-04**: `PECPAccount` — async AWS account provisioning with PE-editable notes, status polling, and credential output when ready
-- [ ] **KINDS-05**: `PECPSalesforce` — provisions a Connected App and Permission sets/profiles for a team in Salesforce
-- [ ] **KINDS-06**: `PECPAem` — provisions an AEM site/workspace and author + publish environments for a team
+- [x] **KINDS-01**: `PECPLambda` — serverless function with `exposure` (public/private), `api-gateway` path, and `source-code` reference (e.g. `github://myorg/repo`)
+- [x] **KINDS-02**: `PECPContainer` — container workload with `exposure` (public/private), `image`, and deployment context
+- [x] **KINDS-03**: `PECPDataService` — managed data resource with `subtype` field (s3, sqs, sns, rds, dynamodb) and relevant config
+- [x] **KINDS-04**: `PECPAccount` — async AWS account provisioning with PE-editable notes, status polling, and credential output when ready
+- [x] **KINDS-05**: `PECPSalesforce` — provisions a Connected App and Permission sets/profiles for a team in Salesforce
+- [x] **KINDS-06**: `PECPAem` — provisions an AEM site/workspace and author + publish environments for a team
 
 ### Mock Adapters
 
 - [x] **ADPT-01**: Pluggable adapter interface (`AdapterBase` ABC) with `provision`, `deprovision`, and `get_status` — locked before any mock is written, designed for AWS-complexity real backends
-- [ ] **ADPT-02**: Mock adapters exist for all 7 backing systems: AWS (Lambda/Container/Data/Account), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog
-- [ ] **ADPT-03**: Mock adapters simulate realistic latency (3–10 seconds), produce structured activity logs (what they would call in production), and return synthetic provider metadata
+- [x] **ADPT-02**: Mock adapters exist for all 7 backing systems: AWS (Lambda/Container/Data/Account), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog
+- [x] **ADPT-03**: Mock adapters simulate realistic latency (3–10 seconds), produce structured activity logs (what they would call in production), and return synthetic provider metadata
 
 ### CLI
 
@@ -116,14 +116,14 @@
 | ARCH-02 | Phase 1 | Complete |
 | ARCH-04 | Phase 1 | Complete |
 | ADPT-01 | Phase 1 | Complete |
-| ADPT-02 | Phase 2 | Pending |
-| ADPT-03 | Phase 2 | Pending |
-| KINDS-01 | Phase 2 | Pending |
-| KINDS-02 | Phase 2 | Pending |
-| KINDS-03 | Phase 2 | Pending |
-| KINDS-04 | Phase 2 | Pending |
-| KINDS-05 | Phase 2 | Pending |
-| KINDS-06 | Phase 2 | Pending |
+| ADPT-02 | Phase 2 | Complete |
+| ADPT-03 | Phase 2 | Complete |
+| KINDS-01 | Phase 2 | Complete |
+| KINDS-02 | Phase 2 | Complete |
+| KINDS-03 | Phase 2 | Complete |
+| KINDS-04 | Phase 2 | Complete |
+| KINDS-05 | Phase 2 | Complete |
+| KINDS-06 | Phase 2 | Complete |
 | CTRL-01 | Phase 3 | Pending |
 | CTRL-02 | Phase 3 | Pending |
 | CTRL-03 | Phase 3 | Pending |
