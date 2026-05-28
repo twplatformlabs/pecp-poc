@@ -47,7 +47,7 @@ async def test_round_trip_resource_record(db_session: AsyncSession) -> None:
     """A ResourceRecord inserts and retrieves correctly (Behavior 4, 5)."""
     record = ResourceRecord(
         id="r-test-1",
-        team="payments",
+        team="toxins-research",
         kind="PECPLambda",
         name="hello-world",
         status="pending",
@@ -60,7 +60,7 @@ async def test_round_trip_resource_record(db_session: AsyncSession) -> None:
     rows = result.scalars().all()
 
     assert len(rows) == 1
-    assert rows[0].team == "payments"
+    assert rows[0].team == "toxins-research"
     assert rows[0].kind == "PECPLambda"
     assert rows[0].name == "hello-world"
     assert rows[0].status == "pending"

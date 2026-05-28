@@ -36,14 +36,14 @@ async def isolated_client() -> AsyncClient:  # type: ignore[return]
 
 
 async def test_apply_then_list_round_trip(isolated_client: AsyncClient) -> None:
-    """POST example.yaml then GET /resources?team=payments — proves DB persistence (Behavior 7)."""
+    """POST example.yaml then GET /resources?team=toxins-research — proves DB persistence (Behavior 7)."""
     example_path = Path(__file__).parent.parent.parent / "example.yaml"
     yaml_bytes = example_path.read_bytes()
 
     # POST the resource
     post_response = await isolated_client.post(
         "/resources",
-        params={"team": "payments"},
+        params={"team": "toxins-research"},
         headers={"Content-Type": "application/x-yaml"},
         content=yaml_bytes,
     )
@@ -59,7 +59,7 @@ async def test_apply_then_list_round_trip(isolated_client: AsyncClient) -> None:
     # GET the resource list and find our new resource
     get_response = await isolated_client.get(
         "/resources",
-        params={"team": "payments"},
+        params={"team": "toxins-research"},
     )
     assert get_response.status_code == 200, get_response.text
     resources = get_response.json()

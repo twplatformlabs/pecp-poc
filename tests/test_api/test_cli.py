@@ -50,7 +50,7 @@ spec:
                 "-f",
                 str(example_yaml),
                 "--team",
-                "payments",
+                "toxins-research",
                 "--api-url",
                 "http://test-server:8000",
             ],
@@ -103,7 +103,7 @@ spec:
                 "-f",
                 str(example_yaml),
                 "--team",
-                "payments",
+                "toxins-research",
                 "--api-url",
                 "http://localhost:8000",
             ],
@@ -119,7 +119,7 @@ spec:
     call_kwargs = mock_post.call_args
     assert call_kwargs is not None
     url_arg = call_kwargs[0][0] if call_kwargs[0] else call_kwargs[1].get("url", "")
-    assert "payments" in str(url_arg) or "payments" in str(call_kwargs)
+    assert "toxins-research" in str(url_arg) or "toxins-research" in str(call_kwargs)
 
 
 def test_apply_command_env_var_url(tmp_path: Path) -> None:
@@ -152,7 +152,7 @@ spec:
     with mock.patch("httpx.post", return_value=mock_response) as mock_post:
         result = runner.invoke(
             app,
-            ["apply", "-f", str(example_yaml), "--team", "payments"],
+            ["apply", "-f", str(example_yaml), "--team", "toxins-research"],
             env={"PECP_API_URL": "http://envhost:9000"},
             catch_exceptions=False,
         )

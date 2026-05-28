@@ -23,7 +23,7 @@ The server starts on `http://localhost:8000`. The SQLite database (`pecp.db`) is
 ## Apply a Resource
 
 ```bash
-pecp apply -f example.yaml --team payments
+pecp apply -f example.yaml --team toxins-research
 ```
 
 Expected output:
@@ -34,7 +34,7 @@ Applied PECPLambda hello-world → id=<uuid> status=pending
 ## List Resources
 
 ```bash
-curl -s "http://localhost:8000/resources?team=payments"
+curl -s "http://localhost:8000/resources?team=toxins-research"
 ```
 
 Returns a JSON array of persisted resources for that team.
@@ -88,8 +88,8 @@ pecp-poc/
 
 Phase 1 proves the entire stack end-to-end with the thinnest possible slice:
 
-- `pecp apply -f example.yaml --team payments` → API accepts YAML, persists to SQLite, returns 202
-- `GET /resources?team=payments` → lists the persisted resource
+- `pecp apply -f example.yaml --team toxins-research` → API accepts YAML, persists to SQLite, returns 202
+- `GET /resources?team=toxins-research` → lists the persisted resource
 - `GET /resources` (no team) → returns `400 Bad Request` (ARCH-01 team scope enforcement)
 - All 25 tests pass, mypy strict mode passes, ruff clean
 

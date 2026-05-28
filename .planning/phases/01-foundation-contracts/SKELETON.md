@@ -2,7 +2,7 @@
 
 ## Capability Proven End-to-End
 
-A team member runs `pecp apply -f resource.yaml --team payments` and the platform persists the YAML and returns a resource id and status=pending — listable via `GET /resources?team=payments`.
+A team member runs `pecp apply -f resource.yaml --team toxins-research` and the platform persists the YAML and returns a resource id and status=pending — listable via `GET /resources?team=toxins-research`.
 
 This is the thinnest vertical slice that proves the entire PECP stack: CLI → HTTP → FastAPI → SQLAlchemy async → SQLite → JSON response. No provisioning logic runs yet — Phase 2 wires the Dispatcher and mock adapters.
 
