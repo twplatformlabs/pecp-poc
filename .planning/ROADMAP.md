@@ -59,7 +59,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The Dispatcher drives a resource from `PENDING` through `PROVISIONING` to `READY` (or `FAILED`) and all state transitions are written exclusively by the Dispatcher — no other code path can write `status`
   5. Each mock adapter's activity log records what it would call in production (e.g., `"Would call: aws lambda create-function ..."`) — structured and inspectable without parsing free text
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Alembic init + ResourceSpec extension (4 new kinds) + db_session conftest fixture + Wave 0 test scaffolds [Wave 1]
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 02-02-PLAN.md — Real AwsLambdaMockAdapter + 9 placeholder adapters + Dispatcher with 10-entry ADAPTER_REGISTRY + end-to-end Lambda integration test [Wave 2]
+
+**Wave 3** *(blocked on Wave 2; Plans 03 + 04 run in parallel)*
+
+- [ ] 02-03-PLAN.md — Real AwsContainerMockAdapter + AwsDataMockAdapter (5 subtype branches) + AwsAccountMockAdapter (3s slow-path) + slow-path Dispatcher test [Wave 3]
+- [ ] 02-04-PLAN.md — Real KubernetesMockAdapter + SalesforceMockAdapter + AemMockAdapter + DatadogMockAdapter + ServiceNowMockAdapter + JFrogMockAdapter + extended-kinds Dispatcher tests [Wave 3, parallel with 02-03]
 
 ### Phase 3: REST API + Core CLI
 
