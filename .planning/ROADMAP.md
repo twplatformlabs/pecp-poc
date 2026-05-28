@@ -35,10 +35,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A `GET /resources` call without a team context parameter returns `400 Bad Request` — team scoping is enforced at the server, not the CLI
   5. The demo script (narrative walkthrough, not code) exists as a readable document and matches the final stakeholder session flow
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Project scaffold + contracts (enums, ProvisionResult, ResourceSpec discriminated union, AdapterBase ABC, RequestContext) + Wave 0 test scaffolds [Wave 1]
+- [x] 01-01-PLAN.md — Project scaffold + contracts (enums, ProvisionResult, ResourceSpec discriminated union, AdapterBase ABC, RequestContext) + Wave 0 test scaffolds [Wave 1]
 - [x] 01-02-PLAN.md — Demo script narrative walkthrough (docs/DEMO-SCRIPT.md) per ARCH-04 + human checkpoint [Wave 1, parallel with 01-01]
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Contracts | 1/3 | In Progress|  |
+| 1. Foundation + Contracts | 2/3 | In Progress|  |
 | 2. Core Engine | 0/TBD | Not started | - |
 | 3. REST API + Core CLI | 0/TBD | Not started | - |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
