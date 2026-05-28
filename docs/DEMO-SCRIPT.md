@@ -9,11 +9,11 @@ with captured terminal output from the running system before the stakeholder ses
 
 ## Setting the scene
 
-A new squad has just formed within the engineering organisation. The team is called `payments`,
+A new squad has just formed within the engineering organisation. The team is called `toxins-research`,
 they own a couple of microservices, and they need a Lambda function deployed to AWS along with a
 dedicated AWS account to isolate their production workloads. Historically, this would mean filing
 Jira tickets, waiting for the platform team to action them, and chasing status updates across Slack
-and email. Today we are going to show a different model: the `payments` team writes a YAML file and
+and email. Today we are going to show a different model: the `toxins-research` team writes a YAML file and
 runs a single command, and the Platform Engineering Control Plane — PECP — handles everything else.
 A PE team member is presenting at the terminal. The audience sees the full journey from zero to
 provisioned infrastructure without the team ever needing to know which AWS account they land in,
@@ -23,34 +23,34 @@ which pipeline fires, or which internal ticket gets created.
 
 ## Day one: a team is born
 
-Every resource in PECP belongs to a team. Before the `payments` squad can submit anything, they
+Every resource in PECP belongs to a team. Before the `toxins-research` squad can submit anything, they
 need to exist in the platform. Team creation is a single command.
 
 ```bash
-pecp team create payments
+pecp team create toxins-research
 ```
 
 ```
 [expected output: team created confirmation with team id and metadata — e.g.
   Team created
   ID:      team-a1b2c3d4
-  Name:    payments
+  Name:    toxins-research
   Status:  active
   Created: 2025-09-01T09:00:00Z
 ]
 ```
 
 With the team created, anyone with the owner or contributor role can be added and queried. The
-team object carries the authoritative list of who can act on behalf of `payments` in the control
+team object carries the authoritative list of who can act on behalf of `toxins-research` in the control
 plane. We can inspect that record at any time.
 
 ```bash
-pecp team payments
+pecp team toxins-research
 ```
 
 ```
 [expected output: table showing team members and roles — e.g.
-  Team: payments
+  Team: toxins-research
   ┌─────────────────────┬──────────────┬───────────┐
   │ Member              │ Role         │ Since     │
   ├─────────────────────┼──────────────┼───────────┤
@@ -67,8 +67,8 @@ trigger, and every account they own will be scoped to this team record. That is 
 
 ## Day two: deploying a Lambda
 
-The `payments` squad has a small event-handler they want to run as a serverless function — a
-Lambda that processes payment webhooks. They write a resource spec. It looks exactly like a
+The `toxins-research` squad has a small event-handler they want to run as a serverless function — a
+Lambda that processes webhook events. They write a resource spec. It looks exactly like a
 Kubernetes manifest because the mental model is deliberately familiar: `apiVersion`, `kind`,
 `metadata`, `spec`. No AWS console, no Terraform, no pipeline YAML — just this file.
 
@@ -76,18 +76,18 @@ Kubernetes manifest because the mental model is deliberately familiar: `apiVersi
 apiVersion: pecp/v1
 kind: PECPLambda
 metadata:
-  name: payments-webhook-handler
+  name: toxins-research-webhook-handler
 spec:
-  name: payments-webhook-handler
+  name: toxins-research-webhook-handler
   exposure: public
-  api-gateway: /payments/webhook
-  source-code: github://payments-org/webhook-lambda
+  api-gateway: /toxins-research/webhook
+  source-code: github://toxins-research-org/webhook-lambda
 ```
 
-They save that as `payments-lambda.yaml` and submit it.
+They save that as `toxins-research-lambda.yaml` and submit it.
 
 ```bash
-pecp apply -f payments-lambda.yaml --team payments
+pecp apply -f toxins-research-lambda.yaml --team toxins-research
 ```
 
 ```
@@ -95,8 +95,8 @@ pecp apply -f payments-lambda.yaml --team payments
   Resource submitted
   ID:      res-f1e2d3c4
   Kind:    PECPLambda
-  Name:    payments-webhook-handler
-  Team:    payments
+  Name:    toxins-research-webhook-handler
+  Team:    toxins-research
   Status:  pending
   Message: Dispatched to AWS Lambda adapter
 ]
@@ -111,23 +111,23 @@ They can watch the resource transition in real time by running the status comman
 `--watch` flag. PECP polls with exponential backoff and prints each state change as it happens.
 
 ```bash
-pecp status PECPLambda payments-webhook-handler --team payments --watch
+pecp status PECPLambda toxins-research-webhook-handler --team toxins-research --watch
 ```
 
 ```
 [expected output: status transitions from pending through provisioning to ready with synthetic
   activity log lines — e.g.
-  Watching PECPLambda/payments-webhook-handler (team: payments) ...
+  Watching PECPLambda/toxins-research-webhook-handler (team: toxins-research) ...
   [09:01:02] status: pending      Waiting for dispatch
-  [09:01:03] status: provisioning Would call: aws lambda create-function --function-name payments-webhook-handler
+  [09:01:03] status: provisioning Would call: aws lambda create-function --function-name toxins-research-webhook-handler
   [09:01:05] status: provisioning Would call: aws apigateway create-resource --path-part webhook
   [09:01:07] status: provisioning Would call: aws lambda add-permission --action lambda:InvokeFunction
-  [09:01:09] status: ready        Function ready — arn:aws:lambda:us-east-1:123456789:function:payments-webhook-handler
+  [09:01:09] status: ready        Function ready — arn:aws:lambda:us-east-1:123456789:function:toxins-research-webhook-handler
   Resource reached ready. Exiting watch.
 ]
 ```
 
-From spec submission to `ready` in under ten seconds. The `payments` team can now wire their
+From spec submission to `ready` in under ten seconds. The `toxins-research` team can now wire their
 CI/CD pipeline to push code to the Lambda ARN surfaced in that output. The platform team sees
 a structured activity log that maps every mock action to its real-world equivalent — when real
 adapters replace the mocks, those same log lines will represent actual AWS API calls.
@@ -144,7 +144,7 @@ streams updates — including free-text notes that the PE team appends as they w
 the process.
 
 ```bash
-pecp create awsaccount --team payments
+pecp create awsaccount --team toxins-research
 ```
 
 ```
@@ -152,27 +152,27 @@ pecp create awsaccount --team payments
   Account request submitted
   ID:      res-9a8b7c6d
   Kind:    PECPAccount
-  Team:    payments
+  Team:    toxins-research
   Status:  pending
   Message: AWS account provisioning queued
 ]
 ```
 
-The command returns in under a second. The `payments` team has a resource ID and nothing else to
+The command returns in under a second. The `toxins-research` team has a resource ID and nothing else to
 do. Meanwhile, the PE team is actioning the request: they file an internal approval ticket, they
 watch the AWS Organizations API, and they append notes directly to the resource record as the
 situation develops. The team can watch all of this unfold without a single Slack message.
 
 ```bash
-pecp status awsaccount --team payments --watch
+pecp status awsaccount --team toxins-research --watch
 ```
 
 ```
 [expected output: resource stays in provisioning for at least 3 seconds with PE notes appearing
   mid-stream before eventually transitioning to ready — e.g.
-  Watching PECPAccount (team: payments) ...
+  Watching PECPAccount (team: toxins-research) ...
   [09:05:00] status: pending       Account request queued
-  [09:05:01] status: provisioning  Would call: aws organizations create-account --email payments@example.com
+  [09:05:01] status: provisioning  Would call: aws organizations create-account --email toxins-research@example.com
   [09:05:03] status: provisioning  [PE note] Approval ticket filed: CHG-00412
   [09:05:06] status: provisioning  Would call: aws organizations describe-create-account-status
   [09:05:09] status: provisioning  [PE note] AWS support confirmed — account creation in progress
@@ -185,7 +185,7 @@ pecp status awsaccount --team payments --watch
 ```
 
 This is the moment that changes how a platform team presents async infrastructure work. The
-`payments` team never filed a ticket. They never chased anyone on Slack. They ran two commands,
+`toxins-research` team never filed a ticket. They never chased anyone on Slack. They ran two commands,
 watched a terminal, and got credentials. The PE team had full transparency into what the platform
 recorded at every step, and they had a channel to surface operational notes — the approval ticket
 reference, the AWS support confirmation — directly in the same stream the team is watching.
@@ -194,41 +194,41 @@ reference, the AWS support confirmation — directly in the same stream the team
 
 ## Day four: the full inventory
 
-The `payments` team has been running for a week. They have their Lambda deployed, their AWS
+The `toxins-research` team has been running for a week. They have their Lambda deployed, their AWS
 account provisioned, and they want a clear picture of everything they own in the platform.
 `pecp get` gives them a filtered table by resource kind; `pecp deployments` shows the
 environment-scoped deployment view.
 
 ```bash
-pecp get PECPLambda --team payments
+pecp get PECPLambda --team toxins-research
 ```
 
 ```
 [expected output: rich table with name, kind, status badge, and environment for every Lambda
-  owned by the payments team — e.g.
-  Resources: PECPLambda (team: payments)
-  ┌────────────────────────────┬────────────┬────────┬─────────────┐
-  │ Name                       │ Kind       │ Status │ Environment │
-  ├────────────────────────────┼────────────┼────────┼─────────────┤
-  │ payments-webhook-handler   │ PECPLambda │ ready  │ prod        │
-  └────────────────────────────┴────────────┴────────┴─────────────┘
+  owned by the toxins-research team — e.g.
+  Resources: PECPLambda (team: toxins-research)
+  ┌──────────────────────────────────────┬────────────┬────────┬─────────────┐
+  │ Name                                 │ Kind       │ Status │ Environment │
+  ├──────────────────────────────────────┼────────────┼────────┼─────────────┤
+  │ toxins-research-webhook-handler      │ PECPLambda │ ready  │ prod        │
+  └──────────────────────────────────────┴────────────┴────────┴─────────────┘
 ]
 ```
 
 ```bash
-pecp deployments --team payments --environment prod
+pecp deployments --team toxins-research --environment prod
 ```
 
 ```
-[expected output: rich table of all resources deployed to the prod environment for the payments
+[expected output: rich table of all resources deployed to the prod environment for the toxins-research
   team, with per-resource status — e.g.
-  Deployments: payments / prod
-  ┌────────────────────────────┬──────────────┬────────┬──────────────────────────────────────┐
-  │ Name                       │ Kind         │ Status │ Resource ID                          │
-  ├────────────────────────────┼──────────────┼────────┼──────────────────────────────────────┤
-  │ payments-webhook-handler   │ PECPLambda   │ ready  │ res-f1e2d3c4                          │
-  │ (awsaccount)               │ PECPAccount  │ ready  │ res-9a8b7c6d                          │
-  └────────────────────────────┴──────────────┴────────┴──────────────────────────────────────┘
+  Deployments: toxins-research / prod
+  ┌──────────────────────────────────────┬──────────────┬────────┬──────────────────────────────────────┐
+  │ Name                                 │ Kind         │ Status │ Resource ID                          │
+  ├──────────────────────────────────────┼──────────────┼────────┼──────────────────────────────────────┤
+  │ toxins-research-webhook-handler      │ PECPLambda   │ ready  │ res-f1e2d3c4                          │
+  │ (awsaccount)                         │ PECPAccount  │ ready  │ res-9a8b7c6d                          │
+  └──────────────────────────────────────┴──────────────┴────────┴──────────────────────────────────────┘
 ]
 ```
 
@@ -249,7 +249,7 @@ stakeholders who are not at a terminal.
 
 ## What we proved
 
-In four days of narrative time, the `payments` team went from zero to provisioned infrastructure
+In four days of narrative time, the `toxins-research` team went from zero to provisioned infrastructure
 — a running Lambda function, a dedicated AWS account, and a team inventory visible in both the
 CLI and the browser dashboard. They did it by writing a YAML file and running `pecp apply`.
 They never knew which AWS account their Lambda landed in. They never filed a ticket for the
