@@ -1,4 +1,4 @@
-"""Pydantic v2 discriminated union covering all 6 resource kinds (D-09, D-10, D-11)."""
+"""Pydantic v2 discriminated union covering all 10 resource kinds (D-09, D-10, D-11)."""
 
 from enum import Enum
 from typing import Annotated, Any, Literal, Union
@@ -52,8 +52,39 @@ class AemSpec(BaseModel):
     config: dict[str, Any] = Field(default_factory=dict)
 
 
+class KubernetesSpec(BaseModel):
+    kind: Literal["PECPKubernetes"]
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
+class DatadogSpec(BaseModel):
+    kind: Literal["PECPDatadog"]
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
+class ServiceNowSpec(BaseModel):
+    kind: Literal["PECPServiceNow"]
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
+class JFrogSpec(BaseModel):
+    kind: Literal["PECPJFrog"]
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
 AnySpec = Annotated[
-    Union[LambdaSpec, ContainerSpec, DataServiceSpec, AccountSpec, SalesforceSpec, AemSpec],
+    Union[
+        LambdaSpec,
+        ContainerSpec,
+        DataServiceSpec,
+        AccountSpec,
+        SalesforceSpec,
+        AemSpec,
+        KubernetesSpec,
+        DatadogSpec,
+        ServiceNowSpec,
+        JFrogSpec,
+    ],
     Field(discriminator="kind"),
 ]
 
