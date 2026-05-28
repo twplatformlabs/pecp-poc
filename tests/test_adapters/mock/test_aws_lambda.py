@@ -1,8 +1,8 @@
 """Tests for AwsLambdaMockAdapter (ADPT-02, ADPT-03, KINDS-01)."""
 
-import pytest
-import yaml
 from unittest.mock import patch
+
+import yaml
 
 from pecp.adapters.mock.aws_lambda import AwsLambdaMockAdapter
 from pecp.models.enums import ResourceStatus

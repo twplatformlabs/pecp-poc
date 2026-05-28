@@ -1,12 +1,12 @@
 """Tests for Dispatcher state machine (D-03, D-04, ADPT-02, KINDS-01)."""
 
 import json
+from unittest.mock import patch
 
 import pytest
 import yaml
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from unittest.mock import patch
 
 from pecp import dispatcher
 from pecp.adapters.base import AdapterBase
