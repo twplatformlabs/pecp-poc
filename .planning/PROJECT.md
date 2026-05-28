@@ -12,7 +12,11 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 
 ### Validated
 
-(None yet — ship to validate)
+**Mock Adapter Layer** *(Validated in Phase 2: core-engine)*
+- [x] Pluggable adapter interface (`AdapterBase` ABC) — swappable without changing control plane
+- [x] Mock adapters for all 10 kinds: Lambda, Container, DataService (5 subtypes), Account (3s async dwell), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog
+- [x] Mock adapters log synthetic "Would call:" entries and return structured provider_metadata
+- [x] Dispatcher routes PENDING → PROVISIONING → READY through ADAPTER_REGISTRY (10 entries)
 
 ### Active
 
@@ -119,4 +123,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-28 — Phase 1 complete: project scaffold, all contracts locked, walking skeleton live (25 tests passing)*
+*Last updated: 2026-05-28 — Phase 2 complete: core engine live — all 10 mock adapters implemented, Dispatcher routes PENDING→READY, 97 tests passing*
