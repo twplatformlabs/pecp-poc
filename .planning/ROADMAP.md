@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Foundation + Contracts
-**Goal:** A developer can run the test suite against a fully-typed project skeleton — adapter interface, Pydantic discriminated union, RequestContext stub, and written demo script all in place — before any provisioning logic exists.
+**Goal:** A team member can run `pecp apply -f resource.yaml --team payments` against a running PECP control plane and see the YAML persisted and listed via `GET /resources?team=payments` — proving the full stack (FastAPI + SQLAlchemy async + Typer CLI) end-to-end before any provisioning logic exists.
 **Mode:** mvp
 **Depends on:** Nothing (first phase)
 **Requirements:** ARCH-01, ARCH-02, ARCH-04, ADPT-01
@@ -31,7 +31,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Every FastAPI route handler accepts a `RequestContext` dependency with `user_id`, `team_memberships`, and `is_pe_admin` — the stub is hardcoded but structured for JWT drop-in
   4. A `GET /resources` call without a team context parameter returns `400 Bad Request` — team scoping is enforced at the server, not the CLI
   5. The demo script (narrative walkthrough, not code) exists as a readable document and matches the final stakeholder session flow
-**Plans:** TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold + contracts (enums, ProvisionResult, ResourceSpec discriminated union, AdapterBase ABC, RequestContext) + Wave 0 test scaffolds [Wave 1]
+- [ ] 01-02-PLAN.md — Demo script narrative walkthrough (docs/DEMO-SCRIPT.md) per ARCH-04 + human checkpoint [Wave 1, parallel with 01-01]
+- [ ] 01-03-PLAN.md — Walking Skeleton wiring: SQLite + FastAPI app + /resources GET/POST + Typer `pecp apply` + dev run + end-to-end round trip [Wave 2]
 
 ### Phase 2: Core Engine
 **Goal:** A developer can instantiate any of the 7 mock adapters, call `provision()`, wait for the simulated latency, and inspect a structured activity log and synthetic provider metadata — all without a running HTTP server.
@@ -92,7 +96,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Contracts | 0/TBD | Not started | - |
+| 1. Foundation + Contracts | 0/3 | Planned | - |
 | 2. Core Engine | 0/TBD | Not started | - |
 | 3. REST API + Core CLI | 0/TBD | Not started | - |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
