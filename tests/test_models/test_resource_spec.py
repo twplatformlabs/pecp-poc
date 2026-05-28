@@ -1,22 +1,19 @@
 """Tests for ResourceSpec discriminated union (D-09, D-10, D-11)."""
 
-import yaml
 import pytest
+import yaml
 from pydantic import ValidationError
 
 from pecp.models.resource_spec import (
+    AccountSpec,
     AemSpec,
-    AnySpec,
     ContainerSpec,
     DataServiceSpec,
     DataServiceSubtype,
     LambdaSpec,
-    ResourceMetadata,
     ResourceSpec,
     SalesforceSpec,
-    AccountSpec,
 )
-
 
 EXAMPLE_YAML = """
 apiVersion: pecp/v1

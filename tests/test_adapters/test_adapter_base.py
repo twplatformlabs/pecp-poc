@@ -12,15 +12,15 @@ def test_adapter_base_raises_type_error_without_provision() -> None:
     """ADPT-01: Instantiating an incomplete adapter raises TypeError."""
 
     class IncompleteAdapter(AdapterBase):
-        async def deprovision(self, resource: ResourceSpec) -> ProvisionResult:  # type: ignore[override]
-            ...
+        async def deprovision(self, resource: ResourceSpec) -> ProvisionResult:
+            return ProvisionResult(status=ResourceStatus.ready)
 
-        async def get_status(self, resource: ResourceSpec) -> ProvisionResult:  # type: ignore[override]
-            ...
+        async def get_status(self, resource: ResourceSpec) -> ProvisionResult:
+            return ProvisionResult(status=ResourceStatus.ready)
         # provision() intentionally omitted
 
     with pytest.raises(TypeError, match="provision"):
-        IncompleteAdapter()
+        IncompleteAdapter()  # type: ignore[abstract]
 
 
 def test_complete_adapter_instantiates_without_error() -> None:
