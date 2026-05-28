@@ -1,8 +1,9 @@
-"""Tests for Dispatcher state machine (Wave 0 scaffold — populated by Plan 02)."""
+"""Tests for Dispatcher state machine (D-03, D-04, ADPT-02, KINDS-01) — RED gate."""
 
 import pytest
 
 
-def test_dispatcher_module_not_yet_implemented() -> None:
-    pytest.importorskip("pecp.dispatcher", reason="Wave 0 scaffold — Dispatcher implementation arrives in Plan 02")
-    pytest.skip("Plan 02 will populate this file")
+def test_dispatcher_module_importable() -> None:
+    """RED gate: will fail until dispatcher.py is created."""
+    from pecp.dispatcher import dispatch, ADAPTER_REGISTRY, AdapterNotFoundError  # noqa: F401
+    assert len(ADAPTER_REGISTRY) == 10, "ADAPTER_REGISTRY must have exactly 10 entries"
