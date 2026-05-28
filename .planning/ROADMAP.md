@@ -13,7 +13,7 @@ The PECP PoC delivers a Kubernetes-flavored control plane in five vertical slice
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation + Contracts** - Lock adapter interface, auth stub, and demo script before any code is written
+- [x] **Phase 1: Foundation + Contracts** - Lock adapter interface, auth stub, and demo script before any code is written (completed 2026-05-28)
 - [ ] **Phase 2: Core Engine** - Dispatcher, state machine, all 7 mock adapters, all 6 resource kinds
 - [ ] **Phase 3: REST API + Core CLI** - Running FastAPI server, idempotent apply, `pecp apply/get/delete/status`
 - [ ] **Phase 4: Teams, Projects, Deployments** - Team model, project grouping, environment-scoped deployment queries, team CLI commands
@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A `GET /resources` call without a team context parameter returns `400 Bad Request` — team scoping is enforced at the server, not the CLI
   5. The demo script (narrative walkthrough, not code) exists as a readable document and matches the final stakeholder session flow
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 **Wave 1**
 
 - [x] 01-01-PLAN.md — Project scaffold + contracts (enums, ProvisionResult, ResourceSpec discriminated union, AdapterBase ABC, RequestContext) + Wave 0 test scaffolds [Wave 1]
@@ -43,7 +43,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-03-PLAN.md — Walking Skeleton wiring: SQLite + FastAPI app + /resources GET/POST + Typer `pecp apply` + dev run + end-to-end round trip [Wave 2]
+- [x] 01-03-PLAN.md — Walking Skeleton wiring: SQLite + FastAPI app + /resources GET/POST + Typer `pecp apply` + dev run + end-to-end round trip [Wave 2]
 
 ### Phase 2: Core Engine
 
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Contracts | 2/3 | In Progress|  |
+| 1. Foundation + Contracts | 3/3 | Complete   | 2026-05-28 |
 | 2. Core Engine | 0/TBD | Not started | - |
 | 3. REST API + Core CLI | 0/TBD | Not started | - |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
