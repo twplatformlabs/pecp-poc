@@ -1,0 +1,9 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: hello-world
+spec: 
+  name: hello-world
+  exposure: private
+  api-gateway: /hello
+  source-code: github://myorg/lambda-code
