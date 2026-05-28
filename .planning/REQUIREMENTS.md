@@ -29,7 +29,7 @@
 
 ### Mock Adapters
 
-- [ ] **ADPT-01**: Pluggable adapter interface (`AdapterBase` ABC) with `provision`, `deprovision`, and `get_status` — locked before any mock is written, designed for AWS-complexity real backends
+- [x] **ADPT-01**: Pluggable adapter interface (`AdapterBase` ABC) with `provision`, `deprovision`, and `get_status` — locked before any mock is written, designed for AWS-complexity real backends
 - [ ] **ADPT-02**: Mock adapters exist for all 7 backing systems: AWS (Lambda/Container/Data/Account), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog
 - [ ] **ADPT-03**: Mock adapters simulate realistic latency (3–10 seconds), produce structured activity logs (what they would call in production), and return synthetic provider metadata
 
@@ -55,7 +55,7 @@
 ### Architecture & Cross-Cutting
 
 - [x] **ARCH-01**: All resource API endpoints enforce team scope at the server — `GET /resources` without team context returns `400`, not all resources
-- [ ] **ARCH-02**: A `RequestContext` auth stub flows through every route handler with `user_id`, `team_memberships`, `is_pe_admin` — today hardcoded, structured for future JWT replacement
+- [x] **ARCH-02**: A `RequestContext` auth stub flows through every route handler with `user_id`, `team_memberships`, `is_pe_admin` — today hardcoded, structured for future JWT replacement
 - [ ] **ARCH-03**: Demo seed script populates 2 teams, 3 projects, and resources in all lifecycle states before any stakeholder session
 - [x] **ARCH-04**: Demo script (narrative walkthrough) is written before any implementation begins
 
@@ -113,9 +113,9 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | ARCH-01 | Phase 1 | Complete |
-| ARCH-02 | Phase 1 | Pending |
+| ARCH-02 | Phase 1 | Complete |
 | ARCH-04 | Phase 1 | Complete |
-| ADPT-01 | Phase 1 | Pending |
+| ADPT-01 | Phase 1 | Complete |
 | ADPT-02 | Phase 2 | Pending |
 | ADPT-03 | Phase 2 | Pending |
 | KINDS-01 | Phase 2 | Pending |
