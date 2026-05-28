@@ -14,7 +14,7 @@ The PECP PoC delivers a Kubernetes-flavored control plane in five vertical slice
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation + Contracts** - Lock adapter interface, auth stub, and demo script before any code is written (completed 2026-05-28)
-- [ ] **Phase 2: Core Engine** - Dispatcher, state machine, all 7 mock adapters, all 6 resource kinds
+- [x] **Phase 2: Core Engine** - Dispatcher, state machine, all 7 mock adapters, all 6 resource kinds (completed 2026-05-28)
 - [ ] **Phase 3: REST API + Core CLI** - Running FastAPI server, idempotent apply, `pecp apply/get/delete/status`
 - [ ] **Phase 4: Teams, Projects, Deployments** - Team model, project grouping, environment-scoped deployment queries, team CLI commands
 - [ ] **Phase 5: Account Flow + UI + Demo Readiness** - PECPAccount async demo, CLI account commands, React dashboard, seed data
@@ -59,7 +59,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The Dispatcher drives a resource from `PENDING` through `PROVISIONING` to `READY` (or `FAILED`) and all state transitions are written exclusively by the Dispatcher — no other code path can write `status`
   5. Each mock adapter's activity log records what it would call in production (e.g., `"Would call: aws lambda create-function ..."`) — structured and inspectable without parsing free text
 
-**Plans:** 2/4 plans executed
+**Plans:** 4/4 plans complete
 
 **Wave 1**
 
@@ -71,8 +71,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(blocked on Wave 2; Plans 03 + 04 run in parallel)*
 
-- [ ] 02-03-PLAN.md — Real AwsContainerMockAdapter + AwsDataMockAdapter (5 subtype branches) + AwsAccountMockAdapter (3s slow-path) + slow-path Dispatcher test [Wave 3]
-- [ ] 02-04-PLAN.md — Real KubernetesMockAdapter + SalesforceMockAdapter + AemMockAdapter + DatadogMockAdapter + ServiceNowMockAdapter + JFrogMockAdapter + extended-kinds Dispatcher tests [Wave 3, parallel with 02-03]
+- [x] 02-03-PLAN.md — Real AwsContainerMockAdapter + AwsDataMockAdapter (5 subtype branches) + AwsAccountMockAdapter (3s slow-path) + slow-path Dispatcher test [Wave 3]
+- [x] 02-04-PLAN.md — Real KubernetesMockAdapter + SalesforceMockAdapter + AemMockAdapter + DatadogMockAdapter + ServiceNowMockAdapter + JFrogMockAdapter + extended-kinds Dispatcher tests [Wave 3, parallel with 02-03]
 
 ### Phase 3: REST API + Core CLI
 
@@ -130,7 +130,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Contracts | 3/3 | Complete    | 2026-05-28 |
-| 2. Core Engine | 2/4 | In Progress|  |
+| 2. Core Engine | 4/4 | Complete   | 2026-05-28 |
 | 3. REST API + Core CLI | 0/TBD | Not started | - |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
 | 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |
