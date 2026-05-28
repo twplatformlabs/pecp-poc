@@ -57,7 +57,7 @@
 - [ ] **ARCH-01**: All resource API endpoints enforce team scope at the server — `GET /resources` without team context returns `400`, not all resources
 - [ ] **ARCH-02**: A `RequestContext` auth stub flows through every route handler with `user_id`, `team_memberships`, `is_pe_admin` — today hardcoded, structured for future JWT replacement
 - [ ] **ARCH-03**: Demo seed script populates 2 teams, 3 projects, and resources in all lifecycle states before any stakeholder session
-- [ ] **ARCH-04**: Demo script (narrative walkthrough) is written before any implementation begins
+- [x] **ARCH-04**: Demo script (narrative walkthrough) is written before any implementation begins
 
 ## v2 Requirements
 
@@ -114,7 +114,7 @@
 |-------------|-------|--------|
 | ARCH-01 | Phase 1 | Pending |
 | ARCH-02 | Phase 1 | Pending |
-| ARCH-04 | Phase 1 | Pending |
+| ARCH-04 | Phase 1 | Complete |
 | ADPT-01 | Phase 1 | Pending |
 | ADPT-02 | Phase 2 | Pending |
 | ADPT-03 | Phase 2 | Pending |
