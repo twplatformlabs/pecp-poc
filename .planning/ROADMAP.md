@@ -59,11 +59,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The Dispatcher drives a resource from `PENDING` through `PROVISIONING` to `READY` (or `FAILED`) and all state transitions are written exclusively by the Dispatcher — no other code path can write `status`
   5. Each mock adapter's activity log records what it would call in production (e.g., `"Would call: aws lambda create-function ..."`) — structured and inspectable without parsing free text
 
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Alembic init + ResourceSpec extension (4 new kinds) + db_session conftest fixture + Wave 0 test scaffolds [Wave 1]
+- [x] 02-01-PLAN.md — Alembic init + ResourceSpec extension (4 new kinds) + db_session conftest fixture + Wave 0 test scaffolds [Wave 1]
 
 **Wave 2** *(blocked on Wave 1)*
 
@@ -130,7 +130,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Contracts | 3/3 | Complete    | 2026-05-28 |
-| 2. Core Engine | 0/TBD | Not started | - |
+| 2. Core Engine | 1/4 | In Progress|  |
 | 3. REST API + Core CLI | 0/TBD | Not started | - |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
 | 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |
