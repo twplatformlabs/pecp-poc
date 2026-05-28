@@ -4,11 +4,10 @@ Uses an in-memory SQLite database so tests are fully isolated and fast.
 """
 
 import pytest
-from sqlalchemy import inspect, text
+from sqlalchemy import inspect
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.future import select
 
-from pecp.persistence.database import init_schema
 from pecp.persistence.models import Base, ResourceRecord
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
