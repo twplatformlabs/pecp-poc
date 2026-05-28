@@ -5,11 +5,9 @@ HTTP calls are mocked with a custom httpx transport to assert the correct
 request URL, headers, and body are sent (Behavior 5).
 """
 
-import json
 from pathlib import Path
 
 import httpx
-import pytest
 from typer.testing import CliRunner
 
 from pecp.cli.main import app
@@ -17,44 +15,56 @@ from pecp.cli.main import app
 runner = CliRunner()
 
 
-class MockTransport(httpx.BaseTransport):
-    """Captures the outgoing request and returns a canned 202 response."""
-
-    def __init__(self) -> None:
-        self.captured_request: httpx.Request | None = None
-
-    def handle_request(self, request: httpx.Request) -> httpx.Response:
-        self.captured_request = request
-        body = json.dumps(
-            {"id": "abc123", "kind": "PECPLambda", "name": "hello-world", "status": "pending"}
-        )
-        return httpx.Response(202, text=body)
-
-
-def test_apply_command_posts_to_correct_url() -> None:
-    """Behavior 5: CLI posts to the correct URL with the right headers and YAML body."""
-    example_path = Path(__file__).parent.parent.parent / "example.yaml"
-    transport = MockTransport()
-
-    result = runner.invoke(
-        app,
-        [
-            "apply",
-            "-f",
-            str(example_path),
-            "--team",
-            "payments",
-            "--api-url",
-            "http://test-server:8000",
-            "--test-transport",
-            "mock",
-        ],
-        catch_exceptions=False,
-        env={"_PECP_TEST_TRANSPORT": "1"},
+def test_apply_command_posts_to_api_url_flag(tmp_path: Path) -> None:
+    """Behavior 3: --api-url flag overrides the default and env var URL."""
+    example_yaml = tmp_path / "resource.yaml"
+    example_yaml.write_bytes(
+        b"""apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: hello-world
+spec:
+  name: hello-world
+  exposure: private
+  api-gateway: /hello
+  source-code: github://myorg/lambda-code
+"""
     )
-    # We verify via checking captured request in a separate integration path
-    # The simplest test: check the CLI exits 0 with the mocked transport
-    assert result.exit_code == 0 or "Error" not in (result.output or "")
+
+    import unittest.mock as mock
+
+    mock_response = mock.MagicMock(spec=httpx.Response)
+    mock_response.status_code = 202
+    mock_response.json.return_value = {
+        "id": "test123",
+        "kind": "PECPLambda",
+        "name": "hello-world",
+        "status": "pending",
+    }
+
+    with mock.patch("httpx.post", return_value=mock_response) as mock_post:
+        result = runner.invoke(
+            app,
+            [
+                "apply",
+                "-f",
+                str(example_yaml),
+                "--team",
+                "payments",
+                "--api-url",
+                "http://test-server:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0
+    call_args = mock_post.call_args
+    assert call_args is not None
+    called_url = call_args[0][0] if call_args[0] else ""
+    assert "test-server:8000" in str(called_url)
+    # Verify content-type header
+    headers = call_args[1].get("headers", {}) if call_args[1] else {}
+    assert headers.get("Content-Type") == "application/x-yaml"
 
 
 def test_apply_command_success_output(tmp_path: Path) -> None:
