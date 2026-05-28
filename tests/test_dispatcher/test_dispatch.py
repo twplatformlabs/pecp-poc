@@ -29,9 +29,22 @@ spec:
   source-code: github://myorg/test-repo
 """
 
+ACCOUNT_YAML = """
+apiVersion: pecp/v1
+kind: PECPAccount
+metadata:
+  name: aws-account-toxins-research
+  team: toxins-research
+spec: {}
+"""
+
 
 def _spec_json() -> str:
     return ResourceSpec.model_validate(yaml.safe_load(LAMBDA_YAML)).model_dump_json()
+
+
+def _account_spec_json() -> str:
+    return ResourceSpec.model_validate(yaml.safe_load(ACCOUNT_YAML)).model_dump_json()
 
 
 async def test_dispatch_drives_pending_to_ready(db_session: AsyncSession) -> None:
@@ -134,3 +147,29 @@ async def test_dispatch_unknown_kind_writes_failed(
     updated = result.scalar_one()
     assert updated.status == ResourceStatus.failed.value
     assert "PECPLambda" in (updated.activity_log or "")
+
+
+async def test_dispatch_drives_account_pending_to_ready(db_session: AsyncSession) -> None:
+    record = ResourceRecord(
+        id="account-id-001",
+        team="toxins-research",
+        kind="PECPAccount",
+        name="aws-account-toxins-research",
+        status="pending",
+        spec_json=_account_spec_json(),
+    )
+    db_session.add(record)
+    await db_session.commit()
+
+    with patch("asyncio.sleep", return_value=None):
+        await dispatch("account-id-001", db_session)
+
+    result = await db_session.execute(
+        select(ResourceRecord).where(ResourceRecord.id == "account-id-001")
+    )
+    updated = result.scalar_one()
+    assert updated.status == ResourceStatus.ready.value
+    metadata = json.loads(updated.provider_metadata or "{}")
+    assert metadata.get("account_id") == "123456789012"
+    log = json.loads(updated.activity_log or "[]")
+    assert any("aws organizations create-account" in entry for entry in log)
