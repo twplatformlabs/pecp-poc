@@ -169,3 +169,250 @@ def test_version_command() -> None:
     result = runner.invoke(app, ["version"])
     assert result.exit_code == 0
     assert "0.1.0" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Wave 0 CLI test scaffolds — FAIL intentionally until Wave 3 implements commands
+# ---------------------------------------------------------------------------
+
+
+def test_get_command_renders_table_with_status_badge() -> None:
+    """CLI-02: pecp get renders a Rich table with name, Status column for each resource."""
+    import unittest.mock as mock
+
+    mock_response = mock.MagicMock(spec=httpx.Response)
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {
+            "id": "aaa111",
+            "kind": "PECPLambda",
+            "name": "hello-world",
+            "status": "ready",
+            "env": "dev",
+        },
+        {
+            "id": "bbb222",
+            "kind": "PECPLambda",
+            "name": "goodbye-world",
+            "status": "pending",
+            "env": None,
+        },
+    ]
+
+    with mock.patch("httpx.get", return_value=mock_response):
+        result = runner.invoke(
+            app,
+            [
+                "get",
+                "PECPLambda",
+                "--team",
+                "toxins-research",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0
+    assert "hello-world" in result.output
+    assert "goodbye-world" in result.output
+    assert "Status" in result.output
+
+
+def test_status_command_renders_table_and_notes_block() -> None:
+    """CLI-04: pecp status renders table and Notes: block when notes exist (D-06)."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {
+            "id": "ccc333",
+            "kind": "PECPLambda",
+            "name": "hello-world",
+            "status": "ready",
+            "env": "dev",
+        }
+    ]
+
+    detail_response = mock.MagicMock(spec=httpx.Response)
+    detail_response.status_code = 200
+    detail_response.json.return_value = {
+        "id": "ccc333",
+        "team": "toxins-research",
+        "kind": "PECPLambda",
+        "name": "hello-world",
+        "status": "ready",
+        "env": "dev",
+        "created_at": "2026-06-14T00:00:00Z",
+        "provider_metadata": {},
+        "activity_log": [],
+        "notes": [
+            {
+                "author": "stub-user",
+                "timestamp": "2026-06-14 10:00",
+                "text": "deployment looks good",
+            }
+        ],
+    }
+
+    with mock.patch("httpx.get", side_effect=[list_response, detail_response]):
+        result = runner.invoke(
+            app,
+            [
+                "status",
+                "PECPLambda",
+                "hello-world",
+                "--team",
+                "toxins-research",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0
+    assert "Notes:" in result.output
+    assert "deployment looks good" in result.output
+
+
+def test_status_command_no_notes_omits_block() -> None:
+    """CLI-04: pecp status omits Notes: block when notes list is empty (D-06)."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {
+            "id": "ddd444",
+            "kind": "PECPLambda",
+            "name": "hello-world",
+            "status": "pending",
+            "env": None,
+        }
+    ]
+
+    detail_response = mock.MagicMock(spec=httpx.Response)
+    detail_response.status_code = 200
+    detail_response.json.return_value = {
+        "id": "ddd444",
+        "team": "toxins-research",
+        "kind": "PECPLambda",
+        "name": "hello-world",
+        "status": "pending",
+        "env": None,
+        "created_at": "2026-06-14T00:00:00Z",
+        "provider_metadata": {},
+        "activity_log": [],
+        "notes": [],
+    }
+
+    with mock.patch("httpx.get", side_effect=[list_response, detail_response]):
+        result = runner.invoke(
+            app,
+            [
+                "status",
+                "PECPLambda",
+                "hello-world",
+                "--team",
+                "toxins-research",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0
+    assert "Notes:" not in result.output
+
+
+def test_delete_command_finds_id_then_deletes() -> None:
+    """CLI-03: pecp delete finds resource id via list then calls DELETE on /resources/{id}."""
+    import unittest.mock as mock
+
+    resource_id = "eee555"
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {
+            "id": resource_id,
+            "kind": "PECPLambda",
+            "name": "hello-world",
+            "status": "ready",
+            "env": None,
+        }
+    ]
+
+    delete_response = mock.MagicMock(spec=httpx.Response)
+    delete_response.status_code = 204
+
+    with (
+        mock.patch("httpx.get", return_value=list_response),
+        mock.patch("httpx.delete", return_value=delete_response) as mock_delete,
+    ):
+        result = runner.invoke(
+            app,
+            [
+                "delete",
+                "PECPLambda",
+                "hello-world",
+                "--team",
+                "toxins-research",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0
+    assert mock_delete.called
+    called_url = str(mock_delete.call_args[0][0]) if mock_delete.call_args[0] else ""
+    assert resource_id in called_url
+
+
+def test_delete_command_passes_team_query_param() -> None:
+    """Security A5: pecp delete passes team as query param to DELETE route."""
+    import unittest.mock as mock
+
+    resource_id = "fff666"
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {
+            "id": resource_id,
+            "kind": "PECPLambda",
+            "name": "hello-world",
+            "status": "ready",
+            "env": None,
+        }
+    ]
+
+    delete_response = mock.MagicMock(spec=httpx.Response)
+    delete_response.status_code = 204
+
+    with (
+        mock.patch("httpx.get", return_value=list_response),
+        mock.patch("httpx.delete", return_value=delete_response) as mock_delete,
+    ):
+        result = runner.invoke(
+            app,
+            [
+                "delete",
+                "PECPLambda",
+                "hello-world",
+                "--team",
+                "toxins-research",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0
+    call_kwargs = mock_delete.call_args
+    assert call_kwargs is not None
+    # team must be passed as a query param
+    params = call_kwargs[1].get("params", {}) if call_kwargs[1] else {}
+    assert params.get("team") == "toxins-research"
