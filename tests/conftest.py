@@ -24,10 +24,15 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     )
     app = main.app
 
-    # Initialize schema for the in-memory test database.
-    from pecp.persistence.database import init_schema
+    # Drop and recreate schema for each test to ensure a clean slate.
+    # The module-level engine uses StaticPool for sqlite:///:memory:, so all
+    # connections share the same in-memory DB — we must reset it explicitly to
+    # prevent idempotency tests from colliding on (team, kind, name) uniqueness.
+    from pecp.persistence.database import engine
 
-    await init_schema()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
     async with AsyncClient(
         transport=ASGITransport(app=app),
