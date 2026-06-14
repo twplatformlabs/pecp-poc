@@ -120,9 +120,9 @@ The list lookup also filters by team, so the wrong-team id is never resolved in 
 
 ## Manual Checkpoint Status
 
-**Task 3 (human end-to-end demo):** PENDING — checkpoint returned to user for approval.
+**Task 3 (human end-to-end demo):** APPROVED — user confirmed demo works end-to-end.
 
-The manual demo verifies: `pecp apply` idempotency, `pecp get` Rich table with color badges, `pecp status` with notes block, `pecp delete` cross-team protection, and `pecp delete` clean removal.
+The manual demo verified: `pecp apply` idempotency, `pecp get` Rich table with color badges, `pecp status` with notes block (D-06 format), `pecp delete` cross-team protection, and `pecp delete` clean removal. Phase 3 ROADMAP user story confirmed in terminal.
 
 ## Deviations from Plan
 
