@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-06-14T20:49:34.086Z"
+stopped_at: "Completed 03-02-PLAN.md: REST API vertical slice with idempotency and notes"
+last_updated: "2026-06-14T21:00:33.471Z"
 last_activity: 2026-06-14 -- Phase 03 execution started
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 10
-  completed_plans: 8
-  percent: 80
+  completed_plans: 9
+  percent: 40
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-27)
 ## Current Position
 
 Phase: 03 (rest-api-core-cli) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-14 -- Phase 03 execution started
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 01-foundation-contracts P02 | 30m | 1 tasks | 1 files |
 | Phase 01-foundation-contracts P03 | 77min | 5 tasks | 16 files |
 | Phase 03-rest-api-core-cli P01 | 8min | 3 tasks | 8 files |
+| Phase 03-rest-api-core-cli P02 | 7min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Demo team name is toxins-research — revised from initial payments per user feedback before plan approval
 - Phase 3 (03-01): render_as_batch=True added to alembic/env.py; required for batch_alter_table UniqueConstraint on SQLite (Open Question 1 resolved)
 - Phase 3 (03-01): Unique resource names per test function used to prevent UniqueConstraint collisions in shared in-memory test DB
+- [Phase ?]: Use module-reference import for AsyncSessionLocal to support test reload pattern
+- [Phase ?]: conftest client fixture drops+recreates schema per test to prevent UniqueConstraint collisions in StaticPool SQLite
 
 ### Pending Todos
 
@@ -87,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-14T20:49:34.082Z
-Stopped at: Completed 03-01-PLAN.md: data-layer schema + Wave 0 test scaffolds
-Resume file: .planning/phases/03-rest-api-core-cli/03-02-PLAN.md
+Last session: 2026-06-14T21:00:33.467Z
+Stopped at: Completed 03-02-PLAN.md: REST API vertical slice with idempotency and notes
+Resume file: .planning/phases/03-rest-api-core-cli/03-03-PLAN.md

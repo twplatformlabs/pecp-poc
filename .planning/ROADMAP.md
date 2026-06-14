@@ -88,7 +88,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A PE team member can append a note to any resource via `POST /resources/{id}/notes`, and that note appears in `pecp status` output in append-only order
   5. `pecp` respects `--api-url` flag and `PECP_API_URL` env var for API base URL; `~/.pecp/config.yaml` config file deferred to Phase 5
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 **Wave 1**
 
@@ -96,7 +96,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 03-02-PLAN.md — POST /resources idempotency + BackgroundTasks dispatch (fresh session), GET /resources/{id}, DELETE /resources/{id} with team verify, POST /resources/{id}/notes [Wave 2]
+- [x] 03-02-PLAN.md — POST /resources idempotency + BackgroundTasks dispatch (fresh session), GET /resources/{id}, DELETE /resources/{id} with team verify, POST /resources/{id}/notes [Wave 2]
 
 **Wave 3** *(blocked on Wave 2)*
 
@@ -143,6 +143,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + Contracts | 3/3 | Complete    | 2026-05-28 |
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
-| 3. REST API + Core CLI | 1/3 | In Progress|  |
+| 3. REST API + Core CLI | 2/3 | In Progress|  |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
 | 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |

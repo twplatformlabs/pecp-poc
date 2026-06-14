@@ -7,7 +7,7 @@
 
 ### Control Plane API
 
-- [ ] **CTRL-01**: Platform accepts a YAML resource spec via `POST /resources`, validates against the correct kind schema, and returns `202 Accepted` with a resource ID
+- [x] **CTRL-01**: Platform accepts a YAML resource spec via `POST /resources`, validates against the correct kind schema, and returns `202 Accepted` with a resource ID
 - [x] **CTRL-02**: Platform enforces a resource status lifecycle — `pending → provisioning → ready → failed` — with all transitions owned by the Dispatcher
 - [x] **CTRL-03**: `pecp apply -f resource.yaml` submitted twice is a no-op (spec unchanged) or triggers an update (spec changed) — no duplicate resources created
 - [x] **CTRL-04**: Any resource can have an append-only notes log that PE team members can write to, visible on status queries
@@ -124,7 +124,7 @@
 | KINDS-04 | Phase 2 | Complete |
 | KINDS-05 | Phase 2 | Complete |
 | KINDS-06 | Phase 2 | Complete |
-| CTRL-01 | Phase 3 | Pending |
+| CTRL-01 | Phase 3 | Complete |
 | CTRL-02 | Phase 3 | Complete |
 | CTRL-03 | Phase 3 | Complete |
 | CTRL-04 | Phase 3 | Complete |
