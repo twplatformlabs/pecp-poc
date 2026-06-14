@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: payment-processor
+  team: backend-team
+  env: prod
+spec:
+  name: payment-processor
+  exposure: private
+  api-gateway: /payments
+  source-code: github://backend-team/payments-lambda

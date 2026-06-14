@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: data-pipeline
+  team: data-science
+  env: staging
+spec:
+  name: data-pipeline
+  exposure: private
+  api-gateway: /pipeline
+  source-code: github://data-science/pipeline-lambda

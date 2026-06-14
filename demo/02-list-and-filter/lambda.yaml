@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: auth-service
+  team: platform-eng
+  env: prod
+spec:
+  name: auth-service
+  exposure: public
+  api-gateway: /auth
+  source-code: github://platform-eng/auth-lambda

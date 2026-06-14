@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: hello-world
+  team: toxins-research
+  env: dev
+spec:
+  name: hello-world
+  exposure: private
+  api-gateway: /hello
+  source-code: github://toxins-research/lambda-hello
