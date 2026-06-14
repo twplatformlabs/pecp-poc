@@ -92,6 +92,7 @@ AnySpec = Annotated[
 class ResourceMetadata(BaseModel):
     name: str
     team: str | None = None
+    env: str | None = None
 
 
 class ResourceSpec(BaseModel):

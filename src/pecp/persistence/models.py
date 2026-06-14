@@ -6,7 +6,7 @@ The full validated ResourceSpec is stored as JSON in spec_json for portability.
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, String, Text
+from sqlalchemy import DateTime, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -22,6 +22,9 @@ class ResourceRecord(Base):
     """
 
     __tablename__ = "resource_records"
+    __table_args__ = (
+        UniqueConstraint("team", "kind", "name", name="uq_resource_team_kind_name"),
+    )
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     team: Mapped[str] = mapped_column(String, index=True, nullable=False)
@@ -36,3 +39,5 @@ class ResourceRecord(Base):
     )
     provider_metadata: Mapped[str | None] = mapped_column(Text, nullable=True, default="{}")
     activity_log: Mapped[str | None] = mapped_column(Text, nullable=True, default="[]")
+    env: Mapped[str | None] = mapped_column(Text, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True, default="[]")

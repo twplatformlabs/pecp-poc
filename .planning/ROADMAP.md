@@ -83,12 +83,24 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Success Criteria** (what must be TRUE):
 
   1. `pecp apply -f resource.yaml` returns a resource ID immediately; a second identical `apply` is a no-op (same ID returned, no duplicate created); applying a changed spec triggers an update
-  2. `pecp status <kind> <name> --team <team> --watch` polls with exponential backoff and exits cleanly when the resource reaches `ready` or `failed`
+  2. `pecp status <kind> <name> --team <team>` prints current provisioning status and notes; `--watch` polling deferred to Phase 5
   3. `pecp get PECPLambda --team platform` outputs a Rich table with name, status badge, and environment for every Lambda in that team
   4. A PE team member can append a note to any resource via `POST /resources/{id}/notes`, and that note appears in `pecp status` output in append-only order
-  5. `pecp` respects `--api-url`, `PECP_API_URL` env var, and `~/.pecp/config.yaml` for API base URL — switching between local and remote server requires no code change
+  5. `pecp` respects `--api-url` flag and `PECP_API_URL` env var for API base URL; `~/.pecp/config.yaml` config file deferred to Phase 5
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Schema migration (env, notes columns + UniqueConstraint), ResourceMetadata.env field, alembic render_as_batch, Wave 0 test scaffolds [Wave 1]
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 03-02-PLAN.md — POST /resources idempotency + BackgroundTasks dispatch (fresh session), GET /resources/{id}, DELETE /resources/{id} with team verify, POST /resources/{id}/notes [Wave 2]
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 03-03-PLAN.md — CLI vertical slice: pecp get/status/delete with Rich tables, status badges, D-06 notes block; human end-to-end checkpoint [Wave 3]
 
 ### Phase 4: Teams, Projects, Deployments
 

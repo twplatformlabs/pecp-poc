@@ -40,7 +40,7 @@ Wire the engine to the world: implement REST API routes (`POST /resources` with 
 ### Claude's Discretion
 - `pecp status` output format: Rich table for resource fields (id, kind, name, status, env, created_at), followed by notes block if notes exist. No interactive refresh (--watch is deferred).
 - `pecp get` Rich table columns: name, kind, status badge (colored by status), env (or `—` if absent).
-- `pecp delete` calls `DELETE /resources/{id}` (route to be added) and prints confirmation. No soft-delete in PoC — hard delete from DB.
+- `pecp delete` calls `DELETE /resources/{id}` (route to be added) and prints confirmation. No soft-delete in PoC — hard delete from DB. No deprovisioning adapter call on delete — the PoC assumption is that mock adapters require no cleanup. Deprovisioning is explicitly out of scope for Phase 3 (CLI-03 "triggers deprovisioning" is interpreted as record removal only).
 - Alembic migration for the two new columns (`env`, `notes`) — follows the Phase 2 pattern (`provider_metadata`, `activity_log`).
 - DB-level unique constraint on `(team, kind, name)` for defense-in-depth against race conditions.
 
