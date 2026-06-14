@@ -18,13 +18,21 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 - [x] Mock adapters log synthetic "Would call:" entries and return structured provider_metadata
 - [x] Dispatcher routes PENDING → PROVISIONING → READY through ADAPTER_REGISTRY (10 entries)
 
+### Validated
+
+**REST API & CLI** *(Validated in Phase 3: rest-api-core-cli)*
+- [x] REST API that accepts YAML resource specs, stores them, and dispatches to the appropriate mock adapter
+- [x] Resource CRUD: create (idempotent), read, delete with status lifecycle (pending → provisioning → ready)
+- [x] Query endpoint: list all resources for a team, filter by kind
+- [x] Status endpoint: returns current state including `notes` list (PE-appendable via POST /resources/{id}/notes)
+- [x] `pecp apply -f resource.yaml` — submit a resource spec (idempotent)
+- [x] `pecp get <kind> --team <team>` — Rich table with color-coded status badges and env column
+- [x] `pecp status <kind> <name> --team <team>` — table + notes block
+- [x] `pecp delete <kind> <name> --team <team>` — team-scoped, cross-team delete rejected
+
 ### Active
 
 **Control Plane API**
-- [ ] REST API that accepts YAML resource specs, stores them, and dispatches to the appropriate mock adapter
-- [ ] Resource CRUD: create, read, update, delete with status lifecycle (pending → provisioning → ready → failed)
-- [ ] Query endpoint: list all resources for a team, filter by type and environment
-- [ ] Status endpoint: returns current state of any resource including a free-text `notes` field (updatable by PE team)
 
 **Resource Types (all dispatched to mock adapters for PoC)**
 - [ ] `PECPLambda` — function with `exposure` (public/private), `api-gateway` path, `source-code` reference
@@ -123,4 +131,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-28 — Phase 2 complete: core engine live — all 10 mock adapters implemented, Dispatcher routes PENDING→READY, 97 tests passing*
+*Last updated: 2026-06-14 — Phase 3 complete: REST API + CLI live — idempotent apply, Rich status tables, PE notes workflow, 115 tests passing*
