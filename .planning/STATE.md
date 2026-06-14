@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 context gathered
-last_updated: "2026-06-14T20:32:30.779Z"
-last_activity: 2026-06-14 -- Phase 3 planning complete
+last_updated: "2026-06-14T20:49:34.086Z"
+last_activity: 2026-06-14 -- Phase 03 execution started
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 40
+  total_plans: 10
+  completed_plans: 8
+  percent: 80
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-27)
 
 **Core value:** A team can go from zero to provisioned infrastructure by writing a YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline runs, or which ticket gets filed.
-**Current focus:** Phase 3 — rest api + core cli
+**Current focus:** Phase 03 — rest-api-core-cli
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (rest-api-core-cli) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-06-14 -- Phase 3 planning complete
+Last activity: 2026-06-14 -- Phase 03 execution started
 
 Progress: [██████████] 100%
 
@@ -55,6 +55,7 @@ Progress: [██████████] 100%
 *Updated after each plan completion*
 | Phase 01-foundation-contracts P02 | 30m | 1 tasks | 1 files |
 | Phase 01-foundation-contracts P03 | 77min | 5 tasks | 16 files |
+| Phase 03-rest-api-core-cli P01 | 8min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - Phase 1: Demo script written before any implementation begins — prevents CRUD-only demo pitfall
 - Phase 1: RequestContext auth stub hardcoded but structured for JWT drop-in — no auth enforcement in PoC
 - [Phase ?]: Demo team name is toxins-research — revised from initial payments per user feedback before plan approval
+- Phase 3 (03-01): render_as_batch=True added to alembic/env.py; required for batch_alter_table UniqueConstraint on SQLite (Open Question 1 resolved)
+- Phase 3 (03-01): Unique resource names per test function used to prevent UniqueConstraint collisions in shared in-memory test DB
 
 ### Pending Todos
 
@@ -84,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-14T19:52:06.523Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-rest-api-core-cli/03-CONTEXT.md
+Last session: 2026-06-14T20:49:34.082Z
+Stopped at: Completed 03-01-PLAN.md: data-layer schema + Wave 0 test scaffolds
+Resume file: .planning/phases/03-rest-api-core-cli/03-02-PLAN.md

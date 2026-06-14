@@ -8,9 +8,9 @@
 ### Control Plane API
 
 - [ ] **CTRL-01**: Platform accepts a YAML resource spec via `POST /resources`, validates against the correct kind schema, and returns `202 Accepted` with a resource ID
-- [ ] **CTRL-02**: Platform enforces a resource status lifecycle — `pending → provisioning → ready → failed` — with all transitions owned by the Dispatcher
-- [ ] **CTRL-03**: `pecp apply -f resource.yaml` submitted twice is a no-op (spec unchanged) or triggers an update (spec changed) — no duplicate resources created
-- [ ] **CTRL-04**: Any resource can have an append-only notes log that PE team members can write to, visible on status queries
+- [x] **CTRL-02**: Platform enforces a resource status lifecycle — `pending → provisioning → ready → failed` — with all transitions owned by the Dispatcher
+- [x] **CTRL-03**: `pecp apply -f resource.yaml` submitted twice is a no-op (spec unchanged) or triggers an update (spec changed) — no duplicate resources created
+- [x] **CTRL-04**: Any resource can have an append-only notes log that PE team members can write to, visible on status queries
 
 ### Teams & Onboarding
 
@@ -125,9 +125,9 @@
 | KINDS-05 | Phase 2 | Complete |
 | KINDS-06 | Phase 2 | Complete |
 | CTRL-01 | Phase 3 | Pending |
-| CTRL-02 | Phase 3 | Pending |
-| CTRL-03 | Phase 3 | Pending |
-| CTRL-04 | Phase 3 | Pending |
+| CTRL-02 | Phase 3 | Complete |
+| CTRL-03 | Phase 3 | Complete |
+| CTRL-04 | Phase 3 | Complete |
 | CLI-01 | Phase 3 | Pending |
 | CLI-02 | Phase 3 | Pending |
 | CLI-03 | Phase 3 | Pending |
@@ -147,6 +147,7 @@
 | ARCH-03 | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 33 total
 - Mapped to phases: 33
 - Unmapped: 0 ✓
