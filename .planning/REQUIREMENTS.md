@@ -35,17 +35,17 @@
 
 ### CLI
 
-- [ ] **CLI-01**: `pecp apply -f resource.yaml` — submits a YAML spec to the control plane
-- [ ] **CLI-02**: `pecp get <kind> --team <team>` — lists resources of a type for a team with status badges
-- [ ] **CLI-03**: `pecp delete <kind> <name> --team <team>` — deletes a resource and triggers deprovisioning
-- [ ] **CLI-04**: `pecp status <kind> <name> --team <team> [--watch]` — shows provisioning status and notes log; `--watch` polls with exponential backoff
+- [x] **CLI-01**: `pecp apply -f resource.yaml` — submits a YAML spec to the control plane
+- [x] **CLI-02**: `pecp get <kind> --team <team>` — lists resources of a type for a team with status badges
+- [x] **CLI-03**: `pecp delete <kind> <name> --team <team>` — deletes a resource and triggers deprovisioning
+- [x] **CLI-04**: `pecp status <kind> <name> --team <team> [--watch]` — shows provisioning status and notes log; `--watch` polls with exponential backoff
 - [ ] **CLI-05**: `pecp team <name>` — shows team members, roles, and metadata
 - [ ] **CLI-06**: `pecp team create <name>` — creates a new team
 - [ ] **CLI-07**: `pecp projects --team <team>` — lists projects for a team with environment and metadata
 - [ ] **CLI-08**: `pecp deployments --team <team> --environment <env>` — shows deployment status filtered by environment
 - [ ] **CLI-09**: `pecp create awsaccount --team <team>` — requests async AWS account provisioning (returns immediately with resource ID)
 - [ ] **CLI-10**: `pecp status awsaccount --team <team>` — shows account readiness, access credentials (when ready), and PE notes history
-- [ ] **CLI-11**: CLI API base URL is configurable via `--api-url` flag, `PECP_API_URL` env var, or `~/.pecp/config.yaml` (default: `http://localhost:8000`)
+- [x] **CLI-11**: CLI API base URL is configurable via `--api-url` flag, `PECP_API_URL` env var, or `~/.pecp/config.yaml` (default: `http://localhost:8000`)
 
 ### UI Dashboard
 
@@ -128,11 +128,11 @@
 | CTRL-02 | Phase 3 | Complete |
 | CTRL-03 | Phase 3 | Complete |
 | CTRL-04 | Phase 3 | Complete |
-| CLI-01 | Phase 3 | Pending |
-| CLI-02 | Phase 3 | Pending |
-| CLI-03 | Phase 3 | Pending |
-| CLI-04 | Phase 3 | Pending |
-| CLI-11 | Phase 3 | Pending |
+| CLI-01 | Phase 3 | Complete |
+| CLI-02 | Phase 3 | Complete |
+| CLI-03 | Phase 3 | Complete |
+| CLI-04 | Phase 3 | Complete |
+| CLI-11 | Phase 3 | Complete |
 | TEAM-01 | Phase 4 | Pending |
 | TEAM-02 | Phase 4 | Pending |
 | TEAM-03 | Phase 4 | Pending |

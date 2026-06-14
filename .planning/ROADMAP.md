@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation + Contracts** - Lock adapter interface, auth stub, and demo script before any code is written (completed 2026-05-28)
 - [x] **Phase 2: Core Engine** - Dispatcher, state machine, all 7 mock adapters, all 6 resource kinds (completed 2026-05-28)
-- [ ] **Phase 3: REST API + Core CLI** - Running FastAPI server, idempotent apply, `pecp apply/get/delete/status`
+- [x] **Phase 3: REST API + Core CLI** - Running FastAPI server, idempotent apply, `pecp apply/get/delete/status` (completed 2026-06-14)
 - [ ] **Phase 4: Teams, Projects, Deployments** - Team model, project grouping, environment-scoped deployment queries, team CLI commands
 - [ ] **Phase 5: Account Flow + UI + Demo Readiness** - PECPAccount async demo, CLI account commands, React dashboard, seed data
 
@@ -88,7 +88,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A PE team member can append a note to any resource via `POST /resources/{id}/notes`, and that note appears in `pecp status` output in append-only order
   5. `pecp` respects `--api-url` flag and `PECP_API_URL` env var for API base URL; `~/.pecp/config.yaml` config file deferred to Phase 5
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 **Wave 1**
 
@@ -100,7 +100,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(blocked on Wave 2)*
 
-- [ ] 03-03-PLAN.md — CLI vertical slice: pecp get/status/delete with Rich tables, status badges, D-06 notes block; human end-to-end checkpoint [Wave 3]
+- [x] 03-03-PLAN.md — CLI vertical slice: pecp get/status/delete with Rich tables, status badges, D-06 notes block; human end-to-end checkpoint [Wave 3]
 
 ### Phase 4: Teams, Projects, Deployments
 
@@ -143,6 +143,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + Contracts | 3/3 | Complete    | 2026-05-28 |
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
-| 3. REST API + Core CLI | 2/3 | In Progress|  |
+| 3. REST API + Core CLI | 3/3 | Complete   | 2026-06-14 |
 | 4. Teams, Projects, Deployments | 0/TBD | Not started | - |
 | 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |
