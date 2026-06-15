@@ -14,9 +14,9 @@
 
 ### Teams & Onboarding
 
-- [ ] **TEAM-01**: Team can be created and queried — members, roles (owner/contributor), and metadata are visible via `pecp team <name>`
-- [ ] **TEAM-02**: Resources can be grouped into named projects — a project has a name and a deployment context (target environments)
-- [ ] **TEAM-03**: Deployment status for a team's resources is queryable per environment (`pecp deployments --team <team> --environment dev`)
+- [x] **TEAM-01**: Team can be created and queried — members, roles (owner/contributor), and metadata are visible via `pecp team <name>`
+- [x] **TEAM-02**: Resources can be grouped into named projects — a project has a name and a deployment context (target environments)
+- [x] **TEAM-03**: Deployment status for a team's resources is queryable per environment (`pecp deployments --team <team> --environment dev`)
 
 ### Resource Kinds
 
@@ -39,10 +39,10 @@
 - [x] **CLI-02**: `pecp get <kind> --team <team>` — lists resources of a type for a team with status badges
 - [x] **CLI-03**: `pecp delete <kind> <name> --team <team>` — deletes a resource and triggers deprovisioning
 - [x] **CLI-04**: `pecp status <kind> <name> --team <team> [--watch]` — shows provisioning status and notes log; `--watch` polls with exponential backoff
-- [ ] **CLI-05**: `pecp team <name>` — shows team members, roles, and metadata
-- [ ] **CLI-06**: `pecp team create <name>` — creates a new team
-- [ ] **CLI-07**: `pecp projects --team <team>` — lists projects for a team with environment and metadata
-- [ ] **CLI-08**: `pecp deployments --team <team> --environment <env>` — shows deployment status filtered by environment
+- [x] **CLI-05**: `pecp team <name>` — shows team members, roles, and metadata
+- [x] **CLI-06**: `pecp team create <name>` — creates a new team
+- [x] **CLI-07**: `pecp projects --team <team>` — lists projects for a team with environment and metadata
+- [x] **CLI-08**: `pecp deployments --team <team> --environment <env>` — shows deployment status filtered by environment
 - [ ] **CLI-09**: `pecp create awsaccount --team <team>` — requests async AWS account provisioning (returns immediately with resource ID)
 - [ ] **CLI-10**: `pecp status awsaccount --team <team>` — shows account readiness, access credentials (when ready), and PE notes history
 - [x] **CLI-11**: CLI API base URL is configurable via `--api-url` flag, `PECP_API_URL` env var, or `~/.pecp/config.yaml` (default: `http://localhost:8000`)
@@ -133,13 +133,13 @@
 | CLI-03 | Phase 3 | Complete |
 | CLI-04 | Phase 3 | Complete |
 | CLI-11 | Phase 3 | Complete |
-| TEAM-01 | Phase 4 | Pending |
-| TEAM-02 | Phase 4 | Pending |
-| TEAM-03 | Phase 4 | Pending |
-| CLI-05 | Phase 4 | Pending |
-| CLI-06 | Phase 4 | Pending |
-| CLI-07 | Phase 4 | Pending |
-| CLI-08 | Phase 4 | Pending |
+| TEAM-01 | Phase 4 | Complete |
+| TEAM-02 | Phase 4 | Complete |
+| TEAM-03 | Phase 4 | Complete |
+| CLI-05 | Phase 4 | Complete |
+| CLI-06 | Phase 4 | Complete |
+| CLI-07 | Phase 4 | Complete |
+| CLI-08 | Phase 4 | Complete |
 | CLI-09 | Phase 5 | Pending |
 | CLI-10 | Phase 5 | Pending |
 | UI-01 | Phase 5 | Pending |
