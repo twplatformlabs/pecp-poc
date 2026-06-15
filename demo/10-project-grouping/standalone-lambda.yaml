@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: health-check
+  team: toxins-research
+  env: dev
+spec:
+  name: health-check
+  exposure: private
+  api-gateway: /health
+  source-code: github://toxins-research/health-check-lambda

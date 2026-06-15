@@ -1,0 +1,10 @@
+apiVersion: pecp/v1
+kind: PECPContainer
+metadata:
+  name: api-gateway-container
+  team: platform-eng
+  env: staging
+spec:
+  name: api-gateway-container
+  exposure: public
+  image: platform-eng/api-gateway:latest

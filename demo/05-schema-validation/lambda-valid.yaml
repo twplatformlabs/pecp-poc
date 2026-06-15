@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: valid-lambda
+  team: toxins-research
+  env: dev
+spec:
+  name: valid-lambda
+  exposure: public
+  api-gateway: /valid
+  source-code: github://toxins-research/valid-lambda

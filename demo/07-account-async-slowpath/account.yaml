@@ -1,0 +1,7 @@
+apiVersion: pecp/v1
+kind: PECPAccount
+metadata:
+  name: aws-account-toxins-research
+  team: toxins-research
+  env: prod
+spec: {}

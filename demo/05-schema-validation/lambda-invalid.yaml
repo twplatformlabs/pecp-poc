@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: broken-lambda
+  team: toxins-research
+  env: dev
+spec:
+  name: broken-lambda
+  exposure: public
+  api-gateway: /broken
+  # source-code is intentionally omitted — this spec is invalid

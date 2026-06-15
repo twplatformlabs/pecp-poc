@@ -1,0 +1,9 @@
+apiVersion: pecp/v1
+kind: PECPDataService
+metadata:
+  name: artifact-storage
+  team: platform-eng
+  env: staging
+spec:
+  name: artifact-storage
+  subtype: s3

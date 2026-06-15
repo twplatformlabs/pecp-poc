@@ -1,0 +1,13 @@
+apiVersion: pecp/v1
+kind: PECPKubernetes
+metadata:
+  name: monitoring-stack
+  team: platform-eng
+  env: staging
+spec:
+  config:
+    namespace: platform-monitoring
+    chart: kube-prometheus-stack
+    values:
+      grafana.enabled: "true"
+      prometheus.retention: 30d

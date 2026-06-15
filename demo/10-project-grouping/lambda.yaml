@@ -1,0 +1,11 @@
+apiVersion: pecp/v1
+kind: PECPLambda
+metadata:
+  name: webhook-handler
+  team: toxins-research
+  env: prod
+spec:
+  name: webhook-handler
+  exposure: public
+  api-gateway: /toxins-research/webhook
+  source-code: github://toxins-research/webhook-lambda

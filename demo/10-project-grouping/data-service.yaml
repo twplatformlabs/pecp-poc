@@ -1,0 +1,9 @@
+apiVersion: pecp/v1
+kind: PECPDataService
+metadata:
+  name: webhook-events-queue
+  team: toxins-research
+  env: prod
+spec:
+  name: webhook-events-queue
+  subtype: sqs
