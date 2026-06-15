@@ -15,6 +15,7 @@ import yaml
 from fastapi import APIRouter, BackgroundTasks, Body, HTTPException
 from pydantic import BaseModel, ValidationError
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 import pecp.persistence.database as _db
@@ -22,7 +23,12 @@ from pecp.api.dependencies import ContextDep
 from pecp.dispatcher import dispatch
 from pecp.models.resource_spec import ResourceSpec
 from pecp.persistence.database import SessionDep
-from pecp.persistence.models import ResourceRecord
+from pecp.persistence.models import (
+    DeploymentRecord,
+    ProjectRecord,
+    ResourceRecord,
+    TeamRecord,
+)
 
 router = APIRouter(prefix="/resources", tags=["resources"])
 
@@ -47,6 +53,26 @@ async def _dispatch_with_session(resource_id: str) -> None:
         await dispatch(resource_id, session)
 
 
+async def _maybe_get_project_id(
+    project_name: str | None, team: str, session: AsyncSession
+) -> str | None:
+    """Resolve a project name to its ID for the given team, or return None if not found.
+
+    Pitfall 6: when no matching project exists (wrong name, wrong team, or team not yet
+    created), return None gracefully — do NOT raise an error. The deployment audit row
+    records project_id=None in that case, which is valid.
+    """
+    if project_name is None:
+        return None
+    result = await session.execute(
+        select(ProjectRecord.id)
+        .join(TeamRecord, ProjectRecord.team_id == TeamRecord.id)
+        .where(TeamRecord.name == team)
+        .where(ProjectRecord.name == project_name)
+    )
+    return result.scalar_one_or_none()
+
+
 @router.get("")
 async def list_resources(
     team: str | None = None,
@@ -62,7 +88,10 @@ async def list_resources(
     if not team:
         raise HTTPException(status_code=400, detail="team parameter is required")
 
-    stmt = select(ResourceRecord).where(ResourceRecord.team == team)
+    stmt = select(ResourceRecord).where(
+        ResourceRecord.team == team,
+        ResourceRecord.deleted_at.is_(None),  # D-11: filter out soft-deleted rows (Pitfall 1)
+    )
     if kind is not None:
         stmt = stmt.where(ResourceRecord.kind == kind)
 
@@ -140,7 +169,18 @@ async def create_resource(
             existing.spec_json = new_spec_json
             existing.status = "pending"
             existing.env = spec.metadata.env
-            await session.commit()
+            existing.project = spec.metadata.project  # D-07 / D-08: project field population
+            deployment = DeploymentRecord(
+                id=uuid.uuid4().hex,
+                resource_id=existing.id,
+                project_id=await _maybe_get_project_id(spec.metadata.project, team, session),
+                environment=spec.metadata.env,
+                status="pending",
+                change_type="update",
+                deployed_at=datetime.now(timezone.utc),
+            )
+            session.add(deployment)
+            await session.commit()  # atomic: update + deployment insert in one transaction
             background_tasks.add_task(_dispatch_with_session, existing.id)
             return {
                 "id": existing.id,
@@ -159,13 +199,25 @@ async def create_resource(
         status="pending",
         spec_json=new_spec_json,
         env=spec.metadata.env,
+        project=spec.metadata.project,  # D-07 / D-08: project field from spec metadata
     )
     session.add(record)
+    deployment = DeploymentRecord(
+        id=uuid.uuid4().hex,
+        resource_id=resource_id,
+        project_id=await _maybe_get_project_id(spec.metadata.project, team, session),
+        environment=spec.metadata.env,
+        status="pending",
+        change_type="create",
+        deployed_at=datetime.now(timezone.utc),
+    )
+    session.add(deployment)
     try:
-        await session.commit()
+        await session.commit()  # atomic: resource + deployment insert in one transaction (Pitfall 2)
     except IntegrityError:
         # Concurrent POST race: another request committed the same (team, kind, name)
         # before us. Roll back and return the winner's record as a no-op response.
+        # NOTE: do NOT write a deployment row here — the winner already wrote one (audit integrity).
         await session.rollback()
         race_result = await session.execute(
             select(ResourceRecord).where(
@@ -207,7 +259,7 @@ async def get_resource(
         select(ResourceRecord).where(ResourceRecord.id == resource_id)
     )
     record = result.scalar_one_or_none()
-    if record is None:
+    if record is None or record.deleted_at is not None:  # Pitfall 5: hide soft-deleted rows
         raise HTTPException(status_code=404, detail="Resource not found")
 
     return {
@@ -231,18 +283,25 @@ async def delete_resource(
     ctx: ContextDep = ...,  # type: ignore[assignment]
     session: SessionDep = ...,  # type: ignore[assignment]
 ) -> None:
-    """Hard-delete a resource by id (CTRL-01).
+    """Soft-delete a resource by id (D-11).
 
     ARCH-01: `team` query parameter is required — returns 400 if absent.
     Assumption A5: Returns 404 (not 403) when team mismatch to avoid leaking
     existence of resources in other teams (T-3-02-03).
     Returns 204 with empty body on success.
+    Soft-delete: sets deleted_at instead of hard-deleting — the row stays in DB
+    for the deployment audit trail FK (D-11). Second DELETE returns 404 because
+    the initial lookup filters deleted_at IS NULL.
+    Writes a DeploymentRecord(change_type=delete) atomically in the same commit (D-10).
     """
     if not team:
         raise HTTPException(status_code=400, detail="team parameter is required")
 
     result = await session.execute(
-        select(ResourceRecord).where(ResourceRecord.id == resource_id)
+        select(ResourceRecord).where(
+            ResourceRecord.id == resource_id,
+            ResourceRecord.deleted_at.is_(None),  # D-11: filter so second DELETE returns 404
+        )
     )
     record = result.scalar_one_or_none()
     if record is None:
@@ -252,8 +311,20 @@ async def delete_resource(
         # Collapse team mismatch into 404 to avoid leaking cross-team resource existence (A5)
         raise HTTPException(status_code=404, detail="Resource not found")
 
-    await session.delete(record)
-    await session.commit()
+    now = datetime.now(timezone.utc)
+    record.deleted_at = now  # soft-delete: set deleted_at instead of session.delete (D-11)
+
+    deployment = DeploymentRecord(
+        id=uuid.uuid4().hex,
+        resource_id=record.id,
+        project_id=await _maybe_get_project_id(record.project, record.team, session),
+        environment=record.env,
+        status=record.status,
+        change_type="delete",
+        deployed_at=now,  # same timestamp as deleted_at for audit clarity
+    )
+    session.add(deployment)
+    await session.commit()  # atomic: soft-delete update + deployment insert in one transaction
     return None
 
 
