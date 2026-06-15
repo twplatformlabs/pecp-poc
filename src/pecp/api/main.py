@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from pecp.api.routes import resources
+from pecp.api.routes import resources, teams
 from pecp.persistence.database import init_schema
 
 
@@ -27,3 +27,4 @@ app = FastAPI(
 )
 
 app.include_router(resources.router)
+app.include_router(teams.router)
