@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation + Contracts** - Lock adapter interface, auth stub, and demo script before any code is written (completed 2026-05-28)
 - [x] **Phase 2: Core Engine** - Dispatcher, state machine, all 7 mock adapters, all 6 resource kinds (completed 2026-05-28)
 - [x] **Phase 3: REST API + Core CLI** - Running FastAPI server, idempotent apply, `pecp apply/get/delete/status` (completed 2026-06-14)
-- [ ] **Phase 4: Teams, Projects, Deployments** - Team model, project grouping, environment-scoped deployment queries, team CLI commands
+- [x] **Phase 4: Teams, Projects, Deployments** - Team model, project grouping, environment-scoped deployment queries, team CLI commands (completed 2026-06-15)
 - [ ] **Phase 5: Account Flow + UI + Demo Readiness** - PECPAccount async demo, CLI account commands, React dashboard, seed data
 
 ## Phase Details
@@ -115,7 +115,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `pecp deployments --team payments --environment prod` shows only resources deployed to `prod`, with per-resource status — resources in other environments are excluded from the response
   4. A resource created without a team context (`POST /resources` with no team header) is rejected with `400` — team ownership is enforced at the API layer, not just the CLI
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 ### Phase 5: Account Flow + UI + Demo Readiness
 
@@ -144,5 +144,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation + Contracts | 3/3 | Complete    | 2026-05-28 |
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
 | 3. REST API + Core CLI | 3/3 | Complete    | 2026-06-14 |
-| 4. Teams, Projects, Deployments | 2/3 | In Progress|  |
+| 4. Teams, Projects, Deployments | 3/3 | Complete   | 2026-06-15 |
 | 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |
