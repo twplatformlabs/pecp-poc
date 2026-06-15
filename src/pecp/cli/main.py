@@ -69,6 +69,11 @@ def apply(
         readable=True,
     ),
     team: str = typer.Option(..., "--team", help="Team that owns this resource"),
+    project: str | None = typer.Option(
+        None,
+        "--project",
+        help="Project to associate with this resource (overrides spec.metadata.project per D-07)",
+    ),
     api_url: str | None = typer.Option(
         None,
         "--api-url",
@@ -80,10 +85,14 @@ def apply(
 
     yaml_bytes = file.read_bytes()
 
+    params: dict[str, str] = {"team": team}
+    if project is not None:
+        params["project"] = project
+
     try:
         response = httpx.post(
             f"{base}/resources",
-            params={"team": team},
+            params=params,
             headers={"Content-Type": "application/x-yaml"},
             content=yaml_bytes,
             timeout=10.0,
@@ -288,6 +297,109 @@ def delete(
         raise typer.Exit(code=1)
 
 
+@app.command("projects")
+def projects_list(
+    team: str = typer.Option(..., "--team", help="Team that owns these projects"),
+    json_output: bool = typer.Option(False, "--json", help="Output raw JSON to stdout"),
+    api_url: str | None = typer.Option(
+        None,
+        "--api-url",
+        help="PECP API base URL (overrides PECP_API_URL env var; default http://localhost:8000)",
+    ),
+) -> None:
+    """List projects for a team with resource counts (CLI-07)."""
+    base = _resolve_base_url(api_url)
+
+    try:
+        response = httpx.get(f"{base}/projects", params={"team": team}, timeout=10.0)
+    except httpx.RequestError as exc:
+        console.print(f"[red]Connection error[/red]: {exc}")
+        raise typer.Exit(code=1) from exc
+
+    if response.status_code != 200:
+        console.print(f"[red]Error[/red] {response.status_code}: {response.text}")
+        raise typer.Exit(code=1)
+
+    data = response.json()
+
+    if json_output:
+        print(json.dumps(data))
+        return
+
+    table = Table(title=f"Projects — team: {team}")
+    table.add_column("ID")
+    table.add_column("Name")
+    table.add_column("Environments")
+    table.add_column("Resources")
+
+    for p in data:
+        table.add_row(
+            p["id"],
+            p["name"],
+            ", ".join(p["environments"]),
+            str(p["resource_count"]),
+        )
+
+    console.print(table)
+
+
+@app.command("deployments")
+def deployments_list(
+    team: str = typer.Option(..., "--team", help="Team that owns these resources"),
+    environment: str | None = typer.Option(
+        None,
+        "--environment",
+        help="Filter by environment (e.g. dev, staging, prod)",
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Output raw JSON to stdout"),
+    api_url: str | None = typer.Option(
+        None,
+        "--api-url",
+        help="PECP API base URL (overrides PECP_API_URL env var; default http://localhost:8000)",
+    ),
+) -> None:
+    """Show deployment audit trail for a team, optionally filtered by environment (CLI-08)."""
+    base = _resolve_base_url(api_url)
+
+    params: dict[str, str] = {"team": team}
+    if environment is not None:
+        params["environment"] = environment
+
+    try:
+        response = httpx.get(f"{base}/deployments", params=params, timeout=10.0)
+    except httpx.RequestError as exc:
+        console.print(f"[red]Connection error[/red]: {exc}")
+        raise typer.Exit(code=1) from exc
+
+    if response.status_code != 200:
+        console.print(f"[red]Error[/red] {response.status_code}: {response.text}")
+        raise typer.Exit(code=1)
+
+    data = response.json()
+
+    if json_output:
+        print(json.dumps(data))
+        return
+
+    table = Table(title=f"Deployments — team: {team}")
+    table.add_column("Resource")
+    table.add_column("Kind")
+    table.add_column("Change")
+    table.add_column("Status")
+    table.add_column("Deployed")
+
+    for row in data:
+        table.add_row(
+            row["resource_name"],
+            row["kind"],
+            row["change_type"],
+            status_badge(row["status"]),
+            row["deployed_at"],
+        )
+
+    console.print(table)
+
+
 @app.command("version")
 def version() -> None:
     """Print the CLI version."""
@@ -437,6 +549,57 @@ def team_create(
 
 
 app.add_typer(team_app)
+
+
+# ---------------------------------------------------------------------------
+# Project sub-command group (D-06: explicit project creation)
+# ---------------------------------------------------------------------------
+
+project_app = typer.Typer(help="Manage PECP projects")
+
+
+@project_app.command("create")
+def project_create(
+    name: str = typer.Argument(..., help="Project name"),
+    team: str = typer.Option(..., "--team", help="Team that owns this project"),
+    envs: str = typer.Option(
+        ...,
+        "--env",
+        help="Comma-separated list of environments, e.g. dev,staging,prod",
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Output raw JSON to stdout"),
+    api_url: str | None = typer.Option(
+        None,
+        "--api-url",
+        help="PECP API base URL (overrides PECP_API_URL env var; default http://localhost:8000)",
+    ),
+) -> None:
+    """Create a new project for a team (D-06)."""
+    base = _resolve_base_url(api_url)
+
+    env_list = [e.strip() for e in envs.split(",") if e.strip()]
+    body = {"name": name, "team": team, "environments": env_list}
+
+    try:
+        response = httpx.post(f"{base}/projects", json=body, timeout=10.0)
+    except httpx.RequestError as exc:
+        console.print(f"[red]Connection error[/red]: {exc}")
+        raise typer.Exit(code=1) from exc
+
+    if response.status_code != 201:
+        console.print(f"[red]Error[/red] {response.status_code}: {response.text}")
+        raise typer.Exit(code=1)
+
+    data = response.json()
+
+    if json_output:
+        print(json.dumps(data))
+        return
+
+    console.print(f"Project {data['name']} created (id: {data['id']})")
+
+
+app.add_typer(project_app, name="project")
 
 
 if __name__ == "__main__":
