@@ -115,7 +115,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `pecp deployments --team payments --environment prod` shows only resources deployed to `prod`, with per-resource status — resources in other environments are excluded from the response
   4. A resource created without a team context (`POST /resources` with no team header) is rejected with `400` — team ownership is enforced at the API layer, not just the CLI
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 ### Phase 5: Account Flow + UI + Demo Readiness
 
@@ -144,5 +144,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation + Contracts | 3/3 | Complete    | 2026-05-28 |
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
 | 3. REST API + Core CLI | 3/3 | Complete    | 2026-06-14 |
-| 4. Teams, Projects, Deployments | 1/3 | In Progress|  |
+| 4. Teams, Projects, Deployments | 2/3 | In Progress|  |
 | 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |
