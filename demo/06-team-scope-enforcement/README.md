@@ -32,7 +32,7 @@ Expected: `400 Bad Request` — kind filter alone is not enough, team is still r
 **3. Confirm a properly-scoped query succeeds:**
 
 ```bash
-curl -s -w "\n\nHTTP %{http_code}" "http://localhost:8000/resources?team=toxins-research"
+curl -s -w "\n\nHTTP %{http_code}" "http://localhost:8000/resources?team=customer-product-app"
 ```
 
 Expected: `200 OK` with an array (possibly empty if no resources exist yet).

@@ -6,14 +6,14 @@ rather than creating a duplicate. This is the core "declare and forget" behaviou
 ## Prerequisites
 
 - Server running: `python -m uvicorn pecp.api.main:app --reload`
-- Fresh database (or no existing `hello-world` for `toxins-research`)
+- Fresh database (or no existing `hello-world` for `customer-product-app`)
 
 ## Steps
 
 **1. Apply the resource:**
 
 ```bash
-pecp apply -f demo/01-apply-idempotency/lambda.yaml --team toxins-research
+pecp apply -f demo/01-apply-idempotency/lambda.yaml --team customer-product-app
 ```
 
 Expected: prints a resource ID (UUID) and `status: pending`, then transitions to `ready`.
@@ -21,7 +21,7 @@ Expected: prints a resource ID (UUID) and `status: pending`, then transitions to
 **2. Apply the same spec again:**
 
 ```bash
-pecp apply -f demo/01-apply-idempotency/lambda.yaml --team toxins-research
+pecp apply -f demo/01-apply-idempotency/lambda.yaml --team customer-product-app
 ```
 
 Expected: prints the **same** resource ID — no duplicate created.
@@ -29,7 +29,7 @@ Expected: prints the **same** resource ID — no duplicate created.
 **3. Verify only one resource exists:**
 
 ```bash
-pecp get PECPLambda --team toxins-research
+pecp get PECPLambda --team customer-product-app
 ```
 
 Expected: a single row in the table for `hello-world`.

@@ -7,14 +7,14 @@ organizational unit — every resource, project, and deployment in PECP belongs 
 ## Prerequisites
 
 - Server running: `python -m uvicorn pecp.api.main:app --reload`
-- Fresh database (or team `toxins-research` must not already exist)
+- Fresh database (or team `customer-product-app` must not already exist)
 
 ## Steps
 
 **1. Create the team with an owner:**
 
 ```bash
-pecp team create toxins-research --owner alice@example.com
+pecp team create customer-product-app --owner alice@example.com
 ```
 
 Expected: prints the full team panel immediately —
@@ -26,7 +26,7 @@ No second command needed — `create` returns the full panel from the POST respo
 **2. Inspect the team at any time:**
 
 ```bash
-pecp team toxins-research
+pecp team customer-product-app
 ```
 
 Expected: same panel as above. Any team member (or PE admin) can run this to see
@@ -35,16 +35,16 @@ the current roster and team metadata.
 **3. Attempt to create the same team again:**
 
 ```bash
-pecp team create toxins-research --owner bob@example.com
+pecp team create customer-product-app --owner bob@example.com
 ```
 
-Expected: `Error 409` — team name `toxins-research` already exists. The existing team
+Expected: `Error 409` — team name `customer-product-app` already exists. The existing team
 is **not** modified. Team creation is a deliberate one-time act, not idempotent.
 
 **4. Confirm the original team is unchanged:**
 
 ```bash
-pecp team toxins-research
+pecp team customer-product-app
 ```
 
 Expected: panel shows `alice@example.com` as owner — the rejected duplicate did not

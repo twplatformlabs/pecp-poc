@@ -8,14 +8,14 @@ removal), but every mutation is preserved in `pecp deployments` as an immutable 
 ## Prerequisites
 
 - Server running: `python -m uvicorn pecp.api.main:app --reload`
-- Team `toxins-research` exists (run Scenario 09 first)
+- Team `customer-product-app` exists (run Scenario 09 first)
 
 ## Steps
 
 **1. Apply a resource (creates the first deployment record):**
 
 ```bash
-pecp apply -f demo/11-deployments-audit-trail/lambda.yaml --team toxins-research
+pecp apply -f demo/11-deployments-audit-trail/lambda.yaml --team customer-product-app
 ```
 
 Expected: resource created with a UUID, `status: pending → ready`.
@@ -23,7 +23,7 @@ Expected: resource created with a UUID, `status: pending → ready`.
 **2. Re-apply the same spec (update path — creates a second deployment record):**
 
 ```bash
-pecp apply -f demo/11-deployments-audit-trail/lambda.yaml --team toxins-research
+pecp apply -f demo/11-deployments-audit-trail/lambda.yaml --team customer-product-app
 ```
 
 Expected: same UUID returned — idempotent. But because the spec was re-submitted, an
@@ -32,7 +32,7 @@ Expected: same UUID returned — idempotent. But because the spec was re-submitt
 **3. Check deployments — two records so far:**
 
 ```bash
-pecp deployments --team toxins-research
+pecp deployments --team customer-product-app
 ```
 
 Expected: table shows two rows for `audit-trail-lambda`:
@@ -43,7 +43,7 @@ Both sorted newest first.
 **4. Delete the resource (soft-delete):**
 
 ```bash
-pecp delete PECPLambda audit-trail-lambda --team toxins-research
+pecp delete PECPLambda audit-trail-lambda --team customer-product-app
 ```
 
 Expected: "deleted" confirmation. The row is **not** removed from the database —
@@ -52,7 +52,7 @@ Expected: "deleted" confirmation. The row is **not** removed from the database �
 **5. Confirm the resource is gone from the active list:**
 
 ```bash
-pecp get PECPLambda --team toxins-research
+pecp get PECPLambda --team customer-product-app
 ```
 
 Expected: `audit-trail-lambda` does **not** appear. Soft-deleted resources are filtered
@@ -61,7 +61,7 @@ from all list and get queries — invisible to normal operations.
 **6. Confirm the full audit trail is still visible in deployments:**
 
 ```bash
-pecp deployments --team toxins-research
+pecp deployments --team customer-product-app
 ```
 
 Expected: now three rows for `audit-trail-lambda`:
@@ -75,7 +75,7 @@ resolves to a valid row. The audit trail is complete and permanent.
 **7. Filter by environment to scope the view:**
 
 ```bash
-pecp deployments --team toxins-research --environment staging
+pecp deployments --team customer-product-app --environment staging
 ```
 
 Expected: only resources in the `staging` environment appear. The `audit-trail-lambda`

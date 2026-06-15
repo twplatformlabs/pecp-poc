@@ -2,10 +2,10 @@ apiVersion: pecp/v1
 kind: PECPLambda
 metadata:
   name: audit-trail-lambda
-  team: toxins-research
+  team: customer-product-app
   env: staging
 spec:
   name: audit-trail-lambda
   exposure: private
   api-gateway: /audit
-  source-code: github://toxins-research/audit-lambda
+  source-code: github://customer-product-app/audit-lambda

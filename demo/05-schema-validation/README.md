@@ -15,7 +15,7 @@ This is a Phase 1 guarantee: the schema layer is the first line of defence.
 **1. Apply the invalid spec (missing `source-code`):**
 
 ```bash
-pecp apply -f demo/05-schema-validation/lambda-invalid.yaml --team toxins-research
+pecp apply -f demo/05-schema-validation/lambda-invalid.yaml --team customer-product-app
 ```
 
 Expected: error response with a `422 Unprocessable Entity` status and a message indicating
@@ -25,7 +25,7 @@ no adapter is called.
 **2. Fix the spec and apply the valid version:**
 
 ```bash
-pecp apply -f demo/05-schema-validation/lambda-valid.yaml --team toxins-research
+pecp apply -f demo/05-schema-validation/lambda-valid.yaml --team customer-product-app
 ```
 
 Expected: resource accepted with a UUID, `status: pending`, transitions to `ready`.
@@ -33,7 +33,7 @@ Expected: resource accepted with a UUID, `status: pending`, transitions to `read
 **3. Confirm the invalid attempt left no trace:**
 
 ```bash
-pecp get PECPLambda --team toxins-research
+pecp get PECPLambda --team customer-product-app
 ```
 
 Expected: only the `valid-lambda` resource appears — the rejected spec created nothing.

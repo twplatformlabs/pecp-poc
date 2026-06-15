@@ -2,7 +2,7 @@ apiVersion: pecp/v1
 kind: PECPDataService
 metadata:
   name: webhook-events-queue
-  team: toxins-research
+  team: customer-product-app
   env: prod
 spec:
   name: webhook-events-queue

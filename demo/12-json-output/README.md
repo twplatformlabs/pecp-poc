@@ -10,14 +10,14 @@ also supports a machine-readable output path.
 ## Prerequisites
 
 - Server running: `python -m uvicorn pecp.api.main:app --reload`
-- Team `toxins-research` exists and has at least one resource (run Scenarios 09 + 10)
+- Team `customer-product-app` exists and has at least one resource (run Scenarios 09 + 10)
 
 ## Steps
 
 **1. Team panel as JSON:**
 
 ```bash
-pecp team toxins-research --json
+pecp team customer-product-app --json
 ```
 
 Expected: a single JSON object with keys `id`, `name`, `owner_id`, `created_at`,
@@ -26,7 +26,7 @@ and `members` (array of `{user_id, role, joined_at}`). No Rich formatting.
 **2. Projects list as JSON:**
 
 ```bash
-pecp projects --team toxins-research --json
+pecp projects --team customer-product-app --json
 ```
 
 Expected: JSON array of project objects:
@@ -44,7 +44,7 @@ Expected: JSON array of project objects:
 **3. Deployments as JSON:**
 
 ```bash
-pecp deployments --team toxins-research --json
+pecp deployments --team customer-product-app --json
 ```
 
 Expected: JSON array of deployment records, each with `resource_name`, `kind`,
@@ -53,7 +53,7 @@ Expected: JSON array of deployment records, each with `resource_name`, `kind`,
 **4. Resource list as JSON:**
 
 ```bash
-pecp get PECPLambda --team toxins-research --json
+pecp get PECPLambda --team customer-product-app --json
 ```
 
 Expected: JSON array of resource records with all fields including `project` and
@@ -62,7 +62,7 @@ Expected: JSON array of resource records with all fields including `project` and
 **5. Resource status as JSON:**
 
 ```bash
-pecp status PECPLambda webhook-handler --team toxins-research --json
+pecp status PECPLambda webhook-handler --team customer-product-app --json
 ```
 
 Expected: single JSON object with full resource record including `activity_log` array.
@@ -70,8 +70,8 @@ Expected: single JSON object with full resource record including `activity_log` 
 **6. Pipe to jq for field extraction:**
 
 ```bash
-pecp projects --team toxins-research --json | jq '.[].name'
-pecp deployments --team toxins-research --json | jq '[.[] | {name: .resource_name, type: .change_type}]'
+pecp projects --team customer-product-app --json | jq '.[].name'
+pecp deployments --team customer-product-app --json | jq '[.[] | {name: .resource_name, type: .change_type}]'
 ```
 
 Expected: `jq` extracts fields cleanly — proves stdout is valid JSON with no
