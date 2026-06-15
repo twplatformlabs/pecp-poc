@@ -898,7 +898,7 @@ Step 2.6: SKIPPED (no new external dependencies). Phase 4 is code/config/schema 
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`pecp apply --project` flag placement and `--json` backfill scope**
    - What we know: D-07 says `pecp apply` gains optional `--project` flag. D-17 says `--json` on all data-returning commands including `pecp get` and `pecp status`.
