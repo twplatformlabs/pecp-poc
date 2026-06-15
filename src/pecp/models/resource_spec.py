@@ -93,6 +93,7 @@ class ResourceMetadata(BaseModel):
     name: str
     team: str | None = None
     env: str | None = None
+    project: str | None = None  # D-08: optional project grouping
 
 
 class ResourceSpec(BaseModel):

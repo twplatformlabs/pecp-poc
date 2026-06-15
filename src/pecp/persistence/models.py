@@ -6,7 +6,14 @@ The full validated ResourceSpec is stored as JSON in spec_json for portability.
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, String, Text, UniqueConstraint
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    PrimaryKeyConstraint,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -41,3 +48,86 @@ class ResourceRecord(Base):
     activity_log: Mapped[str | None] = mapped_column(Text, nullable=True, default="[]")
     env: Mapped[str | None] = mapped_column(Text, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True, default="[]")
+    project: Mapped[str | None] = mapped_column(Text, nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class TeamRecord(Base):
+    """ORM model for a team.
+
+    Team names are unique — POST /teams returns 409 if name already exists (D-03).
+    Owner is auto-added as the first TeamMemberRecord with role="owner" (D-02).
+    """
+
+    __tablename__ = "teams"
+    __table_args__ = (UniqueConstraint("name", name="uq_teams_name"),)
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    owner_id: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+
+class TeamMemberRecord(Base):
+    """ORM model for team membership.
+
+    Composite PK on (team_id, user_id) — one row per user per team.
+    role is "owner" or "contributor" for PoC (D-01).
+    """
+
+    __tablename__ = "team_members"
+    __table_args__ = (PrimaryKeyConstraint("team_id", "user_id"),)
+
+    team_id: Mapped[str] = mapped_column(String, ForeignKey("teams.id"), nullable=False)
+    user_id: Mapped[str] = mapped_column(Text, nullable=False)
+    role: Mapped[str] = mapped_column(Text, nullable=False)  # "owner" | "contributor"
+    joined_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+
+class ProjectRecord(Base):
+    """ORM model for a project.
+
+    Projects group resources within a team scoped to environments (D-04).
+    environments stores a JSON-serialized list — round-trip via json.dumps/loads in route handlers.
+    Unique constraint on (team_id, name) — projects are unique per team (D-04).
+    """
+
+    __tablename__ = "projects"
+    __table_args__ = (UniqueConstraint("team_id", "name", name="uq_projects_team_name"),)
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    team_id: Mapped[str] = mapped_column(String, ForeignKey("teams.id"), nullable=False)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    environments: Mapped[str] = mapped_column(Text, nullable=False)  # JSON list via json.dumps/loads
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+
+class DeploymentRecord(Base):
+    """ORM model for a deployment audit record.
+
+    Append-only audit log — multiple rows per resource expected (D-09, D-10).
+    change_type values: create | update | delete (validated at route handler layer).
+    deployed_at has no default — route handler always supplies it explicitly for audit clarity.
+    """
+
+    __tablename__ = "deployments"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    resource_id: Mapped[str] = mapped_column(String, ForeignKey("resource_records.id"), nullable=False)
+    project_id: Mapped[str | None] = mapped_column(String, ForeignKey("projects.id"), nullable=True)
+    environment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(Text, nullable=False)
+    change_type: Mapped[str] = mapped_column(Text, nullable=False)  # create | update | delete
+    deployed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
