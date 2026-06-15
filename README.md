@@ -4,6 +4,9 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 
 Teams submit typed resource specs (`kind: PECPLambda`, `kind: PECPDataService`, etc.) via the `pecp` CLI, and the platform handles routing, account management, and provisioning based on team context. For this PoC, all backing systems are mocked — the goal is to prove the control plane pattern and make it demo-able to stakeholders.
 
+### Built by
+This tool was built in conjunction with GSD and Claude — the brainstorming, architecture decisions, and implementation were all done collaboratively through an AI-assisted development session.
+
 ## Development Setup
 
 ```bash
