@@ -30,6 +30,21 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 - [x] `pecp status <kind> <name> --team <team>` — table + notes block
 - [x] `pecp delete <kind> <name> --team <team>` — team-scoped, cross-team delete rejected
 
+### Validated
+
+**Teams, Projects & Deployments** *(Validated in Phase 4: teams-projects-deployments)*
+- [x] Teams are the primary organizational unit — all resources and accounts belong to a team
+- [x] Team creation via `POST /teams` (409 on duplicate, auto-seeds owner member)
+- [x] Team has members with roles: `owner` and `contributor`
+- [x] A project is a named grouping of resources with resource_count aggregation
+- [x] Projects map to environments; deployments are trackable per team and per environment
+- [x] Soft-delete on resources: `deleted_at` timestamp, filtered from list/get queries
+- [x] `DeploymentRecord` audit rows written atomically on every resource mutation
+- [x] `pecp team create <name>` / `pecp team <name>` — Rich panel with members and roles
+- [x] `pecp projects --team <team>` — list projects with resource counts
+- [x] `pecp deployments --team <team>` — show deployment history by environment
+- [x] `pecp apply ... --project <project>` — resource scoped to a project
+
 ### Active
 
 **Control Plane API**
@@ -42,26 +57,7 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 - [ ] `PECPSalesforce` — Salesforce resource (spec TBD via research)
 - [ ] `PECPAem` — AEM resource (spec TBD via research)
 
-**Team & Onboarding**
-- [ ] Teams are the primary organizational unit — all resources and accounts belong to a team
-- [ ] Team creation requires PE approval (initial flow); subsequent teams can be self-service
-- [ ] Team has members with roles: `owner` and `contributor`
-- [ ] Owners control membership, infrastructure-level resources (AWS accounts), and team settings
-
-**Projects & Environments**
-- [ ] A project is a named grouping of resources with a deployment context
-- [ ] Projects map to environments (dev, staging, prod)
-- [ ] Deployments are trackable per team and per environment
-
 **`pecp` CLI**
-- [ ] `pecp apply -f resource.yaml` — submit a resource spec
-- [ ] `pecp get <kind> --team <team>` — list resources of a type for a team
-- [ ] `pecp delete <kind> <name> --team <team>` — delete a resource
-- [ ] `pecp status <kind> <name> --team <team>` — show provisioning status and notes
-- [ ] `pecp team <name>` — show team members, roles, and metadata
-- [ ] `pecp team create <name>` — request team creation (triggers PE approval flow)
-- [ ] `pecp projects --team <team>` — list projects with deployment context and change management metadata
-- [ ] `pecp deployments --team <team> --environment <env>` — show deployment status for an environment
 - [ ] `pecp create awsaccount --team <team>` — request an AWS account (async provisioning)
 - [ ] `pecp status awsaccount --team <team>` — check account readiness, access credentials, PE notes
 
@@ -131,4 +127,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-14 — Phase 3 complete: REST API + CLI live — idempotent apply, Rich status tables, PE notes workflow, 115 tests passing*
+*Last updated: 2026-06-15 — Phase 4 complete: Teams, Projects, Deployments, Soft-delete — multi-team control plane with audit trail, 146 tests passing*
