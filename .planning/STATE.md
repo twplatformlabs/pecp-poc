@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-current_phase_name: account-flow-ui-demo-readiness
+current_phase: 5
+current_phase_name: milestone candidate
 status: complete
 stopped_at: Phase 5 complete; awaiting milestone close
-last_updated: "2026-06-22T21:00:00.000Z"
+last_updated: "2026-06-22T22:16:35.918Z"
 last_activity: 2026-06-22
-last_activity_desc: Plan 05-04 human verification approved — Phase 5 milestone candidate
+last_activity_desc: Plan 05-04 human verification approved; all 12 demo steps PASS
 progress:
   total_phases: 5
   completed_phases: 5
