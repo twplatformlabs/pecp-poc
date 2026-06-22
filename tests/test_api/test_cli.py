@@ -790,6 +790,7 @@ def test_project_create_command_renders_confirmation() -> None:
 def test_account_create_flag_path_returns_resource_id() -> None:
     """CLI-09 / D-01 / D-02: pecp create awsaccount --team --env --project builds PECPAccount spec and prints resource id."""
     import unittest.mock as mock
+
     import yaml
 
     posted_body: list[bytes] = []
