@@ -45,6 +45,22 @@ def _render_team(team: TeamRecord, members: list[TeamMemberRecord]) -> dict[str,
     }
 
 
+@router.get("")
+async def list_teams(
+    limit: int = 50,
+    ctx: ContextDep = ...,  # type: ignore[assignment]
+    session: SessionDep = ...,  # type: ignore[assignment]
+) -> list[dict[str, str]]:
+    """Return all teams for the dashboard team dropdown (D-07).
+
+    GET /teams?limit=50 — no auth required for PoC.
+    Returns [{id, name}] — dashboard does not need full team body (T-05-06).
+    """
+    result = await session.execute(select(TeamRecord).limit(limit))
+    rows = result.scalars().all()
+    return [{"id": r.id, "name": r.name} for r in rows]
+
+
 @router.post("", status_code=201)
 async def create_team(
     body: TeamCreate,

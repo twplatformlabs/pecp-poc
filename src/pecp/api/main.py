@@ -8,6 +8,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from pecp.api.routes import deployments, projects, resources, teams
 from pecp.persistence.database import init_schema
@@ -24,6 +25,16 @@ app = FastAPI(
     title="PECP Control Plane",
     version="0.1.0",
     lifespan=lifespan,
+)
+
+# CORS must be added BEFORE include_router calls (Pitfall 7 / D-06 / T-05-01)
+# Whitelist only the Vite dev server origin — never use ["*"] (T-05-01)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(resources.router)
