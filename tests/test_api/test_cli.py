@@ -780,3 +780,434 @@ def test_project_create_command_renders_confirmation() -> None:
     assert result.exit_code == 0
     assert "payments-backend" in result.output
     assert "abc-123" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 Plan 01 — account sub-command tests (CLI-09, CLI-10)
+# ---------------------------------------------------------------------------
+
+
+def test_account_create_flag_path_returns_resource_id() -> None:
+    """CLI-09 / D-01 / D-02: pecp create awsaccount --team --env --project builds PECPAccount spec and prints resource id."""
+    import unittest.mock as mock
+    import yaml
+
+    posted_body: list[bytes] = []
+
+    mock_response = mock.MagicMock(spec=httpx.Response)
+    mock_response.status_code = 202
+    mock_response.json.return_value = {
+        "id": "acct-abc-123",
+        "kind": "PECPAccount",
+        "name": "pecp-customer-product-app",
+        "status": "pending",
+    }
+
+    def capture_post(*args: object, **kwargs: object) -> httpx.Response:
+        content = kwargs.get("content", b"")
+        if isinstance(content, bytes):
+            posted_body.append(content)
+        return mock_response
+
+    with mock.patch("httpx.post", side_effect=capture_post):
+        result = runner.invoke(
+            app,
+            [
+                "create",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--env",
+                "prod",
+                "--project",
+                "cpa-core",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0, result.output
+    assert "acct-abc-123" in result.output
+
+    # Verify the request body is a valid YAML PECPAccount spec
+    assert len(posted_body) == 1
+    spec = yaml.safe_load(posted_body[0])
+    assert spec["kind"] == "PECPAccount"
+    assert spec["metadata"]["name"] == "pecp-customer-product-app"
+    assert spec["metadata"]["team"] == "customer-product-app"
+    assert spec["metadata"]["env"] == "prod"
+    assert spec["metadata"]["project"] == "cpa-core"
+
+
+def test_account_create_yaml_override_uses_file(tmp_path: Path) -> None:
+    """CLI-09 / D-01: pecp create awsaccount -f account.yaml sends file bytes verbatim."""
+    import unittest.mock as mock
+
+    account_yaml = tmp_path / "account.yaml"
+    yaml_content = b"""apiVersion: pecp/v1
+kind: PECPAccount
+metadata:
+  name: pecp-custom-override
+  team: customer-product-app
+spec: {}
+"""
+    account_yaml.write_bytes(yaml_content)
+
+    posted_body: list[bytes] = []
+
+    mock_response = mock.MagicMock(spec=httpx.Response)
+    mock_response.status_code = 202
+    mock_response.json.return_value = {
+        "id": "acct-file-456",
+        "kind": "PECPAccount",
+        "name": "pecp-custom-override",
+        "status": "pending",
+    }
+
+    def capture_post(*args: object, **kwargs: object) -> httpx.Response:
+        content = kwargs.get("content", b"")
+        if isinstance(content, bytes):
+            posted_body.append(content)
+        return mock_response
+
+    with mock.patch("httpx.post", side_effect=capture_post):
+        result = runner.invoke(
+            app,
+            [
+                "create",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "-f",
+                str(account_yaml),
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0, result.output
+    # File bytes must be sent verbatim (no internal YAML build)
+    assert len(posted_body) == 1
+    assert posted_body[0] == yaml_content
+
+
+def test_account_status_renders_metadata_and_notes() -> None:
+    """CLI-10 / D-03: pecp status awsaccount renders provider_metadata fields and notes."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {
+            "id": "acct-r1",
+            "kind": "PECPAccount",
+            "name": "pecp-customer-product-app",
+            "status": "ready",
+            "env": "prod",
+        }
+    ]
+
+    detail_response = mock.MagicMock(spec=httpx.Response)
+    detail_response.status_code = 200
+    detail_response.json.return_value = {
+        "id": "acct-r1",
+        "kind": "PECPAccount",
+        "name": "pecp-customer-product-app",
+        "status": "ready",
+        "env": "prod",
+        "created_at": "2026-06-22T00:00:00Z",
+        "provider_metadata": {
+            "account_id": "123456789012",
+            "account_email": "aws+cpa@example.com",
+            "account_name": "pecp-customer-product-app",
+            "management_console_url": "https://console.aws.amazon.com/switch-role?account=123456789012",
+        },
+        "notes": [
+            {
+                "author": "pe-team",
+                "timestamp": "2026-06-22 09:00",
+                "text": "Account provisioning request received",
+            }
+        ],
+    }
+
+    with mock.patch("httpx.get", side_effect=[list_response, detail_response]):
+        result = runner.invoke(
+            app,
+            [
+                "status",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0, result.output
+    # All four provider_metadata values must appear
+    assert "123456789012" in result.output
+    assert "aws+cpa@example.com" in result.output
+    assert "pecp-customer-product-app" in result.output
+    assert "console.aws.amazon.com" in result.output
+    # Notes must appear
+    assert "Account provisioning request received" in result.output
+    # D-03: no AWS access keys in status output
+    assert "AKIA" not in result.output
+
+
+def test_account_status_json_output() -> None:
+    """CLI-10 / D-03: pecp status awsaccount --json outputs raw JSON dict."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {
+            "id": "acct-r2",
+            "kind": "PECPAccount",
+            "name": "pecp-customer-product-app",
+            "status": "ready",
+            "env": "prod",
+        }
+    ]
+
+    detail_dict = {
+        "id": "acct-r2",
+        "kind": "PECPAccount",
+        "name": "pecp-customer-product-app",
+        "status": "ready",
+        "env": "prod",
+        "created_at": "2026-06-22T00:00:00Z",
+        "provider_metadata": {
+            "account_id": "123456789012",
+            "account_email": "aws+cpa@example.com",
+            "account_name": "pecp-customer-product-app",
+            "management_console_url": "https://console.aws.amazon.com/",
+        },
+        "notes": [],
+    }
+    detail_response = mock.MagicMock(spec=httpx.Response)
+    detail_response.status_code = 200
+    detail_response.json.return_value = detail_dict
+
+    with mock.patch("httpx.get", side_effect=[list_response, detail_response]):
+        result = runner.invoke(
+            app,
+            [
+                "status",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--json",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0, result.output
+    parsed = json.loads(result.output)
+    assert isinstance(parsed, dict)
+    assert parsed["id"] == "acct-r2"
+    assert "provider_metadata" in parsed
+
+
+def test_account_status_watch_exits_on_ready(monkeypatch: object) -> None:
+    """CLI-10 / D-05: pecp status awsaccount --watch polls until ready, prints timestamped lines."""
+    import unittest.mock as mock
+
+    # Patch time.sleep to no-op
+    monkeypatch.setattr("pecp.cli.main.time.sleep", lambda _: None)  # type: ignore[attr-defined]
+
+    call_count = 0
+
+    def side_effect_get(*args: object, **kwargs: object) -> httpx.Response:
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            # First call: list resources
+            r = mock.MagicMock(spec=httpx.Response)
+            r.status_code = 200
+            r.json.return_value = [
+                {"id": "acct-w1", "kind": "PECPAccount", "name": "pecp-customer-product-app", "status": "provisioning", "env": "prod"}
+            ]
+            return r
+        elif call_count == 2:
+            # First detail fetch: provisioning
+            r = mock.MagicMock(spec=httpx.Response)
+            r.status_code = 200
+            r.json.return_value = {
+                "id": "acct-w1", "kind": "PECPAccount", "name": "pecp-customer-product-app",
+                "status": "provisioning", "env": "prod", "created_at": "2026-06-22T00:00:00Z",
+                "provider_metadata": {}, "notes": [],
+            }
+            return r
+        elif call_count == 3:
+            # Second list: still provisioning
+            r = mock.MagicMock(spec=httpx.Response)
+            r.status_code = 200
+            r.json.return_value = [
+                {"id": "acct-w1", "kind": "PECPAccount", "name": "pecp-customer-product-app", "status": "provisioning", "env": "prod"}
+            ]
+            return r
+        elif call_count == 4:
+            # Second detail fetch: ready
+            r = mock.MagicMock(spec=httpx.Response)
+            r.status_code = 200
+            r.json.return_value = {
+                "id": "acct-w1", "kind": "PECPAccount", "name": "pecp-customer-product-app",
+                "status": "ready", "env": "prod", "created_at": "2026-06-22T00:00:00Z",
+                "provider_metadata": {}, "notes": [],
+            }
+            return r
+        else:
+            raise AssertionError("Too many calls to httpx.get")
+
+    with mock.patch("httpx.get", side_effect=side_effect_get):
+        result = runner.invoke(
+            app,
+            [
+                "status",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--watch",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0, result.output
+    # Should have timestamped poll lines
+    assert "status:" in result.output
+    assert "provisioning" in result.output
+    assert "ready" in result.output
+
+
+def test_account_login_prints_export_lines_when_ready() -> None:
+    """CLI-10 / D-04: pecp login awsaccount prints export lines and exits 0 when ready."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {"id": "acct-l1", "kind": "PECPAccount", "name": "pecp-customer-product-app", "status": "ready", "env": "prod"}
+    ]
+
+    detail_response = mock.MagicMock(spec=httpx.Response)
+    detail_response.status_code = 200
+    detail_response.json.return_value = {
+        "id": "acct-l1", "kind": "PECPAccount", "name": "pecp-customer-product-app",
+        "status": "ready", "env": "prod", "created_at": "2026-06-22T00:00:00Z",
+        "provider_metadata": {
+            "account_id": "123456789012",
+            "account_email": "aws+cpa@example.com",
+            "account_name": "pecp-customer-product-app",
+            "management_console_url": "https://console.aws.amazon.com/",
+            "access_key_id": "AKIAIOSFODNN7EXAMPLE",
+            "secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            "default_region": "us-east-1",
+        },
+        "notes": [],
+    }
+
+    with mock.patch("httpx.get", side_effect=[list_response, detail_response]):
+        result = runner.invoke(
+            app,
+            [
+                "login",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--api-url",
+                "http://t:8000",
+            ],
+            catch_exceptions=False,
+        )
+
+    assert result.exit_code == 0, result.output
+    assert "export AWS_ACCESS_KEY_ID=" in result.output
+    assert "export AWS_SECRET_ACCESS_KEY=" in result.output
+    assert "export AWS_DEFAULT_REGION=" in result.output
+    # Comment line with profile and account
+    assert "# Profile:" in result.output
+    assert "123456789012" in result.output
+
+
+def test_account_login_exit_code_2_when_not_ready() -> None:
+    """CLI-10 / D-04: pecp login awsaccount exits 2 when account status is not ready."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = [
+        {"id": "acct-l2", "kind": "PECPAccount", "name": "pecp-customer-product-app", "status": "provisioning", "env": "prod"}
+    ]
+
+    detail_response = mock.MagicMock(spec=httpx.Response)
+    detail_response.status_code = 200
+    detail_response.json.return_value = {
+        "id": "acct-l2", "kind": "PECPAccount", "name": "pecp-customer-product-app",
+        "status": "provisioning", "env": "prod", "created_at": "2026-06-22T00:00:00Z",
+        "provider_metadata": {}, "notes": [],
+    }
+
+    with mock.patch("httpx.get", side_effect=[list_response, detail_response]):
+        result = runner.invoke(
+            app,
+            [
+                "login",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--api-url",
+                "http://t:8000",
+            ],
+        )
+
+    assert result.exit_code == 2, result.output
+    assert "not yet ready" in result.output.lower() or "not ready" in result.output.lower()
+
+
+def test_account_login_exit_code_1_when_not_found() -> None:
+    """CLI-10 / D-04: pecp login awsaccount exits 1 when no PECPAccount found for team."""
+    import unittest.mock as mock
+
+    list_response = mock.MagicMock(spec=httpx.Response)
+    list_response.status_code = 200
+    list_response.json.return_value = []  # No accounts found
+
+    with mock.patch("httpx.get", return_value=list_response):
+        result = runner.invoke(
+            app,
+            [
+                "login",
+                "awsaccount",
+                "--team",
+                "customer-product-app",
+                "--api-url",
+                "http://t:8000",
+            ],
+        )
+
+    assert result.exit_code == 1, result.output
+
+
+def test_status_awsaccount_subapp_registered() -> None:
+    """Registration smoke test: pecp status awsaccount --help exits 0 and shows --team/--watch."""
+    result = runner.invoke(app, ["status", "awsaccount", "--help"])
+    assert result.exit_code == 0, result.output
+    assert "--team" in result.output
+    assert "--watch" in result.output
+
+
+def test_login_awsaccount_subapp_registered() -> None:
+    """Registration smoke test: pecp login awsaccount --help exits 0 and shows --team."""
+    result = runner.invoke(app, ["login", "awsaccount", "--help"])
+    assert result.exit_code == 0, result.output
+    assert "--team" in result.output
