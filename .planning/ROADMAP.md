@@ -132,7 +132,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Running the seed script populates 4 teams, 3 projects, and resources spanning all lifecycle states (`pending`, `provisioning`, `ready`, `failed`) — a stakeholder session can start from a clean database with one command
 
 **UI hint:** yes
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 **Wave 1**
@@ -142,7 +142,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-03-PLAN.md — React dashboard at ui/ (Vite + shadcn + TanStack Query): Inventory + Deployments tabs, team dropdown, manual refresh [Wave 2]
+- [x] 05-03-PLAN.md — React dashboard at ui/ (Vite + shadcn + TanStack Query): Inventory + Deployments tabs, team dropdown, manual refresh [Wave 2]
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -159,4 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
 | 3. REST API + Core CLI | 3/3 | Complete    | 2026-06-14 |
 | 4. Teams, Projects, Deployments | 3/3 | Complete    | 2026-06-15 |
-| 5. Account Flow + UI + Demo Readiness | 2/4 | In Progress|  |
+| 5. Account Flow + UI + Demo Readiness | 3/4 | In Progress|  |
