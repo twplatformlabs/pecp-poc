@@ -127,12 +127,26 @@ Decimal phases appear between their surrounding integers in numeric order.
 
   1. `pecp create awsaccount --team payments` returns immediately with a resource ID; `pecp status awsaccount --team payments --watch` polls and shows `provisioning` with PE notes updating live, then exits when the account reaches `ready`
   2. `pecp status awsaccount --team payments` displays credential output (account ID, access keys — synthetic) once status is `ready`
-  3. The React dashboard loads the team resource inventory as a table with name, kind, status badge, and environment — data refreshes automatically without a page reload
+  3. The React dashboard loads the team resource inventory as a table with name, kind, status badge, and environment — data refreshes on demand without a page reload
   4. The deployment view filters the resource table by environment (dev / staging / prod) and shows per-resource status for the selected environment
   5. Running the seed script populates 2 teams, 3 projects, and resources spanning all lifecycle states (`pending`, `provisioning`, `ready`, `failed`) — a stakeholder session can start from a clean database with one command
 
 **UI hint:** yes
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 05-01-PLAN.md — Account CLI vertical slice (create/status/login awsaccount) + CORS middleware + GET /teams list endpoint [Wave 1]
+- [ ] 05-02-PLAN.md — Demo seed script (4 teams, 3 projects, lifecycle-spanning resources, demo PECPAccount in provisioning) [Wave 1, parallel with 05-01]
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 05-03-PLAN.md — React dashboard at ui/ (Vite + shadcn + TanStack Query): Inventory + Deployments tabs, team dropdown, manual refresh [Wave 2]
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 05-04-PLAN.md — End-to-end stakeholder demo walkthrough + milestone-complete STATE update [Wave 3]
 
 ## Progress
 
@@ -145,4 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
 | 3. REST API + Core CLI | 3/3 | Complete    | 2026-06-14 |
 | 4. Teams, Projects, Deployments | 3/3 | Complete    | 2026-06-15 |
-| 5. Account Flow + UI + Demo Readiness | 0/TBD | Not started | - |
+| 5. Account Flow + UI + Demo Readiness | 0/4 | Planned     | - |
