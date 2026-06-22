@@ -49,8 +49,8 @@
 
 ### UI Dashboard
 
-- [ ] **UI-01**: Team resource inventory — table view showing all resources for a team with name, kind, status badge, and environment
-- [ ] **UI-02**: Deployment view — resources filterable by environment (dev / staging / prod) with per-resource status
+- [x] **UI-01**: Team resource inventory — table view showing all resources for a team with name, kind, status badge, and environment
+- [x] **UI-02**: Deployment view — resources filterable by environment (dev / staging / prod) with per-resource status
 
 ### Architecture & Cross-Cutting
 
@@ -142,8 +142,8 @@
 | CLI-08 | Phase 4 | Complete |
 | CLI-09 | Phase 5 | Complete |
 | CLI-10 | Phase 5 | Complete |
-| UI-01 | Phase 5 | Pending |
-| UI-02 | Phase 5 | Pending |
+| UI-01 | Phase 5 | Complete |
+| UI-02 | Phase 5 | Complete |
 | ARCH-03 | Phase 5 | Complete |
 
 **Coverage:**
