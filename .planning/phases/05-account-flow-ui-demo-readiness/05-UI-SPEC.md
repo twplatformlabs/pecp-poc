@@ -55,6 +55,8 @@ The dashboard is a single-page app with no React Router. All state is component-
 - Content area: `flex-1 p-6 max-w-screen-xl mx-auto w-full`
 - No sidebar. No modal routes. No page navigation.
 
+**Populated state focal point:** Primary visual anchor is the Status badge column — it is the only colored element in an otherwise monochrome table, drawing the eye immediately to resource lifecycle state.
+
 ### Inventory Tab Layout
 
 ```
@@ -109,7 +111,7 @@ Four roles, two weights only.
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px (text-sm) | 400 (normal) | 1.5 | Table cell text, dropdown options, nav labels |
-| Label | 12px (text-xs) | 500 (medium) | 1.4 | Column headers, badge text, filter labels |
+| Label | 12px (text-xs) | 600 (semibold) | 1.4 | Column headers, badge text, filter labels |
 | Heading | 16px (text-base) | 600 (semibold) | 1.25 | Empty state headings, section titles |
 | Display | 20px (text-xl) | 600 (semibold) | 1.2 | PECP logo / app name in nav |
 
