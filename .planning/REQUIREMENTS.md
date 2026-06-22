@@ -43,8 +43,8 @@
 - [x] **CLI-06**: `pecp team create <name>` — creates a new team
 - [x] **CLI-07**: `pecp projects --team <team>` — lists projects for a team with environment and metadata
 - [x] **CLI-08**: `pecp deployments --team <team> --environment <env>` — shows deployment status filtered by environment
-- [ ] **CLI-09**: `pecp create awsaccount --team <team>` — requests async AWS account provisioning (returns immediately with resource ID)
-- [ ] **CLI-10**: `pecp status awsaccount --team <team>` — shows account readiness, access credentials (when ready), and PE notes history
+- [x] **CLI-09**: `pecp create awsaccount --team <team>` — requests async AWS account provisioning (returns immediately with resource ID)
+- [x] **CLI-10**: `pecp status awsaccount --team <team>` — shows account readiness, access credentials (when ready), and PE notes history
 - [x] **CLI-11**: CLI API base URL is configurable via `--api-url` flag, `PECP_API_URL` env var, or `~/.pecp/config.yaml` (default: `http://localhost:8000`)
 
 ### UI Dashboard
@@ -140,8 +140,8 @@
 | CLI-06 | Phase 4 | Complete |
 | CLI-07 | Phase 4 | Complete |
 | CLI-08 | Phase 4 | Complete |
-| CLI-09 | Phase 5 | Pending |
-| CLI-10 | Phase 5 | Pending |
+| CLI-09 | Phase 5 | Complete |
+| CLI-10 | Phase 5 | Complete |
 | UI-01 | Phase 5 | Pending |
 | UI-02 | Phase 5 | Pending |
 | ARCH-03 | Phase 5 | Pending |
