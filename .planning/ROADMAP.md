@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Core Engine** - Dispatcher, state machine, all 7 mock adapters, all 6 resource kinds (completed 2026-05-28)
 - [x] **Phase 3: REST API + Core CLI** - Running FastAPI server, idempotent apply, `pecp apply/get/delete/status` (completed 2026-06-14)
 - [x] **Phase 4: Teams, Projects, Deployments** - Team model, project grouping, environment-scoped deployment queries, team CLI commands (completed 2026-06-15)
-- [ ] **Phase 5: Account Flow + UI + Demo Readiness** - PECPAccount async demo, CLI account commands, React dashboard, seed data
+- [x] **Phase 5: Account Flow + UI + Demo Readiness** - PECPAccount async demo, CLI account commands, React dashboard, seed data (completed 2026-06-22)
 
 ## Phase Details
 
@@ -132,7 +132,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Running the seed script populates 4 teams, 3 projects, and resources spanning all lifecycle states (`pending`, `provisioning`, `ready`, `failed`) — a stakeholder session can start from a clean database with one command
 
 **UI hint:** yes
-**Plans:** 4/4 plans executed (05-04 ready to start)
+**Plans:** 4/4 plans complete
 
 Plans:
 **Wave 1**
@@ -146,7 +146,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 05-04-PLAN.md — End-to-end stakeholder demo walkthrough + milestone-complete STATE update [Wave 3]
+- [x] 05-04-PLAN.md — End-to-end stakeholder demo walkthrough + milestone-complete STATE update [Wave 3]
 
 ## Progress
 
@@ -159,4 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
 | 3. REST API + Core CLI | 3/3 | Complete    | 2026-06-14 |
 | 4. Teams, Projects, Deployments | 3/3 | Complete    | 2026-06-15 |
-| 5. Account Flow + UI + Demo Readiness | 3/4 | In Progress (05-04 pending) |  |
+| 5. Account Flow + UI + Demo Readiness | 4/4 | Complete    | 2026-06-22 |

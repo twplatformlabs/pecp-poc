@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 05
 current_phase_name: account-flow-ui-demo-readiness
-status: executing
-stopped_at: Plan 05-03 complete — human verify approved
-last_updated: "2026-06-22T20:10:00.000Z"
+status: complete
+stopped_at: Phase 5 complete; awaiting milestone close
+last_updated: "2026-06-22T21:00:00.000Z"
 last_activity: 2026-06-22
-last_activity_desc: Plan 05-03 human verification approved; ready for 05-04
+last_activity_desc: Plan 05-04 human verification approved — Phase 5 milestone candidate
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 17
-  completed_plans: 16
-  percent: 80
+  completed_plans: 17
+  percent: 100
 ---
 
 # Project State
@@ -28,10 +28,8 @@ See: .planning/PROJECT.md (updated 2026-05-27)
 
 ## Current Position
 
-Phase: 05 (account-flow-ui-demo-readiness) — EXECUTING
-Plan: 4 of 4
-Status: Ready to execute
-Last activity: 2026-06-22 — Plan 05-03 human verification approved
+Phase: 5 / Plan: All complete / Status: Phase 5 complete — milestone candidate
+Last activity: 2026-06-22 — Plan 05-04 human verification approved; all 12 demo steps PASS
 
 Progress: [██████████] 100%
 
@@ -101,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-22T20:02:54.476Z
-Stopped at: Completed 05-02 seed script plan
-Resume file: .planning/phases/05-account-flow-ui-demo-readiness/05-04-PLAN.md
+Last session: 2026-06-22T21:00:00.000Z
+Stopped at: Phase 5 complete; awaiting milestone close
+Resume file: None
