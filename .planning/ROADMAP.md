@@ -132,7 +132,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Running the seed script populates 4 teams, 3 projects, and resources spanning all lifecycle states (`pending`, `provisioning`, `ready`, `failed`) — a stakeholder session can start from a clean database with one command
 
 **UI hint:** yes
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed (05-04 ready to start)
 
 Plans:
 **Wave 1**
@@ -159,4 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Core Engine | 4/4 | Complete    | 2026-05-28 |
 | 3. REST API + Core CLI | 3/3 | Complete    | 2026-06-14 |
 | 4. Teams, Projects, Deployments | 3/3 | Complete    | 2026-06-15 |
-| 5. Account Flow + UI + Demo Readiness | 3/4 | In Progress|  |
+| 5. Account Flow + UI + Demo Readiness | 3/4 | In Progress (05-04 pending) |  |

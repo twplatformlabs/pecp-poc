@@ -116,17 +116,19 @@ Implemented all 8 hand-authored source files:
 - **`ui/src/components/TopNav.tsx`**: PECP wordmark, team Select from `useTeams()`, Refresh button with `invalidateQueries` + `animate-spin` during fetch
 - **`ui/src/App.tsx`**: `useState<'inventory' | 'deployments'>`, auto-selects first team alphabetically on load, no React Router, no `refetchInterval`
 
-### Task 3: Human Verification Checkpoint — PAUSED
+### Task 3: Human Verification Checkpoint — APPROVED
 
 Automation pre-steps were completed:
 - `npm run build` succeeds (verified in Tasks 1 and 2)
 - `npx tsc --noEmit` passes
 
-User must run:
+User verified:
 1. `python scripts/seed.py` from repo root
 2. `uvicorn pecp.api.main:app --reload --port 8000`
 3. `cd ui && npm run dev`
-4. Open http://localhost:5173 and walk through 12 visual checkpoints
+4. Opened http://localhost:5173 and walked through all 12 visual checkpoints
+
+**All 12 checkpoints passed. User response: "approved"**
 
 ### Task 4: ROADMAP.md SC#5 Update (commit 841d598)
 
@@ -254,11 +256,4 @@ No new threat surface introduced beyond the plan's threat model:
 
 ## Checkpoint Status
 
-**Task 3 (human-verify) is the next step.** The user must:
-
-1. Start the API: `uvicorn pecp.api.main:app --reload --port 8000`
-2. Seed data: `python scripts/seed.py`
-3. Start UI: `cd ui && npm run dev`
-4. Open http://localhost:5173 and complete the 12 visual verification checkpoints from the plan
-
-After approving the visual demo, Plan 05-04 can proceed.
+**Task 3 (human-verify) APPROVED.** All 12 visual checkpoints passed. Plan 05-03 is fully complete. Plan 05-04 (end-to-end stakeholder demo walkthrough) can proceed.
