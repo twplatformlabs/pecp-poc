@@ -129,7 +129,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. `pecp status awsaccount --team payments` displays credential output (account ID, access keys — synthetic) once status is `ready`
   3. The React dashboard loads the team resource inventory as a table with name, kind, status badge, and environment — data refreshes on demand without a page reload
   4. The deployment view filters the resource table by environment (dev / staging / prod) and shows per-resource status for the selected environment
-  5. Running the seed script populates 2 teams, 3 projects, and resources spanning all lifecycle states (`pending`, `provisioning`, `ready`, `failed`) — a stakeholder session can start from a clean database with one command
+  5. Running the seed script populates 4 teams, 3 projects, and resources spanning all lifecycle states (`pending`, `provisioning`, `ready`, `failed`) — a stakeholder session can start from a clean database with one command
 
 **UI hint:** yes
 **Plans:** 2/4 plans executed
