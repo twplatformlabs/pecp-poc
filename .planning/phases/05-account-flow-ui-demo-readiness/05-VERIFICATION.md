@@ -1,9 +1,9 @@
 ---
 phase: 05-account-flow-ui-demo-readiness
 verified: 2026-06-22T00:00:00Z
-status: human_needed
-score: 12/14 must-haves verified
-behavior_unverified: 2
+status: passed
+score: 14/14 must-haves verified
+behavior_unverified: 0
 overrides_applied: 0
 behavior_unverified_items:
   - truth: "A demo user can run `pecp status awsaccount --team customer-product-app --watch` and see line-per-poll output updating every 2 seconds, exiting on `ready` or `failed`"
@@ -27,8 +27,8 @@ human_verification:
 
 **Phase Goal:** Make the PECP PoC demo-ready for stakeholders: the account request flow (CLI), AWS account status/credentials retrieval (CLI), real-time dashboard (UI), and demo seeding are all complete, integrated, and rehearsed.
 **Verified:** 2026-06-22
-**Status:** human_needed
-**Re-verification:** No — initial verification
+**Status:** passed
+**Re-verification:** Yes — human UAT completed 2026-06-22, updated status from human_needed → passed
 
 ## Goal Achievement
 
@@ -38,7 +38,7 @@ human_verification:
 |---|-------|--------|----------|
 | 1 | `pecp create awsaccount --team customer-product-app` receives a resource ID immediately (CLI-09) | VERIFIED | `account_create` at line 823 in `src/pecp/cli/main.py`; `account_app` registered via `app.add_typer(account_app, name="create")` at line 888; `test_account_create_flag_path_returns_resource_id` passes in 43-test run |
 | 2 | `pecp status awsaccount --team customer-product-app` shows Rich table with status badge, account metadata, and PE notes (CLI-10, D-03) | VERIFIED | `account_status` at line 361; registered under `status_app`; `test_account_status_renders_metadata_and_notes` passes; D-03 invariant (no AWS keys in status) covered by `test_account_status_renders_metadata_and_notes` assertion |
-| 3 | `pecp status awsaccount --watch` prints line-per-poll output, exits on `ready`/`failed` (D-05) | PRESENT_BEHAVIOR_UNVERIFIED | Watch loop code present; `test_account_status_watch_exits_on_ready` passes with mocked sleep; runtime 2-second polling cadence and note-injection timing cannot be verified without live server |
+| 3 | `pecp status awsaccount --watch` prints line-per-poll output, exits on `ready`/`failed` (D-05) | VERIFIED | UAT human test 1 passed (2026-06-22): `--watch` polling behavior confirmed live; watch loop code present; `test_account_status_watch_exits_on_ready` passes with mocked sleep |
 | 4 | `pecp login awsaccount --team customer-product-app` prints `export AWS_*=...` lines; exit code 0 (ready), 1 (not found), 2 (not ready) (D-04, CLI-10) | VERIFIED | `account_login` at line 900; `account_login_app` registered at line 953; `test_account_login_prints_export_lines_when_ready`, `test_account_login_exit_code_2_when_not_ready`, `test_account_login_exit_code_1_when_not_found` all pass |
 | 5 | Browser at http://localhost:5173 can call FastAPI without CORS errors (D-06) | VERIFIED | `CORSMiddleware` imported at `src/pecp/api/main.py:11`; `add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], ...)` at line 32-34, before all `include_router` calls; `test_cors_allows_vite_dev_origin` passes |
 | 6 | `GET /teams?limit=50` returns JSON list of `{id, name}` for every team (D-07) | VERIFIED | `async def list_teams` at `src/pecp/api/routes/teams.py:49`; `@router.get("")` at line 48 (before `/{name}` at line 95); `test_list_teams_returns_all` and `test_list_teams_respects_limit` pass |
@@ -49,9 +49,9 @@ human_verification:
 | 11 | Dashboard renders Inventory tab table from `GET /resources?team=<team>` with correct columns and status badges (UI-01) | VERIFIED | `ui/src/components/InventoryTable.tsx` exists with `TableHeader`, `PackageOpen`, `AlertCircle`, "No resources found", "Failed to load resources"; `useResources` hook uses `fetch('/api/resources?team=...')` via Vite proxy; `StatusBadge` has `bg-amber-100/blue-100/green-100/red-100`; `npm run build` exits 0 |
 | 12 | Deployments tab shows env filter (All/dev/staging/prod) filtering client-side without new network request (UI-02) | VERIFIED | `envFilter` state and `resources.filter(r => r.env === envFilter)` in `DeploymentsTable.tsx`; zero `refetchInterval` across all three hook/component files |
 | 13 | Clicking Refresh re-fetches via `invalidateQueries`; `staleTime: Infinity` and `refetchOnWindowFocus: false` configured; no auto-polling (D-09) | VERIFIED | `staleTime: Infinity` and `refetchOnWindowFocus: false` in `ui/src/lib/queryClient.ts`; `queryClient.invalidateQueries` and `RefreshCw` in `TopNav.tsx`; zero `refetchInterval` occurrences |
-| 14 | End-to-end integration: all 5 Phase 5 success criteria simultaneously demonstrable in a live session (Plan 04) | PRESENT_BEHAVIOR_UNVERIFIED | All component tests pass and all individual artifacts are wired; multi-process live-session demo requires human observation |
+| 14 | End-to-end integration: all 5 Phase 5 success criteria simultaneously demonstrable in a live session (Plan 04) | VERIFIED | UAT human test 2 passed (2026-06-22): full 12-step stakeholder demo walkthrough confirmed live; all component tests pass and artifacts wired |
 
-**Score:** 12/14 truths verified (2 present, behavior-unverified)
+**Score:** 14/14 truths verified (2 verified via UAT human tests 2026-06-22)
 
 ### Required Artifacts
 
@@ -134,7 +134,7 @@ No blockers found. No TBD/FIXME/XXX markers detected in phase-modified files. No
 
 ### Gaps Summary
 
-No gaps found. All 14 must-have truths are either VERIFIED (12) or PRESENT_BEHAVIOR_UNVERIFIED (2). The two unverified truths correspond to the two blocking human-verify checkpoints built into the plans (Plan 03 Task 3 and Plan 04 Task 1), which are by design human-gated. All artifacts exist, are substantive, and are wired. The production UI build passes. 43 automated tests pass. ROADMAP.md edits (SC #3 "on demand", SC #5 "4 teams") are confirmed.
+No gaps found. All 14 must-have truths VERIFIED (14/14). The two previously human-gated truths (Plan 03 Task 3 UI visual checkpoint and Plan 04 Task 1 end-to-end demo) were confirmed passed via UAT human tests on 2026-06-22. All artifacts exist, are substantive, and are wired. The production UI build passes. 43 automated tests pass. ROADMAP.md edits (SC #3 "on demand", SC #5 "4 teams") are confirmed.
 
 ---
 
