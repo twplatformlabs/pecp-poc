@@ -59,8 +59,12 @@ Plans:
 
 **Plans**: 2 plans
 Plans:
+**Wave 1**
 
 - [ ] 07-01-PLAN.md — IntegrationBase ABC + snapshot dataclasses + NoOpIntegration + INTEGRATION_REGISTRY + fire_integrations + IntegrationConfig + unit tests (INTG-01, INTG-02, INTG-03)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 07-02-PLAN.md — Wire load_and_register_integrations into lifespan; BackgroundTasks + snapshot dispatch into POST /teams and POST /projects; commit-before-hook integration tests (INTG-01, INTG-02, INTG-03)
 
 ### Phase 8: GitHub Integration
