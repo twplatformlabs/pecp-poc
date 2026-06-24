@@ -37,7 +37,9 @@
   2. A new `ProjectRepo` row can be inserted with a `project_id` FK, `repo_name`, `repo_url`, and `created_at`
   3. The Alembic migration runs cleanly from scratch (`alembic upgrade head`) and rolls back cleanly (`alembic downgrade -1`)
   4. All existing tests pass without modification after the migration is applied
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 06-01-PLAN.md — models.py changes + Alembic migration 0004 + upgrade/downgrade smoke test (DATA-01, DATA-02, DATA-03)
 
 ### Phase 7: Integration Hook Framework
 **Goal**: A contract-locked `IntegrationBase` ABC and `INTEGRATION_REGISTRY` are in place and safely fire hooks after DB commits — no GitHub code yet
@@ -97,7 +99,7 @@
 | 3. REST API + Core CLI | v1.0 | 3/3 | Complete | 2026-06-14 |
 | 4. Teams, Projects, Deployments | v1.0 | 3/3 | Complete | 2026-06-15 |
 | 5. Account Flow + UI + Demo Readiness | v1.0 | 4/4 | Complete | 2026-06-22 |
-| 6. Data Model + Migration | v1.1 | 0/0 | Not started | - |
+| 6. Data Model + Migration | v1.1 | 0/1 | Not started | - |
 | 7. Integration Hook Framework | v1.1 | 0/0 | Not started | - |
 | 8. GitHub Integration | v1.1 | 0/0 | Not started | - |
 | 9. Service Layer + API Updates | v1.1 | 0/0 | Not started | - |
