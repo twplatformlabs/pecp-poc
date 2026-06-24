@@ -8,7 +8,18 @@ A Kubernetes-inspired control plane that lets engineering teams declare infrastr
 
 A team can go from zero to provisioned infrastructure by writing a YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline runs, or which ticket gets filed.
 
-## Current State (v1.0 PoC — Shipped 2026-06-24)
+## Current Milestone: v1.1 GitHub Onboarding Integration
+
+**Goal:** Extend the control plane so that creating a team or project automatically provisions the corresponding GitHub team and repository — and member management syncs one-way (PECP → GitHub).
+
+**Target features:**
+- `IntegrationBase` ABC — extensible lifecycle hook system (`on_team_create`, `on_project_create`, `on_member_add`, `on_member_remove`); GitHub is integration #1, Jira/Slack slots open
+- Real GitHub API via httpx + `GITHUB_PAT` / `GITHUB_ORG` env vars
+- Team creation creates GitHub team as side-effect; `pecp team <name>` shows GitHub team link
+- Project creation creates GitHub repo `{org}/{team-name}-{project-name}` (empty); `pecp project <name>` shows repos; `pecp project repo add` adds more repos (one-to-many)
+- `pecp team member add/remove` syncs one-way to GitHub team membership
+
+## Previous State (v1.0 PoC — Shipped 2026-06-24)
 
 - **5 phases complete**, 17 plans executed, 165 tests passing
 - **~3,700 LOC** Python backend + TypeScript/TSX React frontend
@@ -54,6 +65,17 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 - ✓ React dashboard: team inventory table with name/kind/status badge/environment — v1.0
 - ✓ Deployment view: client-side environment filter (dev/staging/prod), no auto-polling, manual refresh — v1.0
 - ✓ Demo seed script: 4 teams, 3 projects, resources in all lifecycle states, idempotent — v1.0
+
+### Active (v1.1)
+
+**GitHub Onboarding Integration**
+- [ ] `IntegrationBase` ABC with `on_team_create`, `on_project_create`, `on_member_add`, `on_member_remove` lifecycle hooks — registered in an `INTEGRATION_REGISTRY`, fired after successful team/project/member DB writes
+- [ ] `GitHubIntegration` implementing `IntegrationBase` with real httpx calls to GitHub API (`GITHUB_PAT`, `GITHUB_ORG` env vars)
+- [ ] `pecp team create` fires `on_team_create` → creates GitHub team in org; `pecp team <name>` displays GitHub team slug/URL
+- [ ] `pecp project create` fires `on_project_create` → creates GitHub repo `{org}/{team-name}-{project-name}` (empty); `pecp project <name>` lists repos with GitHub links
+- [ ] `pecp project repo add <repo-name> --project <project> --team <team>` → creates additional GitHub repo and links it to the project
+- [ ] `pecp team member add <user> <team>` → adds to PECP membership + syncs GitHub team membership (one-way)
+- [ ] `pecp team member remove <user> <team>` → removes from PECP membership + removes from GitHub team
 
 ### Active (v2 candidates)
 
@@ -137,4 +159,4 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-24 after v1.0 milestone — all 33 v1 requirements shipped; PoC demo-ready for stakeholders*
+*Last updated: 2026-06-24 — v1.1 milestone started: GitHub onboarding integration*
