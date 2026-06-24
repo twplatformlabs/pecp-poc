@@ -1,174 +1,193 @@
 # Stack Research — PECP
 
 **Project:** Platform Engineering Control Plane (PECP)
-**Researched:** 2026-05-27
+**Researched:** 2026-05-27 (v1.0) / 2026-06-24 (v1.1 additions)
 **Constraint:** Python backend, org-standard
 **Scope:** PoC — demo-able to stakeholders, all backends mocked, no auth
 
-> **Version note:** Versions are from training knowledge (cutoff August 2025). Before pinning in requirements.txt, verify each version against PyPI.
+> **Version note (v1.1 additions):** Versions verified against PyPI on 2026-06-24 via `pip index versions`.
 
 ---
 
-## Recommended Stack
+## v1.1 Addition: GitHub API Integration
 
-### API Server
+This section covers the new libraries and patterns needed **only** for v1.1. The existing stack (FastAPI, SQLAlchemy, httpx, Typer, React) is unchanged and validated.
 
-**FastAPI ~0.111** (verify latest on PyPI)
+### GitHub HTTP Client
 
-FastAPI is correct for three compounding reasons: (1) built natively on Python `async`/`await` — load-bearing because async provisioning workflows require non-blocking I/O throughout; (2) auto-generates OpenAPI/Swagger docs from type annotations, giving stakeholders a browsable API surface for free in a PoC; (3) co-evolves with Pydantic v2 (the YAML validation layer), so the type system spans request validation and domain modelling without impedance mismatch.
+**Recommendation: raw `httpx.AsyncClient` — no new library required.**
 
-ASGI server: **Uvicorn ~0.30** with `uvicorn[standard]` (pulls `httptools` + `uvloop`). For dev, `fastapi dev` (built-in dev server introduced in FastAPI 0.111) is sufficient.
+The project already depends on `httpx >=0.28`. A shared `AsyncClient` instance with `default_headers` set for the GitHub Bearer token and `Accept: application/vnd.github+json` is sufficient for all four PECP GitHub operations (create team, create repo, add member, remove member).
 
-**Why not Flask:** Sync-first. The entire PECP provisioning model is async — fighting the framework from day one is unjustifiable.
+**Why not PyGithub 2.9.1:** PyGithub is synchronous — it wraps `requests` under the hood. Using it inside FastAPI async route handlers requires `asyncio.run_in_executor`, which negates the async model and adds thread-pool complexity with no benefit.
 
-**Why not Django REST Framework:** Sync ORM, excessive ceremony for a dispatch-router API that doesn't need it.
+**Why not gidgethub 5.4.0:** gidgethub has an httpx backend (`gidgethub.httpx.GitHubAPI`) and is async-native. It adds built-in rate limit tracking and etag caching. However, for PECP's 3–4 write operations (all of which are fire-and-forget, no pagination), these features are overhead not value. gidgethub returns `dict` responses — no typing advantage over raw httpx. It is a good choice if PECP later needs webhook handling or paginated queries.
 
----
+**Implementation pattern:**
 
-### YAML Processing & Validation
+```python
+# pecp/integrations/github/client.py
+import httpx
 
-**PyYAML 6.x** for parsing + **Pydantic v2 (~2.7+)** for schema enforcement.
+GITHUB_API = "https://api.github.com"
 
-The `apiVersion: pecp/v1` / `kind: PECP<Type>` convention directly mirrors the Kubernetes resource model:
-
-1. Parse raw YAML bytes to a Python dict with `yaml.safe_load` (never `yaml.load` — arbitrary code execution risk).
-2. Discriminate on `kind` to route to the correct Pydantic model.
-3. Validate with Pydantic, returning a typed model instance or a structured validation error.
-
-Pydantic v2's `Annotated[Union[...], Field(discriminator='kind')]` discriminated union pattern maps exactly to the multi-`kind` resource model. Pydantic v2 (the Rust-backed rewrite) is 5–50x faster than v1 on validation-heavy paths, and FastAPI 0.100+ requires it.
-
-**Why not Marshmallow / Cerberus / voluptuous:** Pre-Pydantic validation libraries; none integrate with FastAPI's dependency injection.
-
----
-
-### CLI
-
-**Typer ~0.12** + **Rich ~13**
-
-Typer is built by the FastAPI author, uses the same type-annotation-driven API surface, and wraps Click under the hood. The `pecp` CLI wraps the REST API — every command maps to an HTTP call. Typer handles argument declaration, help text, and error formatting.
-
-Rich provides status spinners (for async polling loops like `pecp status awsaccount`), formatted tables (`pecp get`), and colour-coded status indicators (pending/provisioning/ready/failed) without bespoke terminal escape management. Typer has first-class Rich integration.
-
-**HTTP client for CLI: httpx ~0.27.** The modern async-capable replacement for `requests` — same API surface, proper timeout semantics, first-class FastAPI test client (`httpx.AsyncClient`).
-
-**Why not Click directly:** Typer is Click with type-annotation DX. The underlying Click app is accessible as an escape hatch if needed.
-
-**Why not argparse:** No rich output integration, verbose boilerplate for PECP's 10+ commands.
-
----
-
-### Async Task Processing
-
-**FastAPI `BackgroundTasks` for PoC; ARQ ~0.25 as the documented upgrade path.**
-
-For the PoC, FastAPI's built-in `BackgroundTasks` is correct and removes all infrastructure dependencies:
-
-1. `POST /resources` accepts the YAML spec, creates a DB record in `pending` state, enqueues a background task, returns `202 Accepted` with the resource ID.
-2. The background task runs the mock adapter (with synthetic delay) and updates the record to `ready` or `failed`.
-3. `GET /resources/{id}/status` polls the DB and returns current state.
-
-**Why not Celery for the PoC:** Requires a broker (Redis or RabbitMQ) and a separate worker process. Pure operational overhead for mock adapters with no real I/O.
-
-**ARQ as the upgrade path (not Celery):** When real adapters ship post-PoC, ARQ (built on Redis, natively asyncio) is preferred over Celery because Celery's asyncio support is a retrofit that creates subtle issues with async FastAPI handlers.
-
----
-
-### Data Storage
-
-**SQLite via SQLAlchemy 2.x async** for PoC; designed for PostgreSQL swap without model changes.
-
-SQLite is appropriate for PoC: zero infrastructure, and the data model (resources, teams, members, projects, deployments) is straightforwardly relational.
-
-**SQLAlchemy 2.x with `sqlalchemy[asyncio]`** — the 2.0 async API (`AsyncSession`, `async_engine`) integrates cleanly with FastAPI's async handlers. The same ORM models work against SQLite for PoC and PostgreSQL for production — swapping is a one-line connection string change.
-
-**Alembic ~1.13** for schema migrations, even in the PoC. Migrations cost almost nothing to configure and prevent the schema collapse that typically happens when a PoC database grows uncontrolled across demo iterations.
-
-**Why not PostgreSQL from day one:** Adds a Docker dependency for local dev. The SQLAlchemy abstraction makes the swap trivial when the PoC graduates.
-
-**Why not SQLModel:** Pydantic v2 + SQLAlchemy 2.x async compatibility has had documented rough edges as of mid-2025. Use SQLAlchemy 2.x async directly with separate Pydantic schemas and ORM models.
-
----
-
-### UI Dashboard
-
-**React 19 + Vite 6 + TanStack Query v5 + Tailwind CSS v4 + shadcn/ui**
-
-React is chosen for the widest available ecosystem of dashboard component libraries. The PECP UI is a resource inventory + status view — exactly the pattern shadcn/ui (built on Radix UI primitives + Tailwind) is designed for.
-
-**shadcn/ui:** Not an npm package but a copy-paste component collection. No dependency lock-in, full component ownership, zero-cost tree-shaking. Table, badge, and card components cover the entire PECP dashboard surface.
-
-**TanStack Query v5:** The PECP dashboard is fundamentally a polling/refetching UI (resource status updates asynchronously). `refetchInterval` is the correct primitive — handles cache invalidation, loading/error states, and background refresh without bespoke fetch management.
-
-**Why not Next.js:** Adds SSR/SSG complexity the PoC dashboard does not need. The dashboard can be served as static files from the FastAPI server itself.
-
-**Why not Streamlit / Dash / Gradio:** These are ML/data-science dashboards. They lack the component flexibility for a proper resource inventory view with team navigation, status lifecycles, and environment drill-down.
-
----
-
-### Adapter / Plugin Interface
-
-**Python ABC + `typing.Protocol`** pattern, with adapters as plain Python modules under `pecp/adapters/`.
-
-```
-pecp/
-  adapters/
-    base.py            # AdapterBase ABC + AdapterProtocol
-    mock_aws.py        # MockAWSAdapter(AdapterBase)
-    mock_k8s.py        # MockK8sAdapter(AdapterBase)
-    mock_salesforce.py
-    mock_aem.py
-    mock_datadog.py
-    mock_servicenow.py
-    mock_jfrog.py
-  dispatch/
-    router.py          # Maps kind → AdapterClass
+def make_github_client(pat: str) -> httpx.AsyncClient:
+    return httpx.AsyncClient(
+        base_url=GITHUB_API,
+        headers={
+            "Authorization": f"Bearer {pat}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+        timeout=httpx.Timeout(connect=10.0, read=30.0, write=30.0, pool=10.0),
+    )
 ```
 
-`AdapterBase` defines:
-- `async def provision(resource: ResourceModel) -> ProvisionResult`
-- `async def deprovision(resource: ResourceModel) -> ProvisionResult`
-- `async def get_status(resource: ResourceModel) -> ResourceStatus`
-
-**Why not a plugin framework (pluggy, stevedore, entrypoints):** Plugin discovery via entrypoints is the right model when adapters are distributed as separate packages. For the PoC (all adapters in-tree, all mocked), this machinery adds indirection with zero benefit.
-
-**Why not function-based adapters:** A stateless function signature loses the ability to hold per-adapter config (credentials, region, endpoint URLs) as instance state. When real adapters ship post-PoC, each adapter will need a configured client.
+The client is created at integration startup and closed in a shutdown lifecycle hook, consistent with how the FastAPI app manages the SQLAlchemy engine.
 
 ---
 
-## Supporting Libraries
+### GitHub API Endpoints
 
-| Library | Version | Purpose |
-|---------|---------|---------|
-| `uvicorn[standard]` | ~0.30 | ASGI server |
-| `httpx` | ~0.27 | CLI HTTP client + FastAPI test client |
-| `rich` | ~13 | Terminal tables, spinners, colour output |
-| `python-multipart` | ~0.0.9 | Required by FastAPI for file upload (`-f resource.yaml`) |
-| `python-dotenv` | ~1.0 | `.env` loading for local dev |
-| `pytest` | ~8 | Test runner |
-| `pytest-asyncio` | ~0.23 | Async test support for FastAPI endpoints |
-| `mypy` | ~1.10 | Static type checking — enforces adapter interface contracts |
-| `ruff` | ~0.4 | Linting + formatting (replaces flake8 + black + isort) |
+All four operations needed for v1.1 requirements:
 
----
+| Operation | Method | Endpoint | Success Code |
+|-----------|--------|----------|--------------|
+| Create org team | `POST` | `/orgs/{org}/teams` | 201 |
+| Create repo | `POST` | `/orgs/{org}/repos` | 201 |
+| Add member to team | `PUT` | `/orgs/{org}/teams/{slug}/memberships/{username}` | 200 |
+| Remove member from team | `DELETE` | `/orgs/{org}/teams/{slug}/memberships/{username}` | 204 |
 
-## What NOT to Use
+**Required PAT scopes:** `repo` (repository creation) + `admin:org` (team management and member sync). Document this in `.env.example` — a scope-insufficient PAT produces a `403` that can be mistaken for a network error.
 
-| Technology | Reason |
-|------------|--------|
-| Flask / Quart | Sync-first; async provisioning model fights the framework from day one |
-| Django REST Framework | Sync ORM, excessive ceremony for a dispatch-router API |
-| Celery (PoC) | Requires broker + separate worker process; pure overhead for mock adapters |
-| Kubernetes operators (kopf) | Explicitly out of scope; org not versed in K8s |
-| Streamlit / Dash / Gradio | ML dashboards; lack component flexibility; couple UI to API process |
-| Marshmallow / Cerberus | Pre-Pydantic validation libraries; no FastAPI integration |
-| SQLModel | Pydantic v2 + SQLAlchemy 2.x async compatibility has documented rough edges |
-| MongoDB / document stores | Resource specs have stable typed schemas; schema-free storage trades away Pydantic's enforcement |
-| `yaml.load` (unsafe) | Arbitrary code execution risk; always use `yaml.safe_load` |
-| Next.js | SSR overhead for a read-only static dashboard that can be served as a SPA |
+**Known error cases to handle (requirement GH-05):**
+
+- `422` on team create: GitHub returns `{"message": "Validation Failed", "errors": [{"message": "Name has already been taken"}]}` — detect and log as idempotent, not as failure.
+- `404` on member add/remove: user does not exist in GitHub org — log and return structured error, do not fail the PECP operation.
+- `403`: PAT lacks required scope — log the scope error explicitly.
+- `429`: Rate limit hit — `x-ratelimit-remaining: 0` in response headers; log with reset time from `x-ratelimit-reset` header.
 
 ---
 
-## Confidence Levels
+### Environment Variable Configuration
+
+**Recommendation: `pydantic-settings ~2.14` — add to `pyproject.toml` dependencies.**
+
+Current version: **2.14.2**
+
+The project currently uses `os.getenv()` directly (see `persistence/database.py`). For GitHub credentials, `pydantic-settings` is the correct choice because:
+
+1. **Fail-fast validation**: Missing `GITHUB_PAT` or `GITHUB_ORG` raises `ValidationError` at server startup, not at first API call. Silent misconfiguration (empty string, wrong var name) is caught immediately.
+2. **Consistent with existing Pydantic v2 stack**: `BaseSettings` is a Pydantic `BaseModel` — the same typing and validation infrastructure already in use.
+3. **No additional transitive dependencies**: `python-dotenv` is already in `pyproject.toml`; `pydantic-settings` uses it for `.env` file loading when present.
+
+**Pattern:**
+
+```python
+# pecp/integrations/github/config.py
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class GitHubSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    github_pat: str = ""          # GITHUB_PAT env var
+    github_org: str = ""          # GITHUB_ORG env var
+
+    @property
+    def is_configured(self) -> bool:
+        return bool(self.github_pat and self.github_org)
+```
+
+`is_configured` enables the INTG-03 requirement: missing config disables the integration with a logged warning rather than crashing the server. The integration registry checks `is_configured` before registering `GitHubIntegration`.
+
+**`.env.example` additions:**
+
+```
+# GitHub Integration (v1.1)
+# PAT requires scopes: repo, admin:org
+GITHUB_PAT=ghp_...
+GITHUB_ORG=your-org-name
+```
+
+---
+
+### Testing: Mocking GitHub API Calls
+
+**Recommendation: `pytest-httpx ~0.36` — add to `pyproject.toml` dev dependencies.**
+
+Current version: **0.36.2** — compatible with `httpx >=0.28`.
+
+**Why pytest-httpx over respx:**
+
+Both libraries intercept httpx at the transport level and work with `pytest-asyncio`. pytest-httpx wins on three grounds for this project:
+
+1. **Fixture-based cleanup**: The `httpx_mock` fixture resets state between tests automatically. No decorator plumbing on every test function.
+2. **Simpler API for PECP's use case**: `httpx_mock.add_response(method="POST", url="https://api.github.com/orgs/.../teams", json={...}, status_code=201)` is direct. PECP tests are asserting that specific endpoints are called with correct payloads — not building a mock API server.
+3. **Exception injection**: `httpx_mock.add_exception(httpx.ConnectError(...))` tests the GH-05 error-handling paths cleanly.
+
+respx (0.23.1) is a solid alternative with a more expressive routing DSL, but the fixture cleanup advantage is decisive for this test suite's existing style (see `tests/conftest.py` — all fixtures, no decorators).
+
+**Pattern for GitHub API tests:**
+
+```python
+# tests/test_integrations/test_github.py
+import httpx
+import pytest
+from pytest_httpx import HTTPXMock
+
+from pecp.integrations.github.client import GitHubIntegration
+
+async def test_on_team_create_posts_to_github(httpx_mock: HTTPXMock) -> None:
+    httpx_mock.add_response(
+        method="POST",
+        url="https://api.github.com/orgs/test-org/teams",
+        json={"id": 1, "slug": "payments", "html_url": "https://github.com/orgs/test-org/teams/payments"},
+        status_code=201,
+    )
+    integration = GitHubIntegration(pat="test-pat", org="test-org")
+    result = await integration.on_team_create(team_name="payments")
+    assert result.github_team_slug == "payments"
+
+async def test_on_team_create_handles_already_exists(httpx_mock: HTTPXMock) -> None:
+    httpx_mock.add_response(
+        method="POST",
+        url="https://api.github.com/orgs/test-org/teams",
+        json={"message": "Validation Failed", "errors": [{"message": "Name has already been taken"}]},
+        status_code=422,
+    )
+    integration = GitHubIntegration(pat="test-pat", org="test-org")
+    result = await integration.on_team_create(team_name="payments")
+    # Should not raise — GH-05: errors logged, PECP operation succeeds
+    assert result is not None
+```
+
+**Important**: `pytest-httpx` intercepts **all** httpx calls in a test, including calls the FastAPI `AsyncClient` makes in `conftest.py`. When testing GitHub integration via the API routes (integration tests), use `httpx_mock` to intercept the outbound GitHub calls while `ASGITransport` handles the inbound PECP API calls. These two transports do not conflict.
+
+---
+
+## Updated Supporting Libraries (v1.1 additions only)
+
+| Library | Version | Purpose | Why Added |
+|---------|---------|---------|-----------|
+| `pydantic-settings` | ~2.14 | Typed env var config for `GITHUB_PAT` / `GITHUB_ORG` | Fail-fast startup validation; fits existing Pydantic v2 stack |
+| `pytest-httpx` | ~0.36 (dev) | Mock httpx requests in GitHub integration tests | Fixture-based cleanup; compatible with httpx 0.28 and pytest-asyncio |
+
+**No changes to existing dependencies** — `httpx >=0.28` already in `pyproject.toml` covers all GitHub API HTTP calls.
+
+---
+
+## What NOT to Add (v1.1)
+
+| Technology | Version Available | Reason to Skip |
+|------------|-------------------|----------------|
+| `PyGithub` | 2.9.1 | Synchronous (`requests`-backed) — blocks FastAPI async handlers |
+| `gidgethub` | 5.4.0 | Async-native but unnecessary abstraction for 3–4 write operations; better for webhook/pagination workloads |
+| `ghapi` | — | Auto-generated from GitHub OpenAPI spec; verbose API surface for simple use case |
+| `respx` | 0.23.1 | Valid alternative to pytest-httpx but decorator-based approach conflicts with project's fixture-only test style |
+
+---
+
+## Existing Stack (validated v1.0 — unchanged)
 
 | Component | Recommendation | Confidence |
 |-----------|---------------|------------|
@@ -176,24 +195,38 @@ pecp/
 | YAML Parsing | PyYAML `safe_load` | HIGH |
 | Validation | Pydantic v2 | HIGH |
 | CLI Framework | Typer + Rich | HIGH |
-| HTTP Client | httpx | HIGH |
+| HTTP Client (CLI + GitHub) | httpx >=0.28 | HIGH |
 | Async Tasks (PoC) | FastAPI BackgroundTasks | HIGH |
-| Async Tasks (post-PoC) | ARQ | MEDIUM — verify maturity before production commit |
 | Database (PoC) | SQLite + SQLAlchemy 2.x async | HIGH |
 | ORM | SQLAlchemy 2.x async | HIGH |
 | Migrations | Alembic | HIGH |
-| UI Framework | React 19 + Vite 6 | MEDIUM — verify versions before pinning |
-| UI Components | shadcn/ui + Radix UI | MEDIUM — verify actively maintained |
+| UI Framework | React 19 + Vite 6 | MEDIUM |
+| UI Components | shadcn/ui + Radix UI | MEDIUM |
 | UI Data Fetching | TanStack Query v5 | HIGH |
-| UI Styling | Tailwind CSS v4 | MEDIUM — verify stable release |
-| Adapter Interface | Python ABC + Protocol | HIGH |
+| UI Styling | Tailwind CSS v4 | MEDIUM |
+
+## v1.1 Additions Confidence
+
+| Component | Recommendation | Confidence | Notes |
+|-----------|---------------|------------|-------|
+| GitHub HTTP Client | raw httpx | HIGH | No new dep; existing httpx already in project |
+| Env Var Config | pydantic-settings 2.14.2 | MEDIUM | Versions verified on PyPI; integration with existing Pydantic v2 stack is well-established |
+| GitHub API Mocking | pytest-httpx 0.36.2 | MEDIUM | Versions verified on PyPI; compatibility with httpx 0.28 confirmed by version coupling |
 
 ---
 
-## Version Verification Checklist
+## pyproject.toml Changes Required
 
-Verify before pinning in `requirements.txt` / `package.json`:
+```toml
+[project]
+dependencies = [
+    # ... existing deps ...
+    "pydantic-settings>=2.14",   # ADD: GitHub integration env var config
+]
 
-**Python (PyPI):** `fastapi`, `pydantic`, `typer`, `sqlalchemy`, `alembic`, `uvicorn`, `httpx`, `rich`, `python-multipart`, `python-dotenv`, `arq`, `pytest`, `pytest-asyncio`, `mypy`, `ruff`
-
-**Node (npm):** `react`, `react-dom`, `vite`, `tailwindcss`, `@tanstack/react-query`, `@radix-ui/react-*`
+[project.optional-dependencies]
+dev = [
+    # ... existing dev deps ...
+    "pytest-httpx>=0.36",        # ADD: GitHub API mock in tests
+]
+```

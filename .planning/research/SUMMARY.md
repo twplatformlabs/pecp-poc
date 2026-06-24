@@ -1,175 +1,110 @@
-# Research Summary — PECP
+# Project Research Summary — PECP v1.1
 
-**Synthesized:** 2026-05-27
-
----
+**Project:** PECP — Platform Engineering Control Plane
+**Domain:** GitHub API integration / internal developer platform
+**Researched:** 2026-06-24
+**Confidence:** MEDIUM-HIGH
 
 ## Executive Summary
 
-PECP is a lightweight internal developer platform control plane: it accepts Kubernetes-flavored YAML specs (`apiVersion: pecp/v1`, `kind: PECPLambda` etc.), routes them through a typed adapter layer to multiple backing systems, and exposes resource status via REST API + CLI + read-only dashboard. The deliberate design constraint — K8s mental model without requiring K8s — makes this a meaningful differentiator for enterprises not yet operating K8s clusters. All backing system calls are mocked for the PoC; the demo centerpiece is `PECPAccount` (AWS account creation), which demonstrates the hardest real-world problem: slow, semi-manual, async provisioning with PE-team communication built in.
+PECP v1.1 adds a GitHub integration layer on top of the fully-built v1.0 control plane. The work is well-scoped: four GitHub API operations (create org team, create org repo, add team member, remove team member) wired into a new `IntegrationBase` ABC + `INTEGRATION_REGISTRY` dispatcher that mirrors the existing `AdapterBase` / `ADAPTER_REGISTRY` pattern. The existing stack requires no new runtime dependencies beyond `pydantic-settings ~2.14` for env var validation at startup; `pytest-httpx ~0.36` is the only new dev dependency. Raw `httpx.AsyncClient` covers all GitHub operations — no GitHub client library is needed.
 
-The recommended implementation is a fully async Python stack: FastAPI + SQLAlchemy 2.x async + SQLite (swappable to Postgres) + Pydantic v2 discriminated unions for spec validation, Typer + Rich for CLI, React + TanStack Query for the dashboard. Every technology choice reinforces the async-first requirement — provisioning workflows are non-blocking end-to-end.
+The recommended architecture extracts a thin service layer (`TeamService`, `ProjectService`) from route handlers, with hooks firing via `FastAPI.BackgroundTasks` **after** `session.commit()`. This commit-before-hook ordering is the single most critical invariant: hooks fired before commit create ghost GitHub resources whenever the PECP DB write fails. Two schema changes land in one Alembic migration: a nullable `github_team_slug VARCHAR` on `TeamRecord` and a new `ProjectRepo` table (`id`, `project_id`, `repo_name`, `repo_url`, `created_at`).
 
-The critical risk is not technical: it is demonstrating business value rather than CRUD feasibility (pitfall PR-3). The demo script should be written before a line of code is written. The critical technical risk is the adapter interface (pitfall CP-3) — it must be locked from the perspective of the most complex real backend (AWS), not the simplest mock, before mock work begins.
-
----
-
-## Recommended Stack
-
-| Layer | Technology | Rationale |
-|-------|-----------|-----------|
-| API server | FastAPI ~0.111 + Uvicorn ~0.30 | Native async/await; auto-generates OpenAPI docs; co-evolves with Pydantic v2 |
-| YAML parsing | PyYAML 6.x `safe_load` | Safe parse only — `yaml.load` is an RCE risk |
-| Schema validation | Pydantic v2 ~2.7+ | Discriminated unions on `kind`; 5-50x faster than v1; required by FastAPI 0.100+ |
-| Async tasks (PoC) | FastAPI `BackgroundTasks` | Zero infrastructure; mock adapters have no real I/O to justify a broker |
-| Async tasks (post-PoC) | ARQ ~0.25 | Natively asyncio; avoids Celery's retrofitted async issues |
-| Database (PoC) | SQLite + SQLAlchemy 2.x async | Zero infrastructure; one-line connection string swap to Postgres |
-| Migrations | Alembic ~1.13 | Prevents schema collapse across demo iterations |
-| CLI | Typer ~0.12 + Rich ~13 | Same annotation-driven DX as FastAPI; Rich spinners/tables for status polling |
-| CLI HTTP client | httpx ~0.27 | Async-capable; doubles as FastAPI test client |
-| UI framework | React 19 + Vite 6 | Widest component ecosystem; SPA served as static files from FastAPI |
-| UI components | shadcn/ui + Radix UI | Copy-paste collection; no dependency lock-in; Table/Badge/Card cover the dashboard surface |
-| UI data fetching | TanStack Query v5 | `refetchInterval` is the correct primitive for a status-polling dashboard |
-| Adapter interface | Python ABC + `typing.Protocol` | Stateful per-adapter config; survives K8s migration unchanged |
-| Type checking | mypy ~1.10 | Enforces adapter interface contracts across all mock implementations |
-| Linting/formatting | ruff ~0.4 | Replaces flake8 + black + isort in one tool |
-
-**Do not use:** Flask/Django (sync-first), Celery in PoC (requires broker), SQLModel (Pydantic v2 + SA 2.x async rough edges), `yaml.load` (RCE), Next.js (SSR overhead for read-only SPA), Streamlit/Dash (wrong component model for resource inventory).
-
-**Version note:** Verify all versions against PyPI/npm before pinning.
+The primary risks are: (1) hook timing — integration code fired before `commit()` creates ghost GitHub resources with no PECP record; (2) session scope — passing the request-scoped yield-dependency session to a background task causes silent `DetachedInstanceError` since FastAPI closes the session before running background tasks; (3) test isolation — real GitHub API calls in tests cause flaky CI and rate limit exposure. All three have clear preventions that must be enforced during the integration framework phase **before** any `GitHubIntegration` code is written.
 
 ---
 
-## Table Stakes Features
+## Stack Additions (v1.1 only)
 
-What must exist for the PoC to feel complete and trustworthy to stakeholders.
+| Component | Technology | Rationale |
+|-----------|-----------|-----------|
+| Env var config | `pydantic-settings ~2.14` | Fail-fast at startup if `GITHUB_PAT`/`GITHUB_ORG` missing; fits existing Pydantic v2 stack |
+| GitHub HTTP client | `httpx.AsyncClient` (existing) | No new dep; PyGithub is sync-only; gidgethub overhead not worth it for 4 operations |
+| Test mocking | `pytest-httpx ~0.36` | Fixture-based (`httpx_mock`) intercepts outbound GitHub calls; compatible with existing `ASGITransport` test setup |
 
-| Feature | Notes |
-|---------|-------|
-| Declarative YAML spec (`pecp apply -f`) with `apiVersion/kind/metadata` | Primary interaction model; everything else is built on this |
-| Resource status lifecycle: `pending → provisioning → ready → failed` | Users must observe what their request is doing without asking a human |
-| Async provisioning with CLI status polling (`pecp status [--watch]`) | Sync wait is broken UX; fire-and-poll is the expected model |
-| Team/ownership model — every resource belongs to a team | Foundation of all resource scoping and isolation |
-| Team-scoped isolation at the API layer (not just CLI) | Stakeholders will ask; "the CLI enforces it" is a red flag |
-| PE-editable notes as append-only log on resources | Encodes the AWS account creation reality; high demo value when PE adds notes live |
-| Project grouping within teams | Named container representing a coherent workload |
-| Multi-environment support (dev / staging / prod) | Teams expect the same spec to resolve to different configs per env |
-| Pluggable adapter interface covering all 7 backing systems | Without this, a second backend requires a rewrite |
-| Idempotent apply — `pecp apply` twice is a no-op or update | Fundamental contract of declarative systems |
-| 202 Accepted + resource ID for async operations | Correct HTTP semantics for slow provisioning |
-| Read-only UI dashboard (inventory + status + deployments) | Operators need a visual inventory view |
-| Demo seed script (teams, projects, resources in all states) | One typo in a live demo breaks it; seed data prevents this |
-| `RequestContext` auth stub in every route handler | Makes "how would you add auth?" answerable with code evidence |
+**Do not add:** PyGithub (sync), gidgethub (pagination/webhook library, wrong tool), requests.
+
+**GitHub PAT scopes required:** `admin:org` (covers team creation, org repo creation, team membership). Token owner must be an org owner. Document in `.env.example`.
+
+---
+
+## GitHub API Behavior (Table Stakes)
+
+| Operation | Endpoint | Idempotent? | Key Behavior |
+|-----------|----------|-------------|--------------|
+| Create org team | `POST /orgs/{org}/teams` | **No** — 422 if name taken | Catch 422, GET to retrieve existing slug |
+| Create org repo | `POST /orgs/{org}/repos` | **No** — 422 if name taken | Catch 422, GET to retrieve existing URL |
+| Add team member | `PUT /orgs/{org}/teams/{slug}/memberships/{username}` | **Yes** | Returns `state: pending` for non-org members (not an error) |
+| Remove team member | `DELETE /orgs/{org}/teams/{slug}/memberships/{username}` | **Yes** | Safe to re-run |
+
+**GitHub returns 422 (not 409) for "already exists."** Any idempotency guard checking `status_code == 409` silently fails.
+
+**Membership `state: pending` is success.** When a GitHub username is not yet an org member, GitHub sends an org invitation and returns `state: pending`. PECP treats this as success. True failures are 422 (username does not exist on GitHub) — log warning, skip.
 
 ---
 
 ## Architecture in One Page
 
-### Six Components, One Direction of Control
+### New Components
 
 ```
-CLI (Typer)
-  └─ HTTP + X-Team-ID header
-     └─ API Layer (FastAPI)
-           ├─ TeamContextMiddleware → request.state.team
-           ├─ Pydantic discriminated union validation on kind (422 if invalid)
-           ├─ Writes PENDING record → Resource Store (SQLite/SA 2.x)
-           └─ Dispatches BackgroundTask → Dispatcher
-                  └─ State machine (PENDING → PROVISIONING → READY/FAILED)
-                  └─ Adapter Registry (kind → AdapterBase subclass)
-                        └─ Mock Adapters x 7 (AWS, K8s, Salesforce, AEM,
-                                              Datadog, ServiceNow, JFrog)
-                              └─ Logs intent, simulates latency,
-                                 returns AdapterResult + provider_metadata
+Route Handler (thin)
+  └─ TeamService / ProjectService (new)
+        ├─ await session.commit()          ← DB write first
+        └─ background_tasks.add_task(      ← hooks after response
+             _fire_hooks,
+             registry=INTEGRATION_REGISTRY,
+             event="on_team_create",
+             team=team_snapshot            ← pass snapshot, not ORM object
+           )
+
+INTEGRATION_REGISTRY (module-level list, like ADAPTER_REGISTRY)
+  └─ [GitHubIntegration(), ...]
+        └─ IntegrationBase ABC
+              on_team_create(team) → IntegrationResult
+              on_project_create(project, team) → IntegrationResult
+              on_member_add(user, team) → IntegrationResult
+              on_member_remove(user, team) → IntegrationResult
 ```
 
-### Resource State Machine
+### Critical Invariants
 
-```
-PENDING → PROVISIONING → READY → DELETING → DELETED
-                     └→ FAILED → PROVISIONING (retry)
-```
+- **Hooks always fire after `session.commit()`** — DB write is durable before any external call
+- **Background tasks use a fresh session**, not the route's yield-dependency session (closed before BG tasks run)
+- **`github_team_url` is derived at read time** (`f"https://github.com/orgs/{org}/teams/{slug}"`), not stored — avoids org-rename consistency risk
+- **Integration failures are non-fatal** — logged with context, PECP operation succeeds regardless
 
-The Dispatcher owns all transitions. The API Layer writes PENDING on create and never touches status again.
+### Suggested Build Order
 
-### Key Invariants
-
-- Team context flows through all 5 layers: CLI header → middleware → route dependency → DB filter → AdapterContext.
-- `spec` is immutable after admission. `status` is written only by the Dispatcher. `notes` is append-only, written only via the PE update endpoint.
-- Every resource query includes `filter(Resource.team_id == team.id)`. No unscoped queries exist.
-- Adapter interface (`provision`, `deprovision`, `get_status`) is locked before any mock is written. Designed for AWS complexity, not mock simplicity.
-
-### K8s Migration Path
-
-The adapter interface is the migration-stable surface. Pydantic ResourceSpec maps to CRD schema; Resource Store to etcd; Dispatcher to operator reconciler loop; AdapterBase subclasses are unchanged. When the org is K8s-ready, app teams rewrite nothing.
+1. Alembic migration `0004` — unblocks everything; no code dependencies
+2. `IntegrationBase` ABC + `INTEGRATION_REGISTRY` — pure Python; lock the contract first
+3. `GitHubIntegration` — highest-risk; build with `pytest-httpx` mocking from the first commit
+4. Service layer + route handler updates — commit→hook dispatch ordering; new member/repo endpoints
+5. CLI updates — additive only; depends on stable API contract
 
 ---
 
 ## Top Pitfalls to Avoid
 
-| # | Pitfall | Prevention |
-|---|---------|-----------|
-| CP-1 | Schema validation in the adapter, not at API boundary | Validate against Pydantic discriminated union before touching DB; 422 with field-level errors |
-| CP-2 | `status` and `notes` written by any code path | Dispatcher exclusively owns status transitions; notes endpoint is append-only |
-| CP-3 | Adapter interface designed for mocks, not real backends | Lock full interface before writing any mock — designed from AWS perspective |
-| CP-4 | Async jobs lost on process restart | Persist every job in `provisioning_jobs`; scan on startup and mark stale jobs `failed` |
-| CP-5 | Team isolation only in CLI | `team_id` non-nullable FK on every resource; every endpoint requires team context |
-| PR-3 | PoC proves CRUD on YAML, not business value | Write the demo script before writing any code |
-
-**Zero-effort, high-leverage:** `yaml.safe_load` everywhere; `RequestContext` auth stub in Phase 1; configurable CLI API URL; exponential backoff on `--watch`; `UNIQUE(team_id, kind, name)` for idempotent apply.
-
----
-
-## Build Order
-
-### Phase 1: Foundation + Contracts
-- Project scaffold (Python package, ruff, mypy, pytest, Alembic)
-- SQLAlchemy 2.x async models: `Team`, `Resource`, `Project`, `Deployment`, `ProvisioningJob`, `Note`
-- Pydantic ResourceSpec discriminated union — all 7 kinds defined
-- `AdapterBase` + `AdapterContext` + `AdapterResult` interface — **LOCKED**
-- `RequestContext` auth stub in route middleware
-- Write demo script (narrative, not code)
-
-### Phase 2: Core Engine
-- Dispatcher: state machine + adapter dispatch + status writes
-- Adapter Registry: kind → AdapterBase mapping, lifespan registration
-- All 7 mock adapters: realistic latency, structured activity log, synthetic metadata
-- `PECPAccount` mock: long dwell in PROVISIONING, PE notes simulation
-
-### Phase 3: API Layer
-- FastAPI app + lifespan + `TeamContextMiddleware`
-- Routers: `/resources`, `/teams`, `/projects`, `/deployments`
-- `GET /resources/{id}/status`, `POST /resources/{id}/notes`
-- 202 Accepted pattern with BackgroundTask dispatch
-- Idempotent apply (upsert + unique constraint)
-
-### Phase 4: CLI
-- `pecp apply`, `pecp get`, `pecp delete`, `pecp status [--watch]`
-- `pecp team`, `pecp project`, `pecp deployments`, `pecp create awsaccount`
-- Configurable API URL; exponential backoff on `--watch`; Rich tables + spinners
-
-### Phase 5: UI Dashboard
-- React + Vite + TanStack Query + Tailwind + shadcn/ui scaffold
-- Team resource inventory, deployment view, account status with notes log
-- TanStack Query `refetchInterval` for live status updates
-- **Less than 20% of total PoC effort. No pagination, search, or complex state management.**
-
-### Phase 6: Demo Polish
-- Seed script: 2 teams, 3 projects, resources in all states
-- `PECPAccount` slow-path walkthrough with live PE notes → READY
-- Verify all pitfall preventions in place before stakeholder session
+| # | Pitfall | Phase | Prevention |
+|---|---------|-------|-----------|
+| GH-1 | Hook fires before `session.commit()` — ghost GitHub resources | 2 | Enforce `commit()` → hook ordering in service layer; test for it |
+| GH-2 | Route session passed to background task → `DetachedInstanceError` | 2 | Pass data snapshot (dict/dataclass), not ORM object; open fresh session in hook |
+| GH-3 | GitHub 422 treated as unexpected error (not "already exists") | 3 | Check `status_code == 422` and `errors[0]["message"]` contains "already taken"; GET to recover |
+| GH-4 | Real GitHub API calls in tests — flaky CI, rate limit exposure | 3 | `pytest-httpx` mocks all outbound calls; no `GITHUB_PAT` in test environment |
+| GH-9 | `NOT NULL` on `github_team_slug` Alembic migration breaks existing rows | 1 | Column must be `nullable=True`; SQLite rejects `ADD COLUMN NOT NULL` without DEFAULT |
 
 ---
 
 ## Open Questions
 
-| Question | Impact | Who answers |
-|----------|--------|-------------|
-| What does a `PECPSalesforce` resource spec look like? | Blocks `PECPSalesforceSpec` Pydantic model | Product / PE team |
-| What does a `PECPAem` resource spec look like? | Blocks `PECPAemSpec` | Product / PE team |
-| Does the org have a ServiceNow ITSM pattern influencing the approval flow? | Determines ServiceNow mock design | Platform Engineering |
-| What triggers `FAILED → PROVISIONING` retry — automatic, PE-initiated, or CLI? | State machine completeness | Product decision |
-| Long-term UI strategy — Backstage plugin, standalone, or other? | Determines whether PoC UI is throwaway or foundation | Architecture / leadership |
+| Question | Impact | Phase |
+|----------|--------|-------|
+| GitHub 422 "already exists" error body (`errors[0].message` exact text) | Idempotency handler correctness | Before Phase 3 |
+| BackgroundTasks vs yield-dependency teardown order in current FastAPI — write minimal test to confirm | Core architectural invariant | Before Phase 4 |
+| Classic PAT vs fine-grained PAT if org policy prohibits classic | Setup instructions for demo | Before Phase 3 |
+| `private: true` on org repos — requires paid org plan? | Repo creation `403` on free org | Before Phase 3 |
 
 ---
 
@@ -177,9 +112,9 @@ The adapter interface is the migration-stable surface. Pydantic ResourceSpec map
 
 | Area | Confidence | Basis |
 |------|-----------|-------|
-| Stack | HIGH | Core technologies stable, widely adopted, mutually reinforcing. UI versions warrant verification before pinning. |
-| Features | MEDIUM-HIGH | Reference products well-documented. Salesforce and AEM specs are stubs until product provides domain knowledge. |
-| Architecture | HIGH | Standard control plane patterns. SQLite concurrency edge case is low-risk at PoC scale. |
-| Pitfalls | HIGH (technical) / MEDIUM (strategic) | Grounded in async Python and control plane design patterns. |
+| Stack additions | HIGH | Raw httpx confirmed; pydantic-settings fit is clear; pytest-httpx fixture pattern matches existing tests |
+| GitHub API behavior | MEDIUM | Stable REST API; trained through Aug 2025; live doc verification recommended for 422 error body |
+| Architecture pattern | HIGH | Direct codebase analysis; mirrors existing ADAPTER_REGISTRY pattern; BackgroundTasks timing confirmed from FastAPI docs |
+| Pitfalls | MEDIUM | FastAPI session/BG task timing confirmed from official docs; GitHub error codes from domain knowledge |
 
-**Overall: HIGH confidence in the technical direction. The adapter interface design and the demo narrative are the two highest-leverage investments before coding begins.**
+**Overall: MEDIUM-HIGH. The integration is well-scoped and self-contained. Three critical pitfalls (GH-1, GH-2, GH-4) must be addressed architecturally before any GitHub-specific code is written.**
