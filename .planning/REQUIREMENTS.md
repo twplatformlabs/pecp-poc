@@ -19,21 +19,21 @@
 - [x] **GH-04**: `on_member_add` adds the user (by GitHub username) to the GitHub team; `on_member_remove` removes them — one-way sync, PECP is the source of truth
 - [x] **GH-05**: GitHub API errors (rate limit, user not found, team already exists) are caught, logged with context, and return a structured error without failing the PECP operation
 
-### CLI & Display
+### CLI & Display (Phase 10 — Not yet implemented)
 
-- [x] **CLI-12**: `pecp team create <name>` output includes a GitHub team link line after successful creation: `GitHub team: https://github.com/orgs/{org}/teams/{slug}`
-- [x] **CLI-13**: `pecp team <name>` panel includes a "GitHub" row showing the team URL and current member count (from PECP, not re-fetched from GitHub)
-- [x] **CLI-14**: `pecp project create <name> --team <team>` output includes the created repo URL: `GitHub repo: https://github.com/{org}/{team-name}-{project-name}`
-- [x] **CLI-15**: `pecp project <name> --team <team>` lists all linked repos with their GitHub URLs
-- [x] **CLI-16**: `pecp project repo add <repo-name> --project <project> --team <team>` creates an additional empty GitHub repo `{org}/{team-name}-{repo-name}` and links it to the project
-- [x] **CLI-17**: `pecp team member add <github-username> <team>` adds the user to PECP team membership and syncs to GitHub team; `pecp team member remove <github-username> <team>` does the reverse
+- [ ] **CLI-12**: `pecp team create <name>` output includes a GitHub team link line after successful creation: `GitHub team: https://github.com/orgs/{org}/teams/{slug}`
+- [ ] **CLI-13**: `pecp team <name>` panel includes a "GitHub" row showing the team URL and current member count (from PECP, not re-fetched from GitHub)
+- [ ] **CLI-14**: `pecp project create <name> --team <team>` output includes the created repo URL: `GitHub repo: https://github.com/{org}/{team-name}-{project-name}`
+- [ ] **CLI-15**: `pecp project <name> --team <team>` lists all linked repos with their GitHub URLs
+- [ ] **CLI-16**: `pecp project repo add <repo-name> --project <project> --team <team>` creates an additional empty GitHub repo `{org}/{team-name}-{repo-name}` and links it to the project
+- [ ] **CLI-17**: `pecp team member add <github-username> <team>` adds the user to PECP team membership and syncs to GitHub team; `pecp team member remove <github-username> <team>` does the reverse
 
-### API
+### API (Phase 9 — Not yet implemented)
 
-- [x] **API-01**: `POST /teams` response body includes `github_team_slug` and `github_team_url` fields when GitHub integration is active
-- [x] **API-02**: `GET /teams/{name}` response includes `github_team_slug`, `github_team_url`, and `repos` list (from ProjectRepo table)
-- [x] **API-03**: `POST /teams/{name}/members` body accepts `{"username": "<github-username>", "role": "owner|contributor"}` and syncs to GitHub; `DELETE /teams/{name}/members/{username}` removes and desyncs
-- [x] **API-04**: `POST /projects` response includes `github_repo_url` when GitHub integration is active; `POST /projects/{id}/repos` creates and links additional repos
+- [ ] **API-01**: `POST /teams` response body includes `github_team_slug` and `github_team_url` fields when GitHub integration is active
+- [ ] **API-02**: `GET /teams/{name}` response includes `github_team_slug`, `github_team_url`, and `repos` list (from ProjectRepo table)
+- [ ] **API-03**: `POST /teams/{name}/members` body accepts `{"username": "<github-username>", "role": "owner|contributor"}` and syncs to GitHub; `DELETE /teams/{name}/members/{username}` removes and desyncs
+- [ ] **API-04**: `POST /projects` response includes `github_repo_url` when GitHub integration is active; `POST /projects/{id}/repos` creates and links additional repos
 
 ### Data Model
 
@@ -67,14 +67,14 @@
 | DATA-01 | Phase 6 | Complete |
 | DATA-02 | Phase 6 | Complete |
 | DATA-03 | Phase 6 | Complete |
-| INTG-01 | Phase 7 | Pending |
-| INTG-02 | Phase 7 | Pending |
-| INTG-03 | Phase 7 | Pending |
-| GH-01 | Phase 8 | Pending |
-| GH-02 | Phase 8 | Pending |
-| GH-03 | Phase 8 | Pending |
-| GH-04 | Phase 8 | Pending |
-| GH-05 | Phase 8 | Pending |
+| INTG-01 | Phase 7 | Complete |
+| INTG-02 | Phase 7 | Complete |
+| INTG-03 | Phase 7 | Complete |
+| GH-01 | Phase 8 | Complete |
+| GH-02 | Phase 8 | Complete |
+| GH-03 | Phase 8 | Complete |
+| GH-04 | Phase 8 | Complete |
+| GH-05 | Phase 8 | Complete |
 | API-01 | Phase 9 | Pending |
 | API-02 | Phase 9 | Pending |
 | API-03 | Phase 9 | Pending |
@@ -90,6 +90,8 @@
 
 - v1.1 requirements: 21 total
 - Mapped to phases: 21/21
+- Implemented: 11 (DATA-01/02/03, INTG-01/02/03, GH-01/02/03/04/05)
+- Pending (Phase 9/10): 10 (API-01/02/03/04, CLI-12/13/14/15/16/17)
 - Unmapped: 0
 
 ---
