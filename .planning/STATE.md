@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-status: Milestone complete
+current_phase: 0
+status: Awaiting next milestone
 stopped_at: context exhaustion at 77% (2026-06-22)
-last_updated: "2026-06-22T22:29:17.571Z"
-last_activity: 2026-06-22
-last_activity_desc: Phase 05 complete
+last_updated: "2026-06-24T04:05:10.419Z"
+last_activity: 2026-06-24
+last_activity_desc: Milestone v1.0 completed and archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -21,17 +21,17 @@ current_phase_name: milestone candidate
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-27)
+See: .planning/PROJECT.md (updated 2026-06-24)
 
 **Core value:** A team can go from zero to provisioned infrastructure by writing a YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline runs, or which ticket gets filed.
-**Current focus:** Phase 05 — account-flow-ui-demo-readiness
+**Current focus:** Planning next milestone — v2.0 (real adapters, auth, ARQ)
 
 ## Current Position
 
-Phase: 05
-Last activity: 2026-06-22 — Phase 05 complete
-
-Progress: [██████████] 100%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-24 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -94,12 +94,19 @@ None yet.
 
 ## Deferred Items
 
+Items acknowledged and deferred at milestone close on 2026-06-24:
+
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| verification | Phase 01: 01-VERIFICATION.md — demo script narrative review (5 items: story flow, D-16 scenario, YAML structure, v2 scope check) | human_needed | 2026-06-24 |
+| verification | Phase 03: 03-VERIFICATION.md — live CLI smoke test against running server (11 items: apply/get/status/delete/notes walkthrough) | human_needed | 2026-06-24 |
 
 ## Session Continuity
 
-Last session: 2026-06-22T22:26:37.672Z
-Stopped at: context exhaustion at 77% (2026-06-22)
+Last session: 2026-06-24
+Stopped at: v1.0 milestone complete and archived — ready to plan v2.0
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

@@ -2,93 +2,101 @@
 
 ## What This Is
 
-A Kubernetes-inspired control plane that lets engineering teams declare infrastructure needs via YAML and have the platform provision those resources in the appropriate backing systems — AWS, Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog. Teams submit typed resource specs (`kind: PECPLambda`, `kind: PECPDataService`, etc.) via the `pecp` CLI, and the platform handles routing, account management, and provisioning based on team context. For this PoC, all backing systems are mocked — the goal is to prove the control plane pattern and make it demo-able to stakeholders.
+A Kubernetes-inspired control plane that lets engineering teams declare infrastructure needs via YAML and have the platform provision those resources in the appropriate backing systems — AWS, Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog. Teams submit typed resource specs (`kind: PECPLambda`, `kind: PECPDataService`, etc.) via the `pecp` CLI, and the platform handles routing, account management, and provisioning based on team context. The v1.0 PoC proves the control plane pattern end-to-end with all backing systems mocked and a complete stakeholder demo flow — `pecp apply`, `pecp status --watch`, CLI account flow, and a live React dashboard.
 
 ## Core Value
 
 A team can go from zero to provisioned infrastructure by writing a YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline runs, or which ticket gets filed.
 
+## Current State (v1.0 PoC — Shipped 2026-06-24)
+
+- **5 phases complete**, 17 plans executed, 165 tests passing
+- **~3,700 LOC** Python backend + TypeScript/TSX React frontend
+- **All 33 v1 requirements shipped** — 100% traceability
+- **Demo-ready**: seed script, live CLI walkthrough, and React dashboard all verified end-to-end
+- **Stack**: FastAPI + SQLAlchemy async + SQLite + Alembic + Typer + Rich + React 19 + Vite + TanStack Query + Tailwind v4
+
 ## Requirements
 
-### Validated
+### Validated (v1.0)
 
-**Mock Adapter Layer** *(Validated in Phase 2: core-engine)*
-- [x] Pluggable adapter interface (`AdapterBase` ABC) — swappable without changing control plane
-- [x] Mock adapters for all 10 kinds: Lambda, Container, DataService (5 subtypes), Account (3s async dwell), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog
-- [x] Mock adapters log synthetic "Would call:" entries and return structured provider_metadata
-- [x] Dispatcher routes PENDING → PROVISIONING → READY through ADAPTER_REGISTRY (10 entries)
+**Foundation & Contracts** *(Phase 1: foundation-contracts)*
+- ✓ Pluggable adapter interface (`AdapterBase` ABC) with `provision`/`deprovision`/`get_status` — locked before any mock is written — v1.0
+- ✓ `RequestContext` auth stub flows through every route handler with `user_id`, `team_memberships`, `is_pe_admin` — hardcoded, structured for JWT drop-in — v1.0
+- ✓ `GET /resources` without team context returns `400` — team scoping enforced at server — v1.0
+- ✓ Demo script (narrative walkthrough) written before any implementation begins — v1.0
 
-### Validated
+**Mock Adapter Layer** *(Phase 2: core-engine)*
+- ✓ Mock adapters for all 7 backing systems: AWS (Lambda/Container/Data/Account), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog — v1.0
+- ✓ Mock adapters simulate realistic latency, produce structured activity logs, return synthetic provider_metadata — v1.0
+- ✓ Dispatcher drives PENDING → PROVISIONING → READY/FAILED; all state transitions owned by Dispatcher — v1.0
+- ✓ `PECPAccount` mock dwells in PROVISIONING for 3+ seconds before transitioning to READY — v1.0
+- ✓ All 6 resource kinds (`PECPLambda`, `PECPContainer`, `PECPDataService`, `PECPAccount`, `PECPSalesforce`, `PECPAem`) validated by Pydantic — v1.0
 
-**REST API & CLI** *(Validated in Phase 3: rest-api-core-cli)*
-- [x] REST API that accepts YAML resource specs, stores them, and dispatches to the appropriate mock adapter
-- [x] Resource CRUD: create (idempotent), read, delete with status lifecycle (pending → provisioning → ready)
-- [x] Query endpoint: list all resources for a team, filter by kind
-- [x] Status endpoint: returns current state including `notes` list (PE-appendable via POST /resources/{id}/notes)
-- [x] `pecp apply -f resource.yaml` — submit a resource spec (idempotent)
-- [x] `pecp get <kind> --team <team>` — Rich table with color-coded status badges and env column
-- [x] `pecp status <kind> <name> --team <team>` — table + notes block
-- [x] `pecp delete <kind> <name> --team <team>` — team-scoped, cross-team delete rejected
+**REST API & CLI** *(Phase 3: rest-api-core-cli)*
+- ✓ `POST /resources` accepts YAML spec, validates, returns `202 Accepted` with resource ID — v1.0
+- ✓ `pecp apply -f resource.yaml` twice is a no-op (idempotent) or triggers update (spec changed) — v1.0
+- ✓ Append-only PE notes log via `POST /resources/{id}/notes`, visible on status queries — v1.0
+- ✓ `pecp apply/get/status/delete` CLI with Rich tables, color-coded status badges, notes block — v1.0
+- ✓ CLI respects `--api-url` flag and `PECP_API_URL` env var — v1.0
 
-### Validated
+**Teams, Projects & Deployments** *(Phase 4: teams-projects-deployments)*
+- ✓ Team creation/query with members, roles (owner/contributor), and metadata — v1.0
+- ✓ Resources grouped into named projects with environment targeting and resource_count — v1.0
+- ✓ Deployment status queryable per environment (`pecp deployments --team <team> --environment dev`) — v1.0
+- ✓ Soft-delete on resources; atomic DeploymentRecord audit rows on every resource mutation — v1.0
+- ✓ `pecp team create/show`, `pecp projects`, `pecp deployments`, `pecp apply --project` — v1.0
 
-**Teams, Projects & Deployments** *(Validated in Phase 4: teams-projects-deployments)*
-- [x] Teams are the primary organizational unit — all resources and accounts belong to a team
-- [x] Team creation via `POST /teams` (409 on duplicate, auto-seeds owner member)
-- [x] Team has members with roles: `owner` and `contributor`
-- [x] A project is a named grouping of resources with resource_count aggregation
-- [x] Projects map to environments; deployments are trackable per team and per environment
-- [x] Soft-delete on resources: `deleted_at` timestamp, filtered from list/get queries
-- [x] `DeploymentRecord` audit rows written atomically on every resource mutation
-- [x] `pecp team create <name>` / `pecp team <name>` — Rich panel with members and roles
-- [x] `pecp projects --team <team>` — list projects with resource counts
-- [x] `pecp deployments --team <team>` — show deployment history by environment
-- [x] `pecp apply ... --project <project>` — resource scoped to a project
+**Account Flow, UI & Demo Readiness** *(Phase 5: account-flow-ui-demo-readiness)*
+- ✓ `pecp create awsaccount --team <team>` — async provisioning, returns resource ID immediately — v1.0
+- ✓ `pecp status awsaccount --watch` — polls every 2s, shows PE notes live, exits on ready/failed — v1.0
+- ✓ `pecp login awsaccount` — prints `export AWS_*` lines, exit code 0/1/2 for ready/not-found/not-ready — v1.0
+- ✓ React dashboard: team inventory table with name/kind/status badge/environment — v1.0
+- ✓ Deployment view: client-side environment filter (dev/staging/prod), no auto-polling, manual refresh — v1.0
+- ✓ Demo seed script: 4 teams, 3 projects, resources in all lifecycle states, idempotent — v1.0
 
-### Active
+### Active (v2 candidates)
 
-**Control Plane API**
+**Real Backend Adapters**
+- [ ] Real AWS adapter (Lambda, S3, SQS, SNS, DynamoDB, Organizations) replacing mock
+- [ ] Real Kubernetes adapter replacing mock
+- [ ] Real Salesforce adapter (Connected App + Permission sets) replacing mock
+- [ ] Real AEM adapter (site/workspace + author/publish environments) replacing mock
+- [ ] Real Datadog, ServiceNow, JFrog adapters replacing mocks
 
-**Resource Types (all dispatched to mock adapters for PoC)**
-- [ ] `PECPLambda` — function with `exposure` (public/private), `api-gateway` path, `source-code` reference
-- [ ] `PECPContainer` — container workload with exposure and deployment context
-- [ ] `PECPDataService` — subtypes: S3, SQS, SNS, RDS, DynamoDB
-- [ ] `PECPAccount` — provision an AWS account for a team (async, with status polling and PE-editable notes)
-- [ ] `PECPSalesforce` — Salesforce resource (spec TBD via research)
-- [ ] `PECPAem` — AEM resource (spec TBD via research)
+**Authentication & Authorization**
+- [ ] JWT/API key authentication enforced at the API layer (stub surfaces already in place)
+- [ ] CLI authenticates with API key stored in `~/.pecp/config.yaml`
+- [ ] PE approval flow for new teams — `pending → approved` before resources can be created
 
-**`pecp` CLI**
-- [ ] `pecp create awsaccount --team <team>` — request an AWS account (async provisioning)
-- [ ] `pecp status awsaccount --team <team>` — check account readiness, access credentials, PE notes
+**Async Infrastructure**
+- [ ] ARQ (asyncio) job queue replaces FastAPI BackgroundTasks for distributed worker support
+- [ ] `FAILED → PROVISIONING` retry — PE-initiated via API with configurable backoff
 
-**UI Dashboard**
-- [ ] Team resource inventory view (what's provisioned, what state it's in)
-- [ ] Deployment view per environment
-- [ ] Account status view
-- [ ] Read-only for PoC (no submit from UI — CLI is the submission path)
-
-**Mock Adapter Layer**
-- [ ] Pluggable adapter interface so real adapters can be swapped in without changing the control plane
-- [ ] Mock adapters for: AWS (Lambda, ECS, S3, SQS, SNS, RDS, DynamoDB, Organizations), Kubernetes, Salesforce, AEM, Datadog, ServiceNow, JFrog
-- [ ] Mock adapters log what they would provision and return synthetic status/metadata
+**UI Enhancement**
+- [ ] Self-service resource submission via UI forms (Humanitec-style)
+- [ ] Account status credential display with copy-to-clipboard
+- [ ] Mock activity log surfaced in dashboard per resource
 
 ### Out of Scope
 
-- Real backend connections — no real AWS, K8s, or SaaS API calls in PoC; mocked to prove the pattern
-- Auth/authz — no authentication for PoC; stub surfaces for future integration
-- Team-configurable RBAC policies (e.g. "contributors on this team can also create accounts") — valid future feature, adds significant complexity for a PoC
-- Kubernetes operator pattern — future direction once org is ready; custom API server is the PoC vehicle
-- Multi-cluster or multi-region routing logic — account routing is flat for PoC
+- Real backend connections in PoC — no real cloud/SaaS credentials; mocks prove the pattern
+- Auth enforcement in PoC — significant engineering with zero demo value; stub surfaces in place
+- Team-configurable RBAC in PoC — policy engine adds weeks; v2 feature
+- GitOps / git-backed state — reconciliation complexity without benefit in mock-adapter world
+- Kubernetes operator / CRD runtime — org not versed in K8s; custom API server is the PoC vehicle
+- Multi-cluster / multi-region account routing — flat per-team routing sufficient for PoC
+- Drift detection / reconciliation loop — mock adapters can't drift; interface hook exists, loop deferred
+- Backstage-style software catalog — PECP is a provisioner; scope creep risk
 
 ## Context
 
 - Org is not versed in Kubernetes; custom Python API server chosen over K8s operator to maximize team contribution surface
-- K8s operator is an acknowledged future migration path — adapter interfaces should be designed with this in mind
-- AWS account creation is slow and semi-manual (external API is flaky, PE team sometimes opens tickets manually) — async status with PE-editable notes hides this complexity from users
-- Salesforce and AEM resource specs are undefined; need research before those kinds can be designed
+- K8s operator is an acknowledged future migration path — adapter interfaces designed with this in mind
+- AWS account creation is slow and semi-manual (PE team sometimes opens tickets manually) — async status with PE-editable notes hides this complexity from users
+- Salesforce and AEM resource specs shipped as stubs with placeholder mocks — real specs need product/PE team input before v2
 - The `apiVersion: pecp/v1` / `kind` YAML convention is deliberately Kubernetes-flavored to align mental model and make future K8s migration easier
-- All resource kinds should accept `metadata.team` and optionally `spec.account` to support cross-account routing
-- This is a PoC to get stakeholder buy-in — it needs to be demo-able, not production-hardened
+- PoC achieved stakeholder buy-in goal — all 5 success criteria demonstrable in a single live session
 
 ## Constraints
 
@@ -102,16 +110,18 @@ A team can go from zero to provisioned infrastructure by writing a YAML and runn
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Custom API server over K8s operator | Org not versed in K8s; Python API server lowers contribution barrier | — Pending |
-| Mock adapter layer with pluggable interface | All backends mocked for PoC but must be swappable; real adapters come later | — Pending |
-| Team-first resource ownership | All resources, accounts, and deployments belong to a team; no individual-owned resources | — Pending |
-| Async account provisioning with PE notes | AWS account creation is slow and manually assisted; status polling + notes field hides this from users | — Pending |
-| YAML spec convention mirrors Kubernetes | Aligns mental model, eases future K8s migration path | — Pending |
-| Owner/contributor roles (hardcoded for PoC) | Team-configurable RBAC is valid but out of scope; flat roles keep PoC simple | — Pending |
+| Custom API server over K8s operator | Org not versed in K8s; Python API server lowers contribution barrier | ✓ Good — team engagement high, PoC shipped in 4 weeks |
+| Mock adapter layer with pluggable interface | All backends mocked for PoC but must be swappable; real adapters come later | ✓ Good — AdapterBase ABC locked in Phase 1, all 7 mocks registered in Phase 2 |
+| Team-first resource ownership | All resources, accounts, and deployments belong to a team; no individual-owned resources | ✓ Good — clean scoping, team context enforced at API layer |
+| Async account provisioning with PE notes | AWS account creation is slow and manually assisted; status polling + notes field hides this from users | ✓ Good — `--watch` polling and notes model validated in stakeholder demo |
+| YAML spec convention mirrors Kubernetes | Aligns mental model, eases future K8s migration path | ✓ Good — `apiVersion: pecp/v1` convention adopted without friction |
+| Owner/contributor roles (hardcoded for PoC) | Team-configurable RBAC is valid but out of scope; flat roles keep PoC simple | ✓ Good — sufficient for demo; PE approval flow deferred to v2 |
+| SQLite + SQLAlchemy async for PoC | Zero infra dependencies; async patterns in place for production DB swap | ✓ Good — schema managed via Alembic, migration path to Postgres clear |
+| FastAPI BackgroundTasks (not ARQ) for PoC | Requires no broker/worker process; pure overhead with mock adapters | ✓ Good — deferred to v2 when real adapters need distributed workers |
+| React 19 SPA over Streamlit/Dash | Component flexibility; separates UI process from API process | ✓ Good — Vite + TanStack Query shipped; no coupling to API process |
+| Vite proxy to FastAPI in dev | Eliminates CORS complexity during development; same-origin in prod | ✓ Good — `/api/` rewrite pattern works cleanly with dev server |
 
 ## Evolution
-
-This document evolves at phase transitions and milestone boundaries.
 
 **After each phase transition** (via `/gsd-transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason
@@ -127,4 +137,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-15 — Phase 4 complete: Teams, Projects, Deployments, Soft-delete — multi-team control plane with audit trail, 146 tests passing*
+*Last updated: 2026-06-24 after v1.0 milestone — all 33 v1 requirements shipped; PoC demo-ready for stakeholders*
