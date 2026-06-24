@@ -1,7 +1,13 @@
-"""Tests for INTEGRATION_REGISTRY dispatch + error isolation (INTG-02)."""
+"""Tests for INTEGRATION_REGISTRY dispatch + error isolation (INTG-02).
+
+Extended in Plan 02 with HTTP-level integration tests (POST /teams, POST /projects)
+that verify hook firing through the live FastAPI routes.
+"""
 
 import logging
 from datetime import datetime, timezone
+
+from httpx import AsyncClient
 
 from pecp.integrations import INTEGRATION_REGISTRY, fire_integrations
 from pecp.integrations.base import IntegrationBase, TeamSnapshot
@@ -118,3 +124,91 @@ async def test_failing_integration_logs_warning(caplog) -> None:
         )
     finally:
         _restore_registry(original)
+
+
+async def test_post_teams_fires_on_team_create_hook(client: AsyncClient) -> None:
+    """POST /teams fires on_team_create for registered NoOpIntegration."""
+    original = list(INTEGRATION_REGISTRY)
+    INTEGRATION_REGISTRY.clear()
+    try:
+        noop = NoOpIntegration()
+        INTEGRATION_REGISTRY.append(noop)
+
+        response = await client.post(
+            "/teams",
+            json={"name": "team-alpha", "owner": "alice"},
+        )
+        assert response.status_code == 201
+
+        assert len(noop.calls) == 1
+        hook_name, snap = noop.calls[0]
+        assert hook_name == "on_team_create"
+        assert snap.name == "team-alpha"
+        assert len(snap.id) == 32  # uuid hex
+    finally:
+        INTEGRATION_REGISTRY.clear()
+        INTEGRATION_REGISTRY.extend(original)
+
+
+async def test_post_teams_with_failing_integration_still_returns_201(
+    client: AsyncClient, caplog
+) -> None:
+    """A failing integration hook does NOT propagate to the 201 response."""
+
+    class BoomIntegration(IntegrationBase):
+        async def on_team_create(self, team: TeamSnapshot) -> None:
+            raise RuntimeError("boom")
+
+    original = list(INTEGRATION_REGISTRY)
+    INTEGRATION_REGISTRY.clear()
+    try:
+        INTEGRATION_REGISTRY.append(BoomIntegration())
+
+        response = await client.post(
+            "/teams",
+            json={"name": "boom-team", "owner": "alice"},
+        )
+        assert response.status_code == 201
+
+        with caplog.at_level(logging.WARNING, logger="pecp.integrations"):
+            # BackgroundTasks completed inline — the log should be present
+            pass
+
+        assert any(
+            "BoomIntegration" in r.message
+            for r in caplog.records
+        ), f"No BoomIntegration WARNING in: {[(r.levelname, r.message) for r in caplog.records]}"
+    finally:
+        INTEGRATION_REGISTRY.clear()
+        INTEGRATION_REGISTRY.extend(original)
+
+
+async def test_post_teams_duplicate_returns_409_and_does_not_fire_hook(
+    client: AsyncClient,
+) -> None:
+    """409 IntegrityError on duplicate name must NOT fire on_team_create (T-07-01)."""
+    original = list(INTEGRATION_REGISTRY)
+    INTEGRATION_REGISTRY.clear()
+    try:
+        noop = NoOpIntegration()
+        INTEGRATION_REGISTRY.append(noop)
+
+        # First POST succeeds and fires on_team_create once
+        r1 = await client.post(
+            "/teams",
+            json={"name": "dup-team", "owner": "alice"},
+        )
+        assert r1.status_code == 201
+
+        # Duplicate POST returns 409 and must NOT fire the hook again
+        r2 = await client.post(
+            "/teams",
+            json={"name": "dup-team", "owner": "bob"},
+        )
+        assert r2.status_code == 409
+
+        # Only the first POST fired the hook
+        assert len(noop.calls) == 1
+    finally:
+        INTEGRATION_REGISTRY.clear()
+        INTEGRATION_REGISTRY.extend(original)

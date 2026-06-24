@@ -8,12 +8,14 @@ Every handler accepts ctx: ContextDep (ARCH-02).
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
 from pecp.api.dependencies import ContextDep
+from pecp.integrations import fire_integrations
+from pecp.integrations.base import TeamSnapshot
 from pecp.persistence.database import SessionDep
 from pecp.persistence.models import TeamMemberRecord, TeamRecord
 
@@ -63,6 +65,7 @@ async def list_teams(
 
 @router.post("", status_code=201)
 async def create_team(
+    background_tasks: BackgroundTasks,
     body: TeamCreate,
     ctx: ContextDep = ...,  # type: ignore[assignment]
     session: SessionDep = ...,  # type: ignore[assignment]
@@ -72,6 +75,9 @@ async def create_team(
     Returns 201 with the full team body (id, name, owner_id, created_at, members[]).
     Returns 409 if a team with the same name already exists (D-03).
     Returns 422 if required fields (name, owner) are missing (Pydantic validation).
+
+    Fires registered integrations' on_team_create hooks via BackgroundTasks AFTER
+    session.commit() succeeds — no hook fires on the 409 IntegrityError rollback path.
     """
     team_id = uuid.uuid4().hex
     now = datetime.now(timezone.utc)
@@ -89,6 +95,16 @@ async def create_team(
     except IntegrityError:
         await session.rollback()
         raise HTTPException(status_code=409, detail=f"Team '{body.name}' already exists")
+
+    # Build snapshot from ORM attributes while session is still open — then fire hooks
+    snapshot = TeamSnapshot(
+        id=team.id,
+        name=team.name,
+        owner_id=team.owner_id,
+        created_at=team.created_at,
+        github_team_slug=team.github_team_slug,
+    )
+    background_tasks.add_task(fire_integrations, "on_team_create", snapshot)
     return _render_team(team, [member])
 
 
