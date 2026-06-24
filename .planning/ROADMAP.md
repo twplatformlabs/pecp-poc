@@ -57,7 +57,11 @@ Plans:
   3. Starting the server with `GITHUB_PAT` / `GITHUB_ORG` unset logs a warning but does not crash
   4. Hooks are fired after `session.commit()`, not before — verifiable by a test that asserts the DB row exists when the hook runs
 
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+
+- [ ] 07-01-PLAN.md — IntegrationBase ABC + snapshot dataclasses + NoOpIntegration + INTEGRATION_REGISTRY + fire_integrations + IntegrationConfig + unit tests (INTG-01, INTG-02, INTG-03)
+- [ ] 07-02-PLAN.md — Wire load_and_register_integrations into lifespan; BackgroundTasks + snapshot dispatch into POST /teams and POST /projects; commit-before-hook integration tests (INTG-01, INTG-02, INTG-03)
 
 ### Phase 8: GitHub Integration
 
@@ -116,7 +120,7 @@ Plans:
 | 4. Teams, Projects, Deployments | v1.0 | 3/3 | Complete | 2026-06-15 |
 | 5. Account Flow + UI + Demo Readiness | v1.0 | 4/4 | Complete | 2026-06-22 |
 | 6. Data Model + Migration | v1.1 | 1/1 | Complete   | 2026-06-24 |
-| 7. Integration Hook Framework | v1.1 | 0/0 | Not started | - |
+| 7. Integration Hook Framework | v1.1 | 0/2 | Not started | - |
 | 8. GitHub Integration | v1.1 | 0/0 | Not started | - |
 | 9. Service Layer + API Updates | v1.1 | 0/0 | Not started | - |
 | 10. CLI Updates | v1.1 | 0/0 | Not started | - |
