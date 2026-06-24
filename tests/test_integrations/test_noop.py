@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from pecp.integrations.base import TeamSnapshot, ProjectSnapshot, MemberSnapshot
+from pecp.integrations.base import MemberSnapshot, ProjectSnapshot, TeamSnapshot
 from pecp.integrations.noop import NoOpIntegration
 
 

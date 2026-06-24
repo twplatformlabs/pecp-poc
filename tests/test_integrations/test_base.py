@@ -1,10 +1,14 @@
 """Tests for IntegrationBase ABC (INTG-01)."""
 
+import dataclasses
 from datetime import datetime, timezone
 
-import dataclasses
-
-from pecp.integrations.base import IntegrationBase, TeamSnapshot, ProjectSnapshot, MemberSnapshot
+from pecp.integrations.base import (
+    IntegrationBase,
+    MemberSnapshot,
+    ProjectSnapshot,
+    TeamSnapshot,
+)
 
 
 def test_integration_base_subclass_with_no_overrides_instantiates() -> None:
