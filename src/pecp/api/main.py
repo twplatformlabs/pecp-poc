@@ -11,13 +11,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from pecp.api.routes import deployments, projects, resources, teams
+from pecp.integrations import load_and_register_integrations
 from pecp.persistence.database import init_schema
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Initialize the database schema on startup."""
+    """Initialize the database schema and load integrations on startup."""
     await init_schema()
+    load_and_register_integrations()
     yield
 
 

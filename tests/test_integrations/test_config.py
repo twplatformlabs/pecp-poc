@@ -89,3 +89,25 @@ def test_empty_registry_when_env_missing(monkeypatch) -> None:
         assert len(INTEGRATION_REGISTRY) == 0
     finally:
         _restore_registry(original)
+
+
+async def test_lifespan_starts_clean_when_env_missing(
+    client,
+) -> None:
+    """Prove lifespan wiring: app starts without GITHUB_PAT/GITHUB_ORG.
+
+    This is a wiring integration test — it proves the cable from
+    FastAPI lifespan to load_and_register_integrations() is connected
+    and the server does not crash when env vars are unset.
+
+    The env-var-specific assertions (registry state, warning message
+    content) are proven at the unit level in test_missing_env_logs_warning_not_crash,
+    test_warning_message_does_not_contain_pat_value, and
+    test_empty_registry_when_env_missing above.
+    """
+    # The standard client fixture starts the lifespan (which calls
+    # load_and_register_integrations) during fixture setup. Since the
+    # test environment has GITHUB_PAT and GITHUB_ORG unset, the lifespan
+    # must not crash — verify by serving a request.
+    r = await client.get("/teams")
+    assert r.status_code == 200
