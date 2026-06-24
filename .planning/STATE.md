@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: GitHub Onboarding Integration
-current_phase: 6
-current_phase_name: Data Model + Migration
-status: roadmap_created
+current_phase: 06
+current_phase_name: data-model-migration
+status: verifying
 stopped_at: Phase 6 context gathered
-last_updated: "2026-06-24T05:15:28.543Z"
+last_updated: "2026-06-24T15:01:12.583Z"
 last_activity: 2026-06-24
-last_activity_desc: v1.1 roadmap written (Phases 6–10, 21 requirements mapped)
+last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-24)
 
 **Core value:** A team can go from zero to provisioned infrastructure by writing a YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline runs, or which ticket gets filed.
-**Current focus:** v1.1 GitHub Onboarding Integration — Phase 6 (Data Model + Migration) ready to plan
+**Current focus:** Phase 06 — data-model-migration
 
 ## Current Position
 
-Phase: 6 — Data Model + Migration
-Plan: —
-Status: Roadmap created — ready to plan Phase 6
-Last activity: 2026-06-24 — v1.1 roadmap written (Phases 6–10, 21 requirements mapped)
+Phase: 06 (data-model-migration) — EXECUTING
+Plan: 1 of 1
+Status: Phase complete — ready for verification
+Last activity: 2026-06-24 — Phase 06 execution started
 
 ```
 [v1.0 ████████████████████ 100%] SHIPPED
@@ -93,6 +93,10 @@ Recent decisions affecting current work:
 - v1.1 roadmap: Background tasks receive data snapshots (not ORM objects) — avoids DetachedInstanceError from request-scoped session teardown
 - v1.1 roadmap: github_team_url derived at read time from slug+org, not stored — avoids org-rename consistency risk
 - v1.1 roadmap: pydantic-settings ~2.14 added for env var validation at startup; pytest-httpx ~0.36 added for test isolation
+- [Phase ?]: Phase 6 (06-01): importlib.reload(pecp.persistence.database) required in migration tests because alembic/env.py reads DATABASE_URL at import time
+- [Phase ?]: Phase 6 (06-01): render_as_batch=True in alembic/env.py enables batch_alter_table for SQLite ALTER TABLE — required for adding github_team_slug column
+- [Phase ?]: Phase 6 (06-01): downgrade() drops project_repos before removing github_team_slug from teams to satisfy FK constraint order (T-06-03 mitigated)
+- [Phase ?]: Phase 6 (06-01): No new packages installed — alembic, sqlalchemy, aiosqlite, pytest all pre-existing from prior phases
 
 ### Pending Todos
 
@@ -116,7 +120,7 @@ Items acknowledged and deferred at milestone close on 2026-06-24:
 
 ## Session Continuity
 
-Last session: 2026-06-24T05:15:28.536Z
+Last session: 2026-06-24T15:00:22.912Z
 Stopped at: Phase 6 context gathered
 Resume file: .planning/phases/06-data-model-migration/06-CONTEXT.md
 

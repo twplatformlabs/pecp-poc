@@ -64,9 +64,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 6 | Pending |
-| DATA-02 | Phase 6 | Pending |
-| DATA-03 | Phase 6 | Pending |
+| DATA-01 | Phase 6 | Complete |
+| DATA-02 | Phase 6 | Complete |
+| DATA-03 | Phase 6 | Complete |
 | INTG-01 | Phase 7 | Pending |
 | INTG-02 | Phase 7 | Pending |
 | INTG-03 | Phase 7 | Pending |
