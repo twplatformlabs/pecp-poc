@@ -64,33 +64,33 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INTG-01 | TBD | Planned |
-| INTG-02 | TBD | Planned |
-| INTG-03 | TBD | Planned |
-| GH-01 | TBD | Planned |
-| GH-02 | TBD | Planned |
-| GH-03 | TBD | Planned |
-| GH-04 | TBD | Planned |
-| GH-05 | TBD | Planned |
-| CLI-12 | TBD | Planned |
-| CLI-13 | TBD | Planned |
-| CLI-14 | TBD | Planned |
-| CLI-15 | TBD | Planned |
-| CLI-16 | TBD | Planned |
-| CLI-17 | TBD | Planned |
-| API-01 | TBD | Planned |
-| API-02 | TBD | Planned |
-| API-03 | TBD | Planned |
-| API-04 | TBD | Planned |
-| DATA-01 | TBD | Planned |
-| DATA-02 | TBD | Planned |
-| DATA-03 | TBD | Planned |
+| DATA-01 | Phase 6 | Pending |
+| DATA-02 | Phase 6 | Pending |
+| DATA-03 | Phase 6 | Pending |
+| INTG-01 | Phase 7 | Pending |
+| INTG-02 | Phase 7 | Pending |
+| INTG-03 | Phase 7 | Pending |
+| GH-01 | Phase 8 | Pending |
+| GH-02 | Phase 8 | Pending |
+| GH-03 | Phase 8 | Pending |
+| GH-04 | Phase 8 | Pending |
+| GH-05 | Phase 8 | Pending |
+| API-01 | Phase 9 | Pending |
+| API-02 | Phase 9 | Pending |
+| API-03 | Phase 9 | Pending |
+| API-04 | Phase 9 | Pending |
+| CLI-12 | Phase 10 | Pending |
+| CLI-13 | Phase 10 | Pending |
+| CLI-14 | Phase 10 | Pending |
+| CLI-15 | Phase 10 | Pending |
+| CLI-16 | Phase 10 | Pending |
+| CLI-17 | Phase 10 | Pending |
 
 **Coverage:**
 
 - v1.1 requirements: 21 total
-- Mapped to phases: TBD (roadmapper will assign)
-- Unmapped: 21 (pre-roadmap)
+- Mapped to phases: 21/21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-06-24*

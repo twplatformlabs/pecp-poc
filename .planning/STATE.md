@@ -2,18 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: GitHub Onboarding Integration
-current_phase_name: defining requirements
-status: planning
-stopped_at: context exhaustion at 75% (2026-06-24)
-last_updated: "2026-06-24T04:31:13.820Z"
+current_phase: 6
+current_phase_name: Data Model + Migration
+status: roadmap_created
+stopped_at: roadmap written — ready to plan Phase 6
+last_updated: "2026-06-24T00:00:00.000Z"
 last_activity: 2026-06-24
-last_activity_desc: Milestone v1.1 started
+last_activity_desc: v1.1 roadmap created — Phases 6–10 defined, 21/21 requirements mapped
 progress:
-  total_phases: 5
+  total_phases: 10
   completed_phases: 5
   total_plans: 17
   completed_plans: 17
-  percent: 100
+  percent: 50
 ---
 
 # Project State
@@ -23,14 +24,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-24)
 
 **Core value:** A team can go from zero to provisioned infrastructure by writing a YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline runs, or which ticket gets filed.
-**Current focus:** Planning next milestone — v2.0 (real adapters, auth, ARQ)
+**Current focus:** v1.1 GitHub Onboarding Integration — Phase 6 (Data Model + Migration) ready to plan
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 6 — Data Model + Migration
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-24 — Milestone v1.1 started
+Status: Roadmap created — ready to plan Phase 6
+Last activity: 2026-06-24 — v1.1 roadmap written (Phases 6–10, 21 requirements mapped)
+
+```
+[v1.0 ████████████████████ 100%] SHIPPED
+[v1.1 ░░░░░░░░░░░░░░░░░░░░   0%] Phase 6 next
+```
 
 ## Performance Metrics
 
@@ -82,14 +88,22 @@ Recent decisions affecting current work:
 - [Phase ?]: STATUS_COLORS map with pending=yellow, provisioning=blue, ready=green, failed=red for CLI badge rendering
 - Phase 5 (05-02): Seed script uses Base.metadata.create_all in main() for fresh-DB safety; no --reset flag needed (D-11 idempotent pattern)
 - Phase 5 (05-02): provider_metadata in seed matches aws_account.py keys exactly: account_id, account_email, account_name, management_console_url
+- v1.1 roadmap: IntegrationBase ABC + INTEGRATION_REGISTRY mirrors existing AdapterBase / ADAPTER_REGISTRY pattern — consistent extension model
+- v1.1 roadmap: Hooks fire after session.commit() via BackgroundTasks — commit-before-hook is the critical invariant (avoids ghost GitHub resources)
+- v1.1 roadmap: Background tasks receive data snapshots (not ORM objects) — avoids DetachedInstanceError from request-scoped session teardown
+- v1.1 roadmap: github_team_url derived at read time from slug+org, not stored — avoids org-rename consistency risk
+- v1.1 roadmap: pydantic-settings ~2.14 added for env var validation at startup; pytest-httpx ~0.36 added for test isolation
 
 ### Pending Todos
 
-None yet.
+- Run `alembic upgrade head` to verify migration 0004 when Phase 6 executes
+- Add `.env.example` entry for GITHUB_PAT and GITHUB_ORG with PAT scope notes (`admin:org`)
 
 ### Blockers/Concerns
 
-- PECPSalesforce and PECPAem resource specs are stubs pending product/PE team input — mock adapter designs will be placeholder until specs are confirmed (Phase 2)
+- PECPSalesforce and PECPAem resource specs are stubs pending product/PE team input — mock adapter designs will be placeholder until specs are confirmed (Phase 2, carried from v1.0)
+- Research open question: Classic PAT vs fine-grained PAT if org policy prohibits classic — resolve before Phase 8 execution
+- Research open question: `private: true` on org repos — requires paid org plan; confirm before Phase 8 repo creation logic
 
 ## Deferred Items
 
@@ -102,10 +116,10 @@ Items acknowledged and deferred at milestone close on 2026-06-24:
 
 ## Session Continuity
 
-Last session: 2026-06-24T04:31:13.816Z
-Stopped at: context exhaustion at 75% (2026-06-24)
+Last session: 2026-06-24
+Stopped at: v1.1 roadmap created — Phases 6–10 written, requirements mapped, files on disk
 Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Run `/gsd-plan-phase 6` to plan Phase 6: Data Model + Migration
