@@ -53,3 +53,11 @@ class IntegrationBase(ABC):
 
     async def on_member_remove(self, user: MemberSnapshot, team: TeamSnapshot) -> None:
         pass
+
+    async def aclose(self) -> None:
+        """Close the integration's resources (e.g. httpx.AsyncClient connection pool).
+
+        Called from FastAPI lifespan shutdown. Default is a no-op —
+        integrations that own resources override this method.
+        """
+        pass

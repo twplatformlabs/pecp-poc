@@ -2,8 +2,8 @@
 phase: 05
 slug: account-flow-ui-demo-readiness
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-06-22
 ---
 
@@ -48,13 +48,15 @@ created: 2026-06-22
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
+**Nyquist / Wave 0 disposition:** All implementation tasks carry `<automated>` verify commands. Wave 0 test scaffolds are embedded in each task's `<behavior>` section (TDD pattern) so the executor creates the failing tests before production code in the same task. The Wave 0 Requirements list below is satisfied by Plan 01 Task 1 + Task 2 (CLI + teams test stubs) and Plan 02 Task 1 (seed test stubs). No standalone Wave 0 plan is required because every behavior-adding task has `tdd="true"` and a `<behavior>` block.
+
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `tests/test_api/test_cli.py` — extend with `test_account_create_*`, `test_account_status_*`, `test_account_login_*`, `test_account_watch_*` test stubs
-- [ ] `tests/test_api/test_teams.py` — add `test_list_teams_returns_all` test stub
-- [ ] `tests/test_seed.py` — stubs for idempotency and lifecycle state coverage
+- [x] `tests/test_api/test_cli.py` — extended in Plan 01 Task 2 (embedded TDD): `test_account_create_*`, `test_account_status_*`, `test_account_login_*`, `test_account_watch_*`, `test_status_awsaccount_subapp_registered`, `test_login_awsaccount_subapp_registered`
+- [x] `tests/test_api/test_teams.py` — extended in Plan 01 Task 1 (embedded TDD): `test_list_teams_returns_all`, `test_list_teams_respects_limit`, `test_cors_allows_vite_dev_origin`
+- [x] `tests/test_seed.py` — created in Plan 02 (embedded TDD): idempotency + lifecycle state coverage stubs
 
 ---
 
@@ -70,11 +72,11 @@ created: 2026-06-22
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (embedded TDD pattern — each task creates its own test stubs)
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending

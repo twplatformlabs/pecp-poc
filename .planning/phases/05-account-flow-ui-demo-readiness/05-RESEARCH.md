@@ -736,7 +736,7 @@ if __name__ == "__main__":
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **GET /teams list endpoint implementation**
    - What we know: `teams.py` only has `GET /teams/{name}`. Dashboard D-07 needs a list.

@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: GitHub Onboarding Integration
-current_phase: 07
-current_phase_name: integration-hook-framework
-status: completed
-stopped_at: Phase 08 context gathered
+current_phase: 08
+current_phase_name: github-integration
+status: planned
+stopped_at: Phase 08 planned (2 plans + VALIDATION.md)
 last_updated: "2026-06-24T18:44:13.100Z"
 last_activity: 2026-06-24
 last_activity_desc: "Phase 07 Plan 02 complete: integration framework wired into live API"
@@ -123,7 +123,7 @@ Items acknowledged and deferred at milestone close on 2026-06-24:
 ## Session Continuity
 
 Last session: 2026-06-24T18:44:13.092Z
-Stopped at: Phase 08 context gathered
+Stopped at: Phase 08 planned (2 plans + VALIDATION.md)
 Resume file: .planning/phases/08-github-integration/08-CONTEXT.md
 
 ## Operator Next Steps

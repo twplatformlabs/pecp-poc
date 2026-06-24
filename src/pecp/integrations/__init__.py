@@ -58,4 +58,5 @@ def load_and_register_integrations() -> None:
         )
         return
 
-    # Phase 8: INTEGRATION_REGISTRY.append(GitHubIntegration(cfg))
+    from pecp.integrations.github import GitHubIntegration
+    INTEGRATION_REGISTRY.append(GitHubIntegration(cfg))

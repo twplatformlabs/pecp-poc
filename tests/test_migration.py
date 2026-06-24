@@ -41,7 +41,12 @@ def test_migration_upgrade_and_downgrade(tmp_path, monkeypatch):
         # 4. Run upgrade: applies all migrations 0000 -> 0004 against tmp DB
         alembic.command.upgrade(cfg, "head")
 
-        # 5. Inspect post-upgrade schema with sync engine (async engines not supported by inspect)
+        # 5. Verify Alembic wrote to the expected temp file (IN-01)
+        assert db_path.exists() and db_path.stat().st_size > 0, (
+            f"Expected Alembic to write to {db_path} but file is missing or empty"
+        )
+
+        # 6. Inspect post-upgrade schema with sync engine (async engines not supported by inspect)
         engine = create_engine(sync_url)
         insp = inspect(engine)
 

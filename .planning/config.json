@@ -1,5 +1,5 @@
 {
-  "model_profile": "balanced",
+  "model_profile": "simple",
   "commit_docs": true,
   "parallelization": true,
   "search_gitignored": false,
@@ -48,7 +48,9 @@
     "post_planning_gaps": true,
     "security_enforcement": true,
     "security_asvs_level": 1,
-    "security_block_on": "high"
+    "security_block_on": "high",
+    "ui_review": true,
+    "use_worktrees": true
   },
   "hooks": {
     "context_warnings": true,
@@ -60,5 +62,20 @@
   "agent_skills": {},
   "features": {},
   "mode": "yolo",
-  "granularity": "standard"
+  "granularity": "standard",
+  "intel": {
+    "enabled": false
+  },
+  "graphify": {
+    "enabled": false
+  },
+  "plan_review": {
+    "source_grounding": true
+  },
+  "model_policy": {
+    "provider": "qwen",
+    "high": "qwen-agent",
+    "medium": "qwen-agent",
+    "low": "qwen-agent"
+  }
 }
