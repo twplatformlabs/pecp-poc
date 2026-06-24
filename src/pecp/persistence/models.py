@@ -70,6 +70,7 @@ class TeamRecord(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
+    github_team_slug: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class TeamMemberRecord(Base):
@@ -131,3 +132,26 @@ class DeploymentRecord(Base):
     status: Mapped[str] = mapped_column(Text, nullable=False)
     change_type: Mapped[str] = mapped_column(Text, nullable=False)  # create | update | delete
     deployed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ProjectRepoRecord(Base):
+    """ORM model for a GitHub repository associated with a project.
+
+    Maps a project to one or more GitHub repos, enabling the GitHub adapter to
+    create and link repositories to PECP projects during provisioning (D-01, D-02).
+    Unique constraint on (project_id, repo_name) prevents duplicate repo associations
+    per project — enforced at DB level via uq_project_repos_project_name.
+    """
+
+    __tablename__ = "project_repos"
+    __table_args__ = (UniqueConstraint("project_id", "repo_name", name="uq_project_repos_project_name"),)
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, ForeignKey("projects.id"), nullable=False)
+    repo_name: Mapped[str] = mapped_column(Text, nullable=False)
+    repo_url: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
