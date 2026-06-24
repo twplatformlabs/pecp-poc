@@ -22,7 +22,7 @@
 
 - [x] **Phase 6: Data Model + Migration** - Add `github_team_slug` to TeamRecord and create ProjectRepo table via one Alembic migration (completed 2026-06-24)
 - [x] **Phase 7: Integration Hook Framework** - Define `IntegrationBase` ABC and `INTEGRATION_REGISTRY` dispatcher; lock the contract before any GitHub code (completed 2026-06-24)
-- [ ] **Phase 8: GitHub Integration** - Implement `GitHubIntegration` with real httpx GitHub API calls for team, repo, and member operations
+- [x] **Phase 8: GitHub Integration** - Implement `GitHubIntegration` with real httpx GitHub API calls for team, repo, and member operations (completed 2026-06-24)
 - [ ] **Phase 9: Service Layer + API Updates** - Extract service layer, wire commit-before-hook dispatch, and expose new GitHub-enriched API endpoints
 - [ ] **Phase 10: CLI Updates** - Surface GitHub links and member sync in all relevant `pecp` CLI commands
 
@@ -80,16 +80,15 @@ Plans:
    4. GitHub API errors (rate limit, 422 "already exists", user not found) are caught, logged with context, and do not fail the PECP operation
    5. All GitHub HTTP calls are intercepted in tests via `pytest-httpx` — no real GitHub API calls are made during `pytest`
 
-**Plans**: 2/2 plans ready
-**UI hint**: no
+**Plans**: 2/2 plans complete
 Plans:
 **Wave 1**
 
-- [ ] 08-01-PLAN.md — GitHubIntegration class + aclose() on ABC + registry activation + lifespan shutdown wiring (GH-01, GH-02, GH-03, GH-04, GH-05)
+- [x] 08-01-PLAN.md — GitHubIntegration class + aclose() on ABC + registry activation + lifespan shutdown wiring (GH-01, GH-02, GH-03, GH-04, GH-05)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 08-02-PLAN.md — pytest-httpx test suite covering all hooks, errors, and edge cases (GH-01, GH-02, GH-03, GH-04, GH-05)
+- [x] 08-02-PLAN.md — pytest-httpx test suite covering all hooks, errors, and edge cases (GH-01, GH-02, GH-03, GH-04, GH-05)
 
 ### Phase 9: Service Layer + API Updates
 
@@ -133,6 +132,6 @@ Plans:
 | 5. Account Flow + UI + Demo Readiness | v1.0 | 4/4 | Complete | 2026-06-22 |
 | 6. Data Model + Migration | v1.1 | 1/1 | Complete   | 2026-06-24 |
 | 7. Integration Hook Framework | v1.1 | 2/2 | Complete   | 2026-06-24 |
-| 8. GitHub Integration | v1.1 | 0/2 | Planned | - |
+| 8. GitHub Integration | v1.1 | 2/2 | Complete   | 2026-06-24 |
 | 9. Service Layer + API Updates | v1.1 | 0/0 | Not started | - |
 | 10. CLI Updates | v1.1 | 0/0 | Not started | - |

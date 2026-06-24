@@ -2,8 +2,10 @@
 
 **Audience:** Engineers and stakeholders (mixed)
 **Duration:** ~20 minutes live
-**Phase 5 Note:** Every `[expected output: ...]` placeholder in this document will be replaced
+**PoC Note:** Every `[expected output: ...]` placeholder in this document will be replaced
 with captured terminal output from the running system before the stakeholder session.
+Phases 1–8 are implemented (207 passing tests). Phase 8 adds GitHub automation — see the
+[Behind the scenes](#behind-the-scenes) section at the end.
 
 ---
 
@@ -40,6 +42,12 @@ pecp team create toxins-research
 ]
 ```
 
+> **Behind the scenes:** The platform's GitHub integration (Phase 8) automatically
+> provisions a GitHub team in `acme/toxins-research` the instant the PECP team is created.
+> The team's `github_team_slug` is written to the PECP database — future member
+> syncs and repository associations use this slug. All of this happens asynchronously
+> in a background task; the CLI returns immediately whether or not GitHub is reachable.
+
 With the team created, anyone with the owner or contributor role can be added and queried. The
 team object carries the authoritative list of who can act on behalf of `toxins-research` in the control
 plane. We can inspect that record at any time.
@@ -71,6 +79,11 @@ The `toxins-research` squad has a small event-handler they want to run as a serv
 Lambda that processes webhook events. They write a resource spec. It looks exactly like a
 Kubernetes manifest because the mental model is deliberately familiar: `apiVersion`, `kind`,
 `metadata`, `spec`. No AWS console, no Terraform, no pipeline YAML — just this file.
+
+> **Behind the scenes:** If the squad has a PECP project (e.g. `webhook-platform`), creating
+> it earlier triggered `POST /orgs/acme/repos` → a GitHub repo named
+> `toxins-research-webhook-platform` was created automatically. The `source-code` field in
+> the Lambda spec references a GitHub URL that already exists.
 
 ```yaml
 apiVersion: pecp/v1
@@ -261,7 +274,47 @@ That is PECP's core value: **a team can go from zero to provisioned infrastructu
 YAML and running `pecp apply` — without knowing which AWS account they're in, which pipeline
 runs, or which ticket gets filed.**
 
-The mock adapters we demonstrated today are the scaffolding. Phase 5 replaces each placeholder
-with real terminal output from a running server. The contracts — the resource spec format, the
+The mock adapters we demonstrated today are the scaffolding. The contracts — the resource spec format, the
 CLI commands, the status lifecycle, the PE notes channel — are locked now. Every phase of
 development that follows builds toward exactly this session.
+
+---
+
+## Behind the scenes: how the platform reacts
+
+The demo shows the team's perspective — commands that feel immediate and simple. Beneath the
+CLI, every PECP lifecycle event fans out to registered integration adapters. Here is what
+happens under the hood for each demo step:
+
+| You ran this... | ...and the platform also did this |
+|----------------|-----------------------------------|
+| `pecp team create toxins-research` | `POST /orgs/acme/teams` → GitHub team created; `github_team_slug` written to DB |
+| `pecp project create webhook-platform` | `POST /orgs/acme/repos` → GitHub repo `toxins-research-webhook-platform` created |
+| (Future) `pecp member add bob` | `PUT /orgs/acme/teams/toxins-research/memberships/bob` → GitHub member synced |
+| `pecp create awsaccount` | PECP dispatch → `AwsAccountMockAdapter` → async provisioning → PE notes channel |
+
+### Architecture
+
+1. **IntegrationBase ABC** (`pecp/integrations/base.py`) — defines 4 lifecycle hooks:
+   `on_team_create`, `on_project_create`, `on_member_add`, `on_member_remove`.
+2. **INTEGRATION_REGISTRY** (`pecp/integrations/__init__.py`) — populated at startup from
+   environment configuration. Currently: `GitHubIntegration` (when `GITHUB_PAT` + `GITHUB_ORG` set).
+3. **BackgroundTasks dispatch** (`fastapi.BackgroundTasks`) — hooks fire AFTER `session.commit()`
+   so the DB row exists when the hook queries it. Hook errors never propagate to the HTTP response.
+4. **GitHubIntegration** (`pecp/integrations/github.py`) — uses `httpx.AsyncClient` with Bearer
+   token auth. 422 skip, 429 propagate, 404 on DELETE → idempotent.
+
+### What phases 5–8 delivered
+
+| Phase | What it added | Demo impact |
+|-------|--------------|-------------|
+| 5 — Account Flow & UI | `pecp create awsaccount`, `--watch` polling, `pecp login`, React dashboard | The team can request an account AND see it in a browser |
+| 6 — Data Model & Migration | `github_team_slug`, `ProjectRepoRecord`, Alembic migration | Invisible — but the DB now stores the GitHub link |
+| 7 — Integration Hook Framework | `IntegrationBase` ABC, registry, BackgroundTasks dispatch | Invisible — but every hook in this table works because of it |
+| 8 — GitHub Automation | GitHub team/repo/membership provisioning | The platform automatically keeps GitHub in sync with PECP |
+
+### What's next
+
+Phases 9–12 will add integrations for AEM, Datadog, ServiceNow, and JFrog — each following
+the same `IntegrationBase` contract. The team continues to write YAML and run `pecp apply`;
+the platform continues to handle routing, async dispatch, and multi-system provisioning.
