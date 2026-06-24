@@ -12,13 +12,15 @@ import json
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
 from pecp.api.dependencies import ContextDep
+from pecp.integrations import fire_integrations
+from pecp.integrations.base import ProjectSnapshot, TeamSnapshot
 from pecp.persistence.database import SessionDep
 from pecp.persistence.models import ProjectRecord, ResourceRecord, TeamRecord
 
@@ -35,6 +37,7 @@ class ProjectCreate(BaseModel):
 
 @router.post("", status_code=201)
 async def create_project(
+    background_tasks: BackgroundTasks,
     body: ProjectCreate,
     ctx: ContextDep = ...,  # type: ignore[assignment]
     session: SessionDep = ...,  # type: ignore[assignment]
@@ -45,6 +48,9 @@ async def create_project(
     Returns 404 if the team does not exist.
     Returns 409 if a project with the same (team, name) already exists (D-04).
     Returns 422 if required fields are missing or environments is not a list.
+
+    Fires registered integrations' on_project_create hooks via BackgroundTasks AFTER
+    session.commit() succeeds — no hook fires on 404 (unknown team) or 409 (duplicate) paths.
     """
     # Lookup the team to get team_id FK and validate existence
     team_result = await session.execute(select(TeamRecord).where(TeamRecord.name == body.team))
@@ -70,6 +76,23 @@ async def create_project(
             status_code=409,
             detail=f"Project '{body.name}' already exists in team '{body.team}'",
         )
+
+    # Build snapshots from ORM attributes while session is still open
+    team_snap = TeamSnapshot(
+        id=team.id,
+        name=team.name,
+        owner_id=team.owner_id,
+        created_at=team.created_at,
+        github_team_slug=team.github_team_slug,
+    )
+    project_snap = ProjectSnapshot(
+        id=project.id,
+        name=project.name,
+        team_id=project.team_id,
+        environments=body.environments,  # use request list, avoid redundant deserialize
+        created_at=project.created_at,
+    )
+    background_tasks.add_task(fire_integrations, "on_project_create", project_snap, team_snap)
 
     return {
         "id": project.id,

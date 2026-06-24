@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from httpx import AsyncClient
 
 from pecp.integrations import INTEGRATION_REGISTRY, fire_integrations
-from pecp.integrations.base import IntegrationBase, TeamSnapshot
+from pecp.integrations.base import IntegrationBase, ProjectSnapshot, TeamSnapshot
 from pecp.integrations.noop import NoOpIntegration
 
 
@@ -209,6 +209,108 @@ async def test_post_teams_duplicate_returns_409_and_does_not_fire_hook(
 
         # Only the first POST fired the hook
         assert len(noop.calls) == 1
+    finally:
+        INTEGRATION_REGISTRY.clear()
+        INTEGRATION_REGISTRY.extend(original)
+
+
+async def test_post_projects_fires_on_project_create_hook(client: AsyncClient) -> None:
+    """POST /projects fires on_project_create and on_team_create for registered NoOp."""
+    original = list(INTEGRATION_REGISTRY)
+    INTEGRATION_REGISTRY.clear()
+    try:
+        noop = NoOpIntegration()
+        INTEGRATION_REGISTRY.append(noop)
+
+        # Create a team first (prerequisite for project)
+        team_resp = await client.post(
+            "/teams",
+            json={"name": "pteam", "owner": "alice"},
+        )
+        assert team_resp.status_code == 201
+
+        # Create a project under that team
+        proj_resp = await client.post(
+            "/projects",
+            json={"name": "pproj", "team": "pteam", "environments": ["dev", "prod"]},
+        )
+        assert proj_resp.status_code == 201
+
+        # Both hooks should have fired
+        assert len(noop.calls) == 2
+
+        hook_0_name, snap_0 = noop.calls[0]
+        assert hook_0_name == "on_team_create"
+        assert snap_0.name == "pteam"
+
+        hook_1_name, snap_1 = noop.calls[1]
+        assert hook_1_name == "on_project_create"
+        assert isinstance(snap_1, ProjectSnapshot)
+        assert snap_1.name == "pproj"
+        assert snap_1.environments == ["dev", "prod"]
+        assert len(snap_1.id) == 32  # uuid hex
+    finally:
+        INTEGRATION_REGISTRY.clear()
+        INTEGRATION_REGISTRY.extend(original)
+
+
+async def test_post_projects_with_unknown_team_returns_404_and_does_not_fire_hook(
+    client: AsyncClient,
+) -> None:
+    """404 on unknown team must NOT fire on_project_create."""
+    original = list(INTEGRATION_REGISTRY)
+    INTEGRATION_REGISTRY.clear()
+    try:
+        noop = NoOpIntegration()
+        INTEGRATION_REGISTRY.append(noop)
+
+        response = await client.post(
+            "/projects",
+            json={"name": "orphan", "team": "no-such-team", "environments": ["dev"]},
+        )
+        assert response.status_code == 404
+
+        # No hooks fired — team lookup failed before any snapshot construction
+        assert noop.calls == []
+    finally:
+        INTEGRATION_REGISTRY.clear()
+        INTEGRATION_REGISTRY.extend(original)
+
+
+async def test_post_projects_duplicate_returns_409_and_does_not_fire_hook(
+    client: AsyncClient,
+) -> None:
+    """409 IntegrityError on duplicate (team, name) must NOT fire on_project_create again."""
+    # Create team first
+    team_resp = await client.post(
+        "/teams",
+        json={"name": "dup-team-proj", "owner": "alice"},
+    )
+    assert team_resp.status_code == 201
+
+    original = list(INTEGRATION_REGISTRY)
+    INTEGRATION_REGISTRY.clear()
+    try:
+        noop = NoOpIntegration()
+        INTEGRATION_REGISTRY.append(noop)
+
+        # First project POST succeeds and fires on_project_create once
+        r1 = await client.post(
+            "/projects",
+            json={"name": "dup-proj", "team": "dup-team-proj", "environments": ["dev"]},
+        )
+        assert r1.status_code == 201
+
+        # Duplicate project POST returns 409 and must NOT fire the hook again
+        r2 = await client.post(
+            "/projects",
+            json={"name": "dup-proj", "team": "dup-team-proj", "environments": ["dev"]},
+        )
+        assert r2.status_code == 409
+
+        # Only the first POST fired on_project_create
+        assert len(noop.calls) == 1
+        assert noop.calls[0][0] == "on_project_create"
     finally:
         INTEGRATION_REGISTRY.clear()
         INTEGRATION_REGISTRY.extend(original)
