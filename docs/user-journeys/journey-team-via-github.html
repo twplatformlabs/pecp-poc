@@ -98,7 +98,7 @@
     <div>
       <div class="mast-eyebrow">User Journey Map · Phase 1 · Flow 3 · Future State</div>
       <h1>Team via <span>GitHub</span></h1>
-      <div class="mast-sub">A beta user creates a team natively in the GitHub org. The webhook syncs it into the platform engine, ties the two together, and the team becomes manageable from either side.</div>
+      <div class="mast-sub">A alpha user creates a team natively in the GitHub org. The webhook syncs it into the platform engine, ties the two together, and the team becomes manageable from either side.</div>
     </div>
     <div class="mast-meta">
       <b>Primary actor</b> · App Engineer as Team owner<br>
@@ -110,7 +110,7 @@
 
   <div class="precond">
     <span class="pk">Precondition</span>
-    <span><b>Beta onboarding complete.</b> User is in the beta AD group (team-creation rights) with GitHub org access. This flow lets users keep native GitHub workflows while still tying into the platform engine.</span>
+    <span><b>Alpha onboarding complete.</b> User is in the alpha AD group (team-creation rights) with GitHub org access. This flow lets users keep native GitHub workflows while still tying into the platform engine.</span>
   </div>
 
   <div class="paths">
@@ -164,7 +164,7 @@
       <!-- BACK -->
       <div class="rowlabel">Back-stage actions</div>
       <div class="cell be"><ul>
-        <li>Team-creation rights confirmed against the beta RBAC entitlement <span class="open">OPEN Q6</span></li>
+        <li>Team-creation rights confirmed against the alpha RBAC entitlement <span class="open">OPEN Q6</span></li>
       </ul></div>
       <div class="cell be"><ul>
         <li>GitHub <code>team.created</code> webhook fires into the platform engine</li>
@@ -234,12 +234,12 @@
       <div class="q done"><span class="qn">Q3 ✓</span><div><b>Resolved — Entra backing.</b> Teams are <b>not</b> mapped to Entra for now — deliberately bypassed until needed. Only GitHub Enterprise and org access tie to AD groups.</div></div>
       <div class="q"><span class="qn">Q4</span><div><b>Team deletion.</b> What happens to team-owned repos when a team is deleted — reassigned to a user, orphaned, or blocked until repos are moved? Delete allowed from both surfaces?</div></div>
       <div class="q"><span class="qn">Q5</span><div><b>Audit capture.</b> Confirm team create/modify/delete events are captured as evidence for Compliance (and exposed in Phase 2).</div></div>
-      <div class="q"><span class="qn">Q6</span><div><b>Who can create teams.</b> Any beta user, or a gated subset? What's the backing RBAC — same entitlement as onboarding, or a separate grant?</div></div>
+      <div class="q"><span class="qn">Q6</span><div><b>Who can create teams.</b> Any alpha user, or a gated subset? What's the backing RBAC — same entitlement as onboarding, or a separate grant?</div></div>
     </div>
 
     <div class="panel">
       <h4><span class="tick g"></span>Phase 1 flow set</h4>
-      <div class="flow-item"><div class="ft">1 · Onboarding (beta) <span class="badge done">mapped</span></div><div class="fd">Precondition for all below.</div></div>
+      <div class="flow-item"><div class="ft">1 · Onboarding (alpha) <span class="badge done">mapped</span></div><div class="fd">Precondition for all below.</div></div>
       <div class="flow-item"><div class="ft">2 · Repo via GitHub <span class="badge done">mapped</span></div><div class="fd">User-owned repo, no team.</div></div>
       <div class="flow-item"><div class="ft">3 · Team via GitHub <span class="badge here">this map</span></div><div class="fd">Team made in GitHub, synced into the platform engine.</div></div>
       <div class="flow-item"><div class="ft">4 · Team via Platform Engine <span class="badge todo">to map</span></div><div class="fd">Mirror of this flow — created in the platform engine, projected to GitHub.</div></div>

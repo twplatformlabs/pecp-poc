@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Journey Map — Onboarding · Existing Employee (Beta)</title>
+<title>Journey Map — Onboarding · Existing Employee (Alpha)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -126,8 +126,8 @@
   <header class="mast">
     <div>
       <div class="mast-eyebrow">User Journey Map · Phase 1 &amp; 2 · Future State</div>
-      <h1>Onboarding — <span>Existing Employee (Beta)</span></h1>
-      <div class="mast-sub">An existing employee is enrolled into the platform beta. This is the precondition every creation flow depends on — it ends on a launchpad into repo &amp; team creation.</div>
+      <h1>Onboarding — <span>Existing Employee (Alpha)</span></h1>
+      <div class="mast-sub">An existing employee is enrolled into the platform alpha. This is the precondition every creation flow depends on — it ends on a launchpad into repo &amp; team creation.</div>
     </div>
     <div class="mast-meta">
       <b>Primary actor</b> · Application Engineer<br>
@@ -138,9 +138,9 @@
   </header>
 
   <div class="paths">
-    <span class="path-pill active"><span class="n">▸</span> Existing Employee — Beta <span style="opacity:.7">— Phase 1 &amp; 2</span></span>
+    <span class="path-pill active"><span class="n">▸</span> Existing Employee — Alpha <span style="opacity:.7">— Phase 1 &amp; 2</span></span>
     <span class="path-pill"><span class="n">▸</span> New Employee — HR-triggered <span style="opacity:.7">— out of scope, later phase</span></span>
-    <span class="path-note">↳ beta users are added manually to the AD group + GitHub Enterprise</span>
+    <span class="path-note">↳ alpha users are added manually to the AD group + GitHub Enterprise</span>
   </div>
 
   <div class="guide">
@@ -167,17 +167,17 @@
       <div class="rowlabel band-top">Front-stage actions</div>
       <div class="cell fe band-top"><ul>
         <li class="muted">Mostly done <i>to</i> the user at this stage</li>
-        <li>(Optional) expresses interest in joining the platform beta <span class="open">OPEN Q1</span></li>
+        <li>(Optional) expresses interest in joining the platform alpha <span class="open">OPEN Q1</span></li>
       </ul></div>
       <div class="cell fe band-top"><ul>
         <li class="muted">No visible action — provisioning happens behind the scenes</li>
       </ul></div>
       <div class="cell fe band-top"><ul>
-        <li>Receives a welcome email: how to reach GitHub &amp; the platform engine, and what beta includes</li>
+        <li>Receives a welcome email: how to reach GitHub &amp; the platform engine, and what alpha includes</li>
         <li>Clicks through the links</li>
       </ul></div>
       <div class="cell fe band-top"><ul>
-        <li>Logs into the platform engine; sees beta status and what it unlocks</li>
+        <li>Logs into the platform engine; sees alpha status and what it unlocks</li>
         <li>Sees "my repositories" (empty to start)</li>
         <li>Reviews the shared-responsibility model — what's in vs out of scope</li>
       </ul></div>
@@ -185,19 +185,19 @@
         <li>Chooses what to create: a <b>user-owned repo</b>, or a <b>team</b> (then team-owned repos)</li>
         <li>Picks the surface: start in <b>GitHub</b>, or start in the <b>platform engine</b></li>
       </ul>
-        <div class="flag"><b>Launchpad:</b> this stage hands off to the four creation flows (2×2 below). A beta user who creates a team can assign users/admins and own team repos.</div>
+        <div class="flag"><b>Launchpad:</b> this stage hands off to the four creation flows (2×2 below). A alpha user who creates a team can assign users/admins and own team repos.</div>
       </div>
 
       <!-- BACK-STAGE -->
       <div class="rowlabel">Back-stage actions</div>
       <div class="cell be"><ul>
-        <li>Platform team / Product Owner selects the user into the beta cohort</li>
-        <li>An RBAC entitlement is created granting beta rights (incl. team creation) <span class="open">OPEN Q3</span></li>
+        <li>Platform team / Product Owner selects the user into the alpha cohort</li>
+        <li>An RBAC entitlement is created granting alpha rights (incl. team creation) <span class="open">OPEN Q3</span></li>
       </ul></div>
       <div class="cell be"><ul>
         <li>User is added to the core AD / Entra group → inner-source org access</li>
         <li>Granted GitHub Enterprise access <span class="open">OPEN Q4</span></li>
-        <li>Platform engine records the beta entitlement against the user</li>
+        <li>Platform engine records the alpha entitlement against the user</li>
         <li>SSH key set up so the user can clone later <span class="open">OPEN Q5</span></li>
       </ul></div>
       <div class="cell be"><ul>
@@ -248,7 +248,7 @@
       <div class="cell th band-top">"I've been tapped for the pilot."</div>
       <div class="cell th band-top">"Access just shows up — I didn't have to chase IT for it."</div>
       <div class="cell th band-top">"Here's my way in, and a clear picture of what I'm allowed to do."</div>
-      <div class="cell th band-top">"As a beta user I can spin up my own repos — and even create a team."</div>
+      <div class="cell th band-top">"As a alpha user I can spin up my own repos — and even create a team."</div>
       <div class="cell th band-top">"Where do I start — a quick personal repo, or set up my team?"</div>
 
     </div>
@@ -279,9 +279,9 @@
 
     <div class="panel">
       <h4><span class="tick"></span>Open questions</h4>
-      <div class="q"><span class="qn">Q1</span><div><b>Nomination.</b> Do beta users self-nominate / request in, or does the platform team hand-pick them? Is there an approval step, and who owns it — Platform Product Owner?</div></div>
-      <div class="q"><span class="qn">Q2</span><div><b>Prior access.</b> Does the existing employee already have GitHub Enterprise access, or does beta enrollment grant it for the first time?</div></div>
-      <div class="q"><span class="qn">Q3</span><div><b>Entitlement scope.</b> What exactly does beta unlock — is <b>team creation</b> gated to beta users only in Phase 1? What's the backing RBAC model?</div></div>
+      <div class="q"><span class="qn">Q1</span><div><b>Nomination.</b> Do alpha users self-nominate / request in, or does the platform team hand-pick them? Is there an approval step, and who owns it — Platform Product Owner?</div></div>
+      <div class="q"><span class="qn">Q2</span><div><b>Prior access.</b> Does the existing employee already have GitHub Enterprise access, or does alpha enrollment grant it for the first time?</div></div>
+      <div class="q"><span class="qn">Q3</span><div><b>Entitlement scope.</b> What exactly does alpha unlock — is <b>team creation</b> gated to alpha users only in Phase 1? What's the backing RBAC model?</div></div>
       <div class="q"><span class="qn">Q4</span><div><b>Access level.</b> GitHub Enterprise <b>read</b>, org <b>write</b> — confirm. What repo-level permission does a creator get by default?</div></div>
       <div class="q"><span class="qn">Q5</span><div><b>SSH provisioning.</b> When/where in onboarding does the user's SSH key get set up, so cloning works later? (Connects to the SSH-vs-PAT question.)</div></div>
     </div>

@@ -100,7 +100,7 @@
     <div>
       <div class="mast-eyebrow">User Journey Map · Phase 1 · Flow 4 · Future State</div>
       <h1>Team via <span>Platform Engine</span></h1>
-      <div class="mast-sub">A beta user creates a team in the platform engine. It projects a matching team into GitHub and carries the self-service RBAC / approval gate; edits sync both ways, with the platform engine as the central record.</div>
+      <div class="mast-sub">A alpha user creates a team in the platform engine. It projects a matching team into GitHub and carries the self-service RBAC / approval gate; edits sync both ways, with the platform engine as the central record.</div>
     </div>
     <div class="mast-meta">
       <b>Primary actor</b> · App Engineer as Team owner<br>
@@ -112,7 +112,7 @@
 
   <div class="precond">
     <span class="pk">Precondition</span>
-    <span><b>Beta onboarding complete.</b> User is in the beta AD group with team-creation rights. This is the structured, platform-native counterpart to Flow 3 (Team via GitHub).</span>
+    <span><b>Alpha onboarding complete.</b> User is in the alpha AD group with team-creation rights. This is the structured, platform-native counterpart to Flow 3 (Team via GitHub).</span>
   </div>
 
   <div class="paths">
@@ -170,7 +170,7 @@
         <li>Platform engine presents the guided team-creation form</li>
       </ul></div>
       <div class="cell be"><ul>
-        <li>RBAC check against the beta entitlement: is the user allowed to create a team? <span class="open">OPEN Q7</span></li>
+        <li>RBAC check against the alpha entitlement: is the user allowed to create a team? <span class="open">OPEN Q7</span></li>
         <li>Policy decides auto-approve vs route for approval + owner assignment <span class="open">OPEN Q1</span></li>
         <li>On approval, the create is authorized to proceed</li>
       </ul></div>
@@ -239,12 +239,12 @@
       <div class="q done"><span class="qn">Q4 ✓</span><div><b>Resolved — source of truth.</b> Both surfaces are valid edit points and sync <b>bidirectionally</b>. The platform engine is the <b>central, up-to-date record</b> across all integrated systems (GitHub now; JFrog, K8s, Datadog later), regardless of where a team was born.</div></div>
       <div class="q"><span class="qn">Q5</span><div><b>Team naming.</b> Naming convention for control-plane-created teams — and does it match the GitHub-created convention (Flow 3 Q1)?</div></div>
       <div class="q"><span class="qn">Q6</span><div><b>Team deletion.</b> What happens to team-owned repos on delete — reassign, orphan, or block until moved? Who can delete: owner only, or also Platform PO?</div></div>
-      <div class="q"><span class="qn">Q7</span><div><b>Creation limits.</b> You noted beta users can create any number of teams — confirm no cap, and whether that holds once approval routing is on.</div></div>
+      <div class="q"><span class="qn">Q7</span><div><b>Creation limits.</b> You noted alpha users can create any number of teams — confirm no cap, and whether that holds once approval routing is on.</div></div>
     </div>
 
     <div class="panel">
       <h4><span class="tick g"></span>Phase 1 flow set</h4>
-      <div class="flow-item"><div class="ft">1 · Onboarding (beta) <span class="badge done">mapped</span></div><div class="fd">Precondition for all below.</div></div>
+      <div class="flow-item"><div class="ft">1 · Onboarding (alpha) <span class="badge done">mapped</span></div><div class="fd">Precondition for all below.</div></div>
       <div class="flow-item"><div class="ft">2 · Repo via GitHub <span class="badge done">mapped</span></div><div class="fd">User-owned repo, no team.</div></div>
       <div class="flow-item"><div class="ft">3 · Team via GitHub <span class="badge done">mapped</span></div><div class="fd">Team made in GitHub, synced to the platform engine.</div></div>
       <div class="flow-item"><div class="ft">4 · Team via Platform Engine <span class="badge here">this map</span></div><div class="fd">Team made in the platform engine, projected to GitHub.</div></div>
