@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persona Catalog — AI Platform Engineering Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14181A;
+    --ink-soft:#3D4448;
+    --ink-faint:#6B7378;
+    --paper:#F6F7F5;
+    --card:#FFFFFF;
+    --hair:#E3E6E2;
+    --hair-soft:#EEF0ED;
+
+    --consumer:#0FA968;
+    --ownership:#0E8F7A;
+    --producer:#2D6E7E;
+    --governance:#5A5F73;
+
+    --consumer-wash:#EAF7F0;
+    --ownership-wash:#E7F4F1;
+    --producer-wash:#E8F1F3;
+    --governance-wash:#EEEFF2;
+
+    --display:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
+    --mono:'JetBrains Mono',monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 40px 72px;
+  }
+
+  .wrap{max-width:1240px;margin:0 auto;}
+
+  /* ---------- Masthead ---------- */
+  .mast{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:32px;
+    padding-bottom:24px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:8px;
+    flex-wrap:wrap;
+  }
+  .mast-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--consumer);
+    margin-bottom:12px;
+    font-weight:600;
+  }
+  .mast h1{
+    font-family:var(--display);
+    font-size:38px;
+    font-weight:600;
+    letter-spacing:-0.02em;
+    line-height:1.05;
+  }
+  .mast h1 span{color:var(--consumer);}
+  .mast-meta{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink-faint);
+    text-align:right;
+    line-height:1.7;
+    letter-spacing:0.02em;
+  }
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+
+  /* ---------- Intro strip ---------- */
+  .intro{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0;
+    border:1px solid var(--hair);
+    border-radius:10px;
+    overflow:hidden;
+    margin:28px 0 40px;
+    background:var(--card);
+  }
+  .intro-cell{padding:18px 20px;border-right:1px solid var(--hair);}
+  .intro-cell:last-child{border-right:none;}
+  .intro-cell .k{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .intro-cell .v{font-size:13.5px;color:var(--ink-soft);}
+  .intro-cell .v b{color:var(--ink);font-weight:600;}
+
+  /* ---------- Plane layer ---------- */
+  .layer{
+    display:grid;
+    grid-template-columns:132px 1fr;
+    border:1px solid var(--hair);
+    border-radius:12px;
+    overflow:hidden;
+    margin-bottom:18px;
+    background:var(--card);
+  }
+  .layer-rail{
+    padding:22px 16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    color:#fff;
+    position:relative;
+  }
+  .layer-rail .idx{
+    font-family:var(--mono);
+    font-size:11px;
+    opacity:0.7;
+    letter-spacing:0.1em;
+    margin-bottom:auto;
+  }
+  .layer-rail .plane-name{
+    font-family:var(--display);
+    font-size:19px;
+    font-weight:600;
+    line-height:1.1;
+    margin-top:14px;
+    letter-spacing:-0.01em;
+  }
+  .layer-rail .plane-sub{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.06em;
+    opacity:0.82;
+    margin-top:8px;
+    line-height:1.5;
+  }
+  .rail-consumer{background:var(--consumer);}
+  .rail-ownership{background:var(--ownership);}
+  .rail-producer{background:var(--producer);}
+  .rail-governance{background:var(--governance);}
+
+  .layer-body{
+    display:grid;
+    gap:0;
+  }
+  .cols-2{grid-template-columns:1fr 1fr;}
+  .cols-1{grid-template-columns:1fr;}
+
+  .persona{
+    padding:22px 24px;
+    border-left:1px solid var(--hair);
+  }
+  .layer-body .persona:first-child{border-left:none;}
+  .cols-1 .persona{border-left:none;}
+
+  .persona-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:4px;
+  }
+  .persona h3{
+    font-family:var(--display);
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .persona .subtitle{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--ink-faint);
+    letter-spacing:0.03em;
+  }
+  .persona .essence{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:8px 0 14px;
+    font-style:italic;
+  }
+  .persona .resp-label{
+    font-family:var(--mono);
+    font-size:9.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:7px;
+    font-weight:600;
+  }
+  .persona ul{list-style:none;margin-bottom:16px;}
+  .persona li{
+    font-size:13px;
+    color:var(--ink-soft);
+    padding-left:16px;
+    position:relative;
+    margin-bottom:5px;
+  }
+  .persona li::before{
+    content:"";
+    position:absolute;
+    left:0;top:8px;
+    width:5px;height:5px;
+    border-radius:1px;
+    background:var(--dot,var(--consumer));
+  }
+
+  /* ---------- Flow chips ---------- */
+  .flows{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding-top:14px;
+    border-top:1px solid var(--hair-soft);
+  }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.02em;
+    padding:4px 9px;
+    border-radius:5px;
+    border:1px solid var(--hair);
+    background:#fff;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .chip .flow{font-weight:600;color:var(--ink);}
+  .chip .role{color:var(--ink-faint);}
+  .chip .swatch{
+    width:7px;height:7px;border-radius:50%;flex:none;
+  }
+  .r-primary{background:#0FA968;}
+  .r-support{background:#F2A93B;}
+  .r-approver{background:#8B5CF6;}
+  .r-backstage{background:#8A9296;}
+  .r-offmap{background:#C7CCC9;}
+
+  /* ---------- Legend + notes ---------- */
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1fr 1.35fr;
+    gap:18px;
+    margin-top:34px;
+  }
+  .panel{
+    border:1px solid var(--hair);
+    border-radius:12px;
+    background:var(--card);
+    padding:22px 24px;
+  }
+  .panel h4{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin-bottom:16px;
+    font-weight:600;
+  }
+  .legend-row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:11px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .legend-row .dot{width:9px;height:9px;border-radius:50%;flex:none;position:relative;top:1px;}
+  .legend-row b{font-family:var(--mono);font-size:11px;color:var(--ink);font-weight:600;min-width:78px;display:inline-block;}
+
+  .note{
+    font-size:13px;
+    color:var(--ink-soft);
+    padding-left:18px;
+    position:relative;
+    margin-bottom:13px;
+    line-height:1.55;
+  }
+  .note:last-child{margin-bottom:0;}
+  .note::before{
+    content:"→";
+    position:absolute;left:0;top:0;
+    color:var(--consumer);
+    font-family:var(--mono);
+    font-weight:600;
+  }
+  .note b{color:var(--ink);font-weight:600;}
+  .note code{
+    font-family:var(--mono);
+    font-size:12px;
+    background:var(--consumer-wash);
+    color:#0a7a4b;
+    padding:1px 5px;
+    border-radius:4px;
+  }
+
+  .colophon{
+    margin-top:34px;
+    padding-top:18px;
+    border-top:1px solid var(--hair);
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--ink-faint);
+    letter-spacing:0.03em;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  @media (max-width:900px){
+    body{padding:32px 20px 56px;}
+    .intro{grid-template-columns:1fr;}
+    .intro-cell{border-right:none;border-bottom:1px solid var(--hair);}
+    .intro-cell:last-child{border-bottom:none;}
+    .layer{grid-template-columns:1fr;}
+    .layer-rail{flex-direction:row;align-items:center;gap:14px;}
+    .layer-rail .idx{margin-bottom:0;}
+    .layer-rail .plane-name{margin-top:0;}
+    .layer-rail .plane-sub{display:none;}
+    .cols-2{grid-template-columns:1fr;}
+    .persona{border-left:none;border-top:1px solid var(--hair);}
+    .layer-body .persona:first-child{border-top:none;}
+    .footer-grid{grid-template-columns:1fr;}
+    .mast h1{font-size:30px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Masthead -->
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">Persona Catalog · v0.1</div>
+      <h1>AI Platform Engineering <span>Experience</span></h1>
+    </div>
+    <div class="mast-meta">
+      <b>Scope</b> · Phase 1 &amp; Phase 2<br>
+      <b>Companion to</b> · User Journey Maps<br>
+      <b>Read alongside</b> · Team &amp; Repo flows
+    </div>
+  </header>
+
+  <!-- Intro strip -->
+  <section class="intro">
+    <div class="intro-cell">
+      <div class="k">How to read this</div>
+      <div class="v">Personas are grouped into four <b>planes</b> of the platform operating model. Each card names who they are, what they own, and their role in our first two journeys.</div>
+    </div>
+    <div class="intro-cell">
+      <div class="k">The two journeys</div>
+      <div class="v"><b>Team Creation</b> — self-service, RBAC-gated. <b>Repo Creation A</b> — individual via github.com, synced. <b>Repo Creation B</b> — team-scoped via platform engine.</div>
+    </div>
+    <div class="intro-cell">
+      <div class="k">One human, many hats</div>
+      <div class="v">These roles can collapse into a single person — especially on a pilot team, where one individual is the <b>engineering manager</b>, the <b>tech lead</b>, and the <b>application engineer</b> at once. Personas are roles, not people.</div>
+    </div>
+  </section>
+
+  <!-- ============ CONSUMER PLANE ============ -->
+  <section class="layer">
+    <div class="layer-rail rail-consumer">
+      <div class="idx">01 / PLANE</div>
+      <div class="plane-name">Consumer</div>
+      <div class="plane-sub">Walks the<br>golden path</div>
+    </div>
+    <div class="layer-body cols-2">
+
+      <div class="persona" style="--dot:var(--consumer)">
+        <div class="persona-head">
+          <h3>Application / Product Engineer</h3>
+          <span class="subtitle">everyday builder</span>
+        </div>
+        <p class="essence">The default user of the platform — writes product code and consumes what the golden path provides.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Writes application &amp; product code day to day</li>
+          <li>Consumes repos and the AI capabilities embedded in them</li>
+          <li>Belongs to one or more teams; can also act entirely solo</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-primary"></span><span class="flow">Repo A</span><span class="role">primary (solo)</span></span>
+          <span class="chip"><span class="swatch r-primary"></span><span class="flow">Repo B</span><span class="role">primary (member)</span></span>
+          <span class="chip"><span class="swatch r-support"></span><span class="flow">Team</span><span class="role">supporting</span></span>
+        </div>
+      </div>
+
+      <div class="persona" style="--dot:var(--consumer)">
+        <div class="persona-head">
+          <h3>Tech Lead / Senior Engineer</h3>
+          <span class="subtitle">technical leadership</span>
+        </div>
+        <p class="essence">Sets technical direction inside a team and stands up the shared scaffolding others build on.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Stands up team-scoped repos and sets conventions</li>
+          <li>Decides which AI capabilities the team's repos should carry</li>
+          <li>Reviews, mentors, and guards code quality</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-primary"></span><span class="flow">Repo B</span><span class="role">primary</span></span>
+          <span class="chip"><span class="swatch r-support"></span><span class="flow">Team</span><span class="role">supporting</span></span>
+          <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Repo A</span><span class="role">solo = App Eng</span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ OWNERSHIP PLANE ============ -->
+  <section class="layer">
+    <div class="layer-rail rail-ownership">
+      <div class="idx">02 / PLANE</div>
+      <div class="plane-name">Ownership</div>
+      <div class="plane-sub">Accountable<br>for the unit</div>
+    </div>
+    <div class="layer-body cols-1">
+
+      <div class="persona" style="--dot:var(--ownership)">
+        <div class="persona-head">
+          <h3>Engineering Manager / Team Lead</h3>
+          <span class="subtitle">owns team composition</span>
+        </div>
+        <p class="essence">Accountable for who is on a team and what it delivers — the natural initiator and owner of a new team.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Initiates team creation in the platform engine (self-service, RBAC-gated)</li>
+          <li>Is assigned as team owner; manages membership over time</li>
+          <li>Requests approval and owner assignment where the flow routes for it</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-primary"></span><span class="flow">Team</span><span class="role">primary — initiator / owner</span></span>
+          <span class="chip"><span class="swatch r-support"></span><span class="flow">Repo B</span><span class="role">supporting</span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ PRODUCER PLANE ============ -->
+  <section class="layer">
+    <div class="layer-rail rail-producer">
+      <div class="idx">03 / PLANE</div>
+      <div class="plane-name">Producer</div>
+      <div class="plane-sub">Builds &amp;<br>runs the platform</div>
+    </div>
+    <div class="layer-body cols-2">
+
+      <div class="persona" style="--dot:var(--producer)">
+        <div class="persona-head">
+          <h3>Platform Engineer</h3>
+          <span class="subtitle">builds the platform engine</span>
+        </div>
+        <p class="essence">Builds and operates the machinery that makes every other journey self-service.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Owns the Terraform IaC and the platform engine itself</li>
+          <li>Defines golden paths and the AI-capability catalog</li>
+          <li>Wires EMU / SCIM sync; keeps GitHub runners healthy</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-backstage"></span><span class="flow">Team</span><span class="role">backstage</span></span>
+          <span class="chip"><span class="swatch r-backstage"></span><span class="flow">Repo A/B</span><span class="role">backstage</span></span>
+          <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Operator maps</span><span class="role">primary — later</span></span>
+        </div>
+      </div>
+
+      <div class="persona" style="--dot:var(--producer)">
+        <div class="persona-head">
+          <h3>Platform Product Owner</h3>
+          <span class="subtitle">scope · roadmap · admin</span>
+        </div>
+        <p class="essence">Defines what the platform is and isn't — and holds cross-team admin authority above any single team.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Approves team creation where the flow routes for approval</li>
+          <li>Can delete teams and assign / reassign owners</li>
+          <li>Sees broader than any individual or team on the system</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-approver"></span><span class="flow">Team</span><span class="role">approver / admin (conditional)</span></span>
+          <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Team deletion</span><span class="role">primary — later</span></span>
+          <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Repo</span><span class="role">off-map</span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ GOVERNANCE PLANE ============ -->
+  <section class="layer">
+    <div class="layer-rail rail-governance">
+      <div class="idx">04 / PLANE</div>
+      <div class="plane-name">Governance</div>
+      <div class="plane-sub">Sets the<br>guardrails</div>
+    </div>
+    <div class="layer-body cols-2">
+
+      <div class="persona" style="--dot:var(--governance)">
+        <div class="persona-head">
+          <h3>Compliance</h3>
+          <span class="subtitle">overarching · subsumes security</span>
+        </div>
+        <p class="essence">The guardrail layer that spans everything — sets what's allowed and holds the evidence that it happened.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Defines what makes a team "compliant" and which AI capabilities are approved for regulated / PHI contexts</li>
+          <li>Views the audit trail / evidence of everything created — team, repo, and more</li>
+          <li>Evidence is captured in the platform DB and exposed when needed <span style="font-family:var(--mono);font-size:11px;color:var(--producer)">(likely Phase 2)</span></li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-backstage"></span><span class="flow">Team</span><span class="role">backstage — policy + audit</span></span>
+          <span class="chip"><span class="swatch r-backstage"></span><span class="flow">Repo A/B</span><span class="role">backstage — posture + audit</span></span>
+        </div>
+      </div>
+
+      <div class="persona" style="--dot:var(--governance)">
+        <div class="persona-head">
+          <h3>Identity / IAM Admin</h3>
+          <span class="subtitle">Entra · EMU · SCIM</span>
+        </div>
+        <p class="essence">Owns the identity plumbing — present today, mostly automated away in the future state.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Manages Entra groups, EMU users, and SCIM group→team sync</li>
+          <li>Future-state aspiration: most of this runs silently, backstage</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-backstage"></span><span class="flow">Team</span><span class="role">backstage — silent sync</span></span>
+          <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Repo</span><span class="role">n/a</span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer: legend + modeling notes -->
+  <div class="footer-grid">
+    <div class="panel">
+      <h4>Role on the map</h4>
+      <div class="legend-row"><span class="dot r-primary"></span><b>primary</b> Drives the flow — front and center on the map</div>
+      <div class="legend-row"><span class="dot r-support"></span><b>supporting</b> Participates in the flow, shown on the map</div>
+      <div class="legend-row"><span class="dot r-approver"></span><b>approver</b> Conditional actor — appears when the flow routes for approval</div>
+      <div class="legend-row"><span class="dot r-backstage"></span><b>backstage</b> A system or policy they own executes silently</div>
+      <div class="legend-row"><span class="dot r-offmap"></span><b>off-map</b> In the catalog, not in these two flows</div>
+    </div>
+    <div class="panel">
+      <h4>Modeling notes</h4>
+      <p class="note"><b>Compliance posture is a team attribute, not a persona.</b> "Compliant vs non-compliant" forks the AI-capability provisioning step — the team's context decides which kit its repos receive, rather than introducing a separate actor.</p>
+      <p class="note"><b>Repo creation is two distinct maps.</b> <code>Path A</code> is created on github.com then synced into the platform engine and shown under "my repositories." <code>Path B</code> is created inside the platform engine, tied to a team, with AI capabilities matched to that team's posture.</p>
+      <p class="note"><b>Producer &amp; Governance mostly sit backstage</b> in these consumer journeys. They become primary actors in their own operator journeys (control-plane build, team deletion, audit exposure) in later phases.</p>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · PERSONA CATALOG</span>
+    <span>DRAFT FOR WORKSHOP ALIGNMENT · v0.1</span>
+  </div>
+
+</div>
+</body>
+</html>

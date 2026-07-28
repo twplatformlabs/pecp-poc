@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Map — Onboarding · Existing Employee (Beta)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;
+    --paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;
+    --green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;
+    --amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;
+    --slate:#5A5F73;
+    --display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:44px 40px 72px;}
+  .wrap{max-width:1420px;margin:0 auto;}
+
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:22px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-family:var(--body);font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:640px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+
+  .paths{display:flex;gap:10px;margin:22px 0 8px;flex-wrap:wrap;align-items:center;}
+  .path-pill{font-family:var(--mono);font-size:11px;letter-spacing:0.03em;padding:7px 13px;border-radius:7px;border:1px solid var(--hair);background:#fff;color:var(--ink-faint);}
+  .path-pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .path-pill .n{color:var(--green);font-weight:600;}
+  .path-pill.active .n{color:#4de29a;}
+  .path-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);}
+
+  .guide{display:flex;gap:0;border:1px solid var(--hair);border-radius:10px;overflow:hidden;margin:14px 0 26px;background:var(--card);flex-wrap:wrap;}
+  .guide-cell{padding:12px 16px;border-right:1px solid var(--hair);flex:1;min-width:150px;}
+  .guide-cell:last-child{border-right:none;}
+  .guide-cell .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:4px;font-weight:600;}
+  .guide-cell .v{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+
+  .map-scroll{overflow-x:auto;border:1px solid var(--hair);border-radius:12px;background:var(--card);padding-bottom:2px;}
+  .map{display:grid;grid-template-columns:118px repeat(5,minmax(240px,1fr));min-width:1360px;}
+  .rowlabel{position:sticky;left:0;z-index:5;background:var(--card);border-right:2px solid var(--ink);padding:16px 12px;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);font-weight:600;display:flex;align-items:flex-start;}
+  .cell{padding:14px 14px;border-right:1px solid var(--hair-soft);border-top:1px solid var(--hair-soft);}
+  .cell:last-child{border-right:none;}
+
+  .hdr .rowlabel{border-top:none;align-items:center;}
+  .chev{position:relative;padding:0;border:none;display:flex;align-items:stretch;}
+  .chev .arrow{flex:1;background:#fff;border:2px solid var(--green);color:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:13px 20px 13px 16px;margin:12px 6px 12px 0;clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);}
+  .chev:first-of-type .arrow{clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);}
+  .chev.final .arrow{border-color:var(--green);background:var(--green-wash);}
+  .chev .arrow .st-n{font-family:var(--mono);font-size:10px;color:var(--green);font-weight:600;letter-spacing:0.08em;}
+  .chev .arrow .st-name{font-family:var(--display);font-size:16px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;}
+
+  .band-top .cell,.band-top.rowlabel{border-top:2px solid var(--hair);}
+  .cell ul{list-style:none;}
+  .cell li{font-size:12.5px;color:var(--ink-soft);padding-left:15px;position:relative;margin-bottom:7px;line-height:1.42;}
+  .cell li:last-child{margin-bottom:0;}
+  .cell.fe li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .cell.be li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:1px;background:var(--slate);}
+  .cell.be{background:#FBFCFB;}
+  .muted{color:var(--ink-faint);font-style:italic;font-size:12px;}
+
+  .tps{display:flex;flex-wrap:wrap;gap:5px;}
+  .tp{font-family:var(--mono);font-size:9.5px;letter-spacing:0.02em;padding:3px 8px;border-radius:5px;background:#F1F3F1;color:var(--ink-soft);border:1px solid var(--hair);white-space:nowrap;}
+  .tp.core{background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;font-weight:600;}
+
+  .actors-wrap{display:flex;flex-direction:column;gap:8px;}
+  .actor-grp .lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px;}
+  .atags{display:flex;flex-wrap:wrap;gap:4px;}
+  .atag{font-size:11px;padding:3px 8px;border-radius:12px;white-space:nowrap;}
+  .atag.on{background:var(--green);color:#fff;font-weight:500;}
+  .atag.back{background:#fff;border:1px solid var(--hair);color:var(--ink-faint);}
+  .atag.sys{background:#EEF0F3;border:1px solid #DADEE4;color:var(--slate);}
+  .atag.none{background:transparent;border:1px dashed var(--hair);color:var(--ink-faint);font-style:italic;}
+
+  .cell.th{font-size:13px;color:var(--ink);font-style:italic;line-height:1.5;}
+
+  .open{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:0.03em;padding:1px 6px;border-radius:4px;background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);font-weight:600;vertical-align:middle;margin-left:3px;white-space:nowrap;}
+  .flag{margin-top:9px;padding:8px 10px;background:var(--green-wash);border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:11px;color:var(--green-deep);line-height:1.4;}
+  .flag b{font-weight:600;}
+
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel.full{grid-column:1 / -1;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .panel h4 .tick{width:8px;height:8px;border-radius:2px;background:var(--amber);}
+  .panel h4 .tick.g{background:var(--green);}
+
+  .q{display:flex;gap:11px;margin-bottom:13px;font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .q:last-child{margin-bottom:0;}
+  .q .qn{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:5px;padding:1px 6px;height:fit-content;white-space:nowrap;}
+  .q b{color:var(--ink);font-weight:600;}
+  .q code{font-family:var(--mono);font-size:12px;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
+
+  .matrix{width:100%;border-collapse:collapse;margin-top:4px;}
+  .matrix th,.matrix td{border:1px solid var(--hair);padding:11px 13px;text-align:left;vertical-align:top;font-size:12.5px;}
+  .matrix thead th{font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);background:#FAFBFA;font-weight:600;}
+  .matrix tbody th{font-family:var(--display);font-size:14px;background:#FAFBFA;color:var(--ink);width:80px;}
+  .matrix td b{color:var(--ink);font-weight:600;}
+  .mtag{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:4px;letter-spacing:0.04em;font-weight:600;white-space:nowrap;}
+  .mtag.done{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .mtag.todo{background:#EEF0F3;color:var(--slate);border:1px solid #DADEE4;}
+
+  .flow-item{padding:14px 0;border-bottom:1px solid var(--hair-soft);}
+  .flow-item:first-of-type{padding-top:0;}
+  .flow-item:last-child{border-bottom:none;padding-bottom:0;}
+  .flow-item .ft{font-family:var(--display);font-size:15px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .badge{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;padding:2px 7px;border-radius:5px;text-transform:uppercase;font-weight:600;}
+  .badge.oos{background:#EEF0F3;color:var(--slate);border:1px solid #DADEE4;}
+  .badge.reconcile{background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);}
+  .flow-item .fd{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .flow-item .fd b{color:var(--ink);font-weight:600;}
+
+  .colophon{margin-top:32px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+  @media (max-width:820px){body{padding:28px 16px 52px;}.panels{grid-template-columns:1fr;}.mast h1{font-size:26px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">User Journey Map · Phase 1 &amp; 2 · Future State</div>
+      <h1>Onboarding — <span>Existing Employee (Beta)</span></h1>
+      <div class="mast-sub">An existing employee is enrolled into the platform beta. This is the precondition every creation flow depends on — it ends on a launchpad into repo &amp; team creation.</div>
+    </div>
+    <div class="mast-meta">
+      <b>Primary actor</b> · Application Engineer<br>
+      <b>Format</b> · Front-stage / Back-stage<br>
+      <b>Companion</b> · Persona Catalog v0.1<br>
+      <b>Status</b> · Draft from transcript
+    </div>
+  </header>
+
+  <div class="paths">
+    <span class="path-pill active"><span class="n">▸</span> Existing Employee — Beta <span style="opacity:.7">— Phase 1 &amp; 2</span></span>
+    <span class="path-pill"><span class="n">▸</span> New Employee — HR-triggered <span style="opacity:.7">— out of scope, later phase</span></span>
+    <span class="path-note">↳ beta users are added manually to the AD group + GitHub Enterprise</span>
+  </div>
+
+  <div class="guide">
+    <div class="guide-cell"><div class="k">Stage</div><div class="v">The phase of enrollment, front to end.</div></div>
+    <div class="guide-cell"><div class="k">Front-stage</div><div class="v">What the employee does &amp; sees. <span style="color:var(--green)">● round</span></div></div>
+    <div class="guide-cell"><div class="k">Back-stage</div><div class="v">What the platform does behind the scenes. <span style="color:var(--slate)">■ square</span></div></div>
+    <div class="guide-cell"><div class="k">Touchpoints</div><div class="v">Systems in play. Platform engine highlighted.</div></div>
+    <div class="guide-cell"><div class="k">Actors</div><div class="v">On-stage vs back-stage personas.</div></div>
+    <div class="guide-cell"><div class="k">Thoughts</div><div class="v">Synthesized future-state voice (not verbatim).</div></div>
+  </div>
+
+  <div class="map-scroll">
+    <div class="map">
+
+      <!-- CHEVRONS -->
+      <div class="rowlabel hdr">STAGE</div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">01</div><div class="st-name">Nominate</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">02</div><div class="st-name">Enroll</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">03</div><div class="st-name">Notify</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">04</div><div class="st-name">Orient</div></div></div>
+      <div class="cell chev final"><div class="arrow"><div class="st-n">05</div><div class="st-name">Ready →</div></div></div>
+
+      <!-- FRONT-STAGE -->
+      <div class="rowlabel band-top">Front-stage actions</div>
+      <div class="cell fe band-top"><ul>
+        <li class="muted">Mostly done <i>to</i> the user at this stage</li>
+        <li>(Optional) expresses interest in joining the platform beta <span class="open">OPEN Q1</span></li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li class="muted">No visible action — provisioning happens behind the scenes</li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li>Receives a welcome email: how to reach GitHub &amp; the platform engine, and what beta includes</li>
+        <li>Clicks through the links</li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li>Logs into the platform engine; sees beta status and what it unlocks</li>
+        <li>Sees "my repositories" (empty to start)</li>
+        <li>Reviews the shared-responsibility model — what's in vs out of scope</li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li>Chooses what to create: a <b>user-owned repo</b>, or a <b>team</b> (then team-owned repos)</li>
+        <li>Picks the surface: start in <b>GitHub</b>, or start in the <b>platform engine</b></li>
+      </ul>
+        <div class="flag"><b>Launchpad:</b> this stage hands off to the four creation flows (2×2 below). A beta user who creates a team can assign users/admins and own team repos.</div>
+      </div>
+
+      <!-- BACK-STAGE -->
+      <div class="rowlabel">Back-stage actions</div>
+      <div class="cell be"><ul>
+        <li>Platform team / Product Owner selects the user into the beta cohort</li>
+        <li>An RBAC entitlement is created granting beta rights (incl. team creation) <span class="open">OPEN Q3</span></li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>User is added to the core AD / Entra group → inner-source org access</li>
+        <li>Granted GitHub Enterprise access <span class="open">OPEN Q4</span></li>
+        <li>Platform engine records the beta entitlement against the user</li>
+        <li>SSH key set up so the user can clone later <span class="open">OPEN Q5</span></li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>Platform engine sends the onboarding email with access details + a capability overview</li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>Platform engine renders the user's entitlements, capability catalog, and docs</li>
+        <li>Shared-responsibility model lists out-of-scope items: CI/CD, secrets, observability, deploy envs</li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>Platform engine routes the user to the matching creation flow</li>
+        <li>Both GitHub-initiated and control-plane-initiated paths sync bidirectionally</li>
+      </ul></div>
+
+      <!-- TOUCHPOINTS -->
+      <div class="rowlabel band-top">Touchpoints</div>
+      <div class="cell band-top"><div class="tps"><span class="tp core">Platform Engine</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">Entra / AD</span><span class="tp">GitHub Enterprise</span><span class="tp core">Platform Engine</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">Email</span><span class="tp core">Platform Engine</span><span class="tp">GitHub</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp core">Platform Engine</span><span class="tp">Docs</span><span class="tp">GitHub</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">GitHub</span><span class="tp core">Platform Engine</span></div></div>
+
+      <!-- ACTORS -->
+      <div class="rowlabel band-top">Actors</div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag none">App Engineer (passive)</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag back">Platform Product Owner</span><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag none">— none visible</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag back">IAM Admin</span><span class="atag back">Platform Engineer</span><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span><span class="atag on">→ Team owner</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+
+      <!-- THOUGHTS -->
+      <div class="rowlabel band-top">Thoughts</div>
+      <div class="cell th band-top">"I've been tapped for the pilot."</div>
+      <div class="cell th band-top">"Access just shows up — I didn't have to chase IT for it."</div>
+      <div class="cell th band-top">"Here's my way in, and a clear picture of what I'm allowed to do."</div>
+      <div class="cell th band-top">"As a beta user I can spin up my own repos — and even create a team."</div>
+      <div class="cell th band-top">"Where do I start — a quick personal repo, or set up my team?"</div>
+
+    </div>
+  </div>
+
+  <!-- 2x2 MATRIX -->
+  <div class="panels">
+    <div class="panel full">
+      <h4><span class="tick g"></span>What "Ready" hands off to — the creation matrix</h4>
+      <table class="matrix">
+        <thead>
+          <tr><th></th><th>Initiated in GitHub → hooks into platform engine</th><th>Initiated in Platform Engine → hooks into GitHub</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Repo</th>
+            <td><b>User-owned repo</b> in the org — created on github.com, synced &amp; registered. <span class="mtag done">Path A · mapped</span></td>
+            <td><b>Team-owned repo</b> — created in the platform engine, provisioned with AI capabilities, synced to GitHub. <span class="mtag todo">Path B · to map</span></td>
+          </tr>
+          <tr>
+            <th>Team</th>
+            <td><b>Team created in GitHub</b> — hooked into the platform engine. <span class="mtag todo">to map</span> <span class="mtag" style="background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line)">reconcile</span></td>
+            <td><b>Team created in platform engine</b> — self-service; assign users/admins, then create team repos; synced to GitHub. <span class="mtag todo">to map</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h4><span class="tick"></span>Open questions</h4>
+      <div class="q"><span class="qn">Q1</span><div><b>Nomination.</b> Do beta users self-nominate / request in, or does the platform team hand-pick them? Is there an approval step, and who owns it — Platform Product Owner?</div></div>
+      <div class="q"><span class="qn">Q2</span><div><b>Prior access.</b> Does the existing employee already have GitHub Enterprise access, or does beta enrollment grant it for the first time?</div></div>
+      <div class="q"><span class="qn">Q3</span><div><b>Entitlement scope.</b> What exactly does beta unlock — is <b>team creation</b> gated to beta users only in Phase 1? What's the backing RBAC model?</div></div>
+      <div class="q"><span class="qn">Q4</span><div><b>Access level.</b> GitHub Enterprise <b>read</b>, org <b>write</b> — confirm. What repo-level permission does a creator get by default?</div></div>
+      <div class="q"><span class="qn">Q5</span><div><b>SSH provisioning.</b> When/where in onboarding does the user's SSH key get set up, so cloning works later? (Connects to the SSH-vs-PAT question.)</div></div>
+    </div>
+
+    <div class="panel">
+      <h4><span class="tick"></span>Related flows — not this map</h4>
+      <div class="flow-item">
+        <div class="ft">Onboarding — New Employee <span class="badge oos">out of scope · later</span></div>
+        <div class="fd">HR-triggered: an <b>HR event</b> → platform engine hook → auto-provision AD group + GitHub. This is what was mistakenly placed on the front of <b>Repo Path A</b> — it belongs here as a sibling map, and is <b>not</b> Phase 1 or 2.</div>
+      </div>
+      <div class="flow-item">
+        <div class="ft">Team — created in GitHub <span class="badge reconcile">reconcile</span></div>
+        <div class="fd">Is an explicit <b>Team-in-GitHub</b> creation the same as the earlier <b>auto-team-via-webhook</b> side-effect (a solo repo creator gets dropped into a team), or two different things? This decides whether "team from GitHub" is a first-class path or just a fallback.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · JOURNEY MAP · ONBOARDING (BETA)</span>
+    <span>DRAFT FROM TRANSCRIPT · PHASE 1 &amp; 2 · FUTURE STATE</span>
+  </div>
+
+</div>
+</body>
+</html>

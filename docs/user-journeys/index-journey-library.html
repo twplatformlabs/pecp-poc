@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Map Library — AI Platform Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;--paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;--green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;--teal:#0E8F7A;--producer:#2D6E7E;--producer-wash:#E8F0F2;--amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;--slate:#5A5F73;--blue:#3E6DBF;--blue-wash:#E9EFF9;--blue-line:#BCD0EE;--gate:#C0492B;--gate-wash:#F8E9E5;--gate-line:#E7C0B6;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:48px 40px 72px;}
+  .wrap{max-width:1240px;margin:0 auto;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:24px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:38px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:640px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+
+  .section-head{display:flex;align-items:baseline;gap:14px;margin:40px 0 4px;flex-wrap:wrap;}
+  .section-head h2{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-0.01em;}
+  .section-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:6px;}
+  .tag.p1{background:var(--green);color:#fff;}
+  .tag.p2{background:var(--producer);color:#fff;}
+  .tag.ref{background:var(--ink);color:#fff;}
+  .section-head .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+  .section-sub{font-size:13px;color:var(--ink-soft);margin:2px 0 18px;max-width:760px;}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .grid.two{grid-template-columns:repeat(2,1fr);}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--hair);border-left:4px solid var(--green);border-radius:11px;background:var(--card);padding:17px 18px;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,24,26,0.07);}
+  a.card.dir-cp{border-left-color:var(--blue);}
+  a.card.p2{border-left-color:var(--producer);}
+  a.card.gate{border-left-color:var(--gate);}
+  a.card.skel{border-left-color:var(--slate);border-left-style:dashed;}
+  a.card.ref{border-left-color:var(--ink);}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+  .card-n{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--green);}
+  .card.dir-cp .card-n{color:var(--blue);}
+  .card.p2 .card-n{color:var(--producer);}
+  .card.gate .card-n{color:var(--gate);}
+  .card.skel .card-n{color:var(--slate);}
+  .card.ref .card-n{color:var(--ink);}
+  .dir{font-family:var(--mono);font-size:8.5px;letter-spacing:0.04em;padding:2px 7px;border-radius:4px;white-space:nowrap;font-weight:600;}
+  .dir.gh{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .dir.cp{background:var(--blue-wash);color:var(--blue);border:1px solid var(--blue-line);}
+  .dir.cli{background:#EDEFF0;color:var(--slate);border:1px solid #D9DDDE;}
+  .dir.gate{background:var(--gate-wash);color:var(--gate);border:1px solid var(--gate-line);}
+  .dir.skel{background:#EEF0F3;color:var(--slate);border:1px dashed #C7CCD6;}
+  .card h3{font-family:var(--display);font-size:16px;font-weight:600;letter-spacing:-0.01em;margin-bottom:5px;line-height:1.15;}
+  .card p{font-size:12.5px;color:var(--ink-soft);line-height:1.42;}
+  .card .stages{margin-top:9px;font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:0.02em;}
+
+  .matrix{border:1px solid var(--hair);border-radius:12px;overflow:hidden;margin-top:6px;background:var(--card);}
+  .matrix table{width:100%;border-collapse:collapse;}
+  .matrix th,.matrix td{padding:12px 14px;text-align:left;font-size:12.5px;border-bottom:1px solid var(--hair-soft);border-right:1px solid var(--hair-soft);}
+  .matrix th{font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);background:#FAFBFA;font-weight:600;}
+  .matrix td:last-child,.matrix th:last-child{border-right:none;}
+  .matrix tr:last-child td{border-bottom:none;}
+  .matrix .corner{color:var(--ink-faint);font-weight:600;}
+  .matrix td b{font-weight:600;color:var(--ink);}
+  .matrix .muted{color:var(--ink-faint);font-size:11.5px;}
+
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .panel h4 .tick{width:8px;height:8px;border-radius:2px;background:var(--green);}
+  .panel h4 .tick.a{background:var(--amber);}
+  .dl{padding:10px 0;border-bottom:1px solid var(--hair-soft);display:flex;gap:11px;}
+  .dl:first-of-type{padding-top:0;}.dl:last-child{border-bottom:none;padding-bottom:0;}
+  .dl .dp{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.05em;padding:2px 7px;border-radius:5px;height:fit-content;white-space:nowrap;text-transform:uppercase;}
+  .dl .dp.p1{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .dl .dp.p2{background:var(--producer-wash);color:var(--producer);border:1px solid #C3DBE0;}
+  .dl .dt{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+  .dl .dt b{color:var(--ink);font-weight:600;}
+  .qgroup{margin-bottom:16px;}
+  .qgroup:last-child{margin-bottom:0;}
+  .qgroup .gh{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:7px;}
+  .qgroup ul{list-style:none;}
+  .qgroup li{font-size:12.5px;color:var(--ink-soft);line-height:1.45;padding-left:15px;position:relative;margin-bottom:6px;}
+  .qgroup li:last-child{margin-bottom:0;}
+  .qgroup li::before{content:"–";position:absolute;left:0;color:var(--amber);font-weight:600;}
+  .qgroup li b{color:var(--ink);font-weight:600;}
+
+  .horizon{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;margin-top:6px;}
+  .horizon h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:15px;font-weight:600;}
+  .hrow{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--hair-soft);}
+  .hrow:last-child{border-bottom:none;padding-bottom:0;}
+  .hrow:first-of-type{padding-top:0;}
+  .hp{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.05em;padding:2px 8px;border-radius:5px;white-space:nowrap;text-transform:uppercase;background:#EEF0F3;color:var(--slate);border:1px solid #DADEE4;}
+  .hp.p2{background:var(--producer-wash);color:var(--producer);border-color:#C3DBE0;}
+  .hp.p3{background:var(--blue-wash);color:var(--blue);border-color:var(--blue-line);}
+  .hp.p4{background:#EFEAF6;color:#6B4FA0;border-color:#D9CDEC;}
+  .hrow .ht{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+  .hrow .ht b{color:var(--ink);font-weight:600;}
+
+  .colophon{margin-top:34px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media (max-width:900px){.grid,.grid.two{grid-template-columns:1fr;}.panels{grid-template-columns:1fr;}}
+  @media (max-width:820px){body{padding:28px 16px 52px;}.mast h1{font-size:29px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">Journey Map Library · v0.2 · Draft for Workshop Alignment</div>
+      <h1>AI Platform Engineering<br><span>Journey Maps</span></h1>
+      <div class="mast-sub">Future-state user journeys across the platform experience — from GitHub inner-sourcing (Phase 1) to the Kubernetes deployment platform (Phase 2). Each map is a self-contained artifact for translation into Mural / Miro.</div>
+    </div>
+    <div class="mast-meta">
+      <b>Scope</b> · Phase 1 &amp; 2<br>
+      <b>Journeys</b> · 14 mapped<br>
+      <b>Reference</b> · 2 artifacts<br>
+      <b>State</b> · Future / draft
+    </div>
+  </header>
+
+  <!-- REFERENCE -->
+  <div class="section-head">
+    <span class="tag ref">Reference</span>
+    <h2>Model &amp; Personas</h2>
+    <span class="cnt">2 artifacts</span>
+  </div>
+  <div class="section-sub">Start here. The persona catalog and the object model are the shared vocabulary every journey map draws on.</div>
+  <div class="grid two">
+    <a class="card ref" href="persona-reference-sheet.html">
+      <div class="card-top"><span class="card-n">REF · A</span><span class="dir cli">v0.2 · both phases</span></div>
+      <h3>Persona Catalog</h3>
+      <p>The role-plus-plane personas — Consumer, Ownership, Producer (Build &amp; Operations), Governance — plus the Project object and the Phase 1→2 shifts.</p>
+      <div class="stages">Consumer · Ownership · Producer · Governance</div>
+    </a>
+    <a class="card ref" href="object-model.html">
+      <div class="card-top"><span class="card-n">REF · B</span><span class="dir cli">Phase 1 → 2</span></div>
+      <h3>Object Model — Phase 1 → Phase 2</h3>
+      <p>How the model evolves: Phase 1 built around the Team (team vs user-owned repos); Phase 2 introducing the Project as the anchor, with Team ↔ Project many-to-many and flat environments.</p>
+      <div class="stages">Team-anchored → Project-anchored</div>
+    </a>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="section-head">
+    <span class="tag p1">Phase 1</span>
+    <h2>GitHub Inner-Sourcing</h2>
+    <span class="cnt">6 journeys</span>
+  </div>
+  <div class="section-sub">Team &amp; repo lifecycle across two edit surfaces — GitHub and the platform engine — with bidirectional sync. Green = GitHub→platform-engine origin · blue = platform-engine→GitHub origin.</div>
+  <div class="grid">
+    <a class="card" href="journey-onboarding-beta.html">
+      <div class="card-top"><span class="card-n">P1 · 01</span><span class="dir gh">beta onboarding</span></div>
+      <h3>Onboarding · Beta</h3>
+      <p>An existing employee joins the beta via manual AD-group add and lands on the launchpad — with the repo/team creation matrix in view.</p>
+      <div class="stages">Invite · Access · Orient · Create · Launchpad</div>
+    </a>
+    <a class="card" href="journey-repo-via-github.html">
+      <div class="card-top"><span class="card-n">P1 · 02</span><span class="dir gh">GitHub → Engine</span></div>
+      <h3>Create a Repo via GitHub</h3>
+      <p>A user-owned base repo made directly in GitHub — no team, no auto-team, no AI capabilities. Webhook registers it with the platform engine.</p>
+      <div class="stages">Create · Register · Configure · Use</div>
+    </a>
+    <a class="card" href="journey-team-via-github.html">
+      <div class="card-top"><span class="card-n">P1 · 03</span><span class="dir gh">GitHub → Engine</span></div>
+      <h3>Create a Team via GitHub</h3>
+      <p>A team created in GitHub flows to the platform engine via webhook — the platform engine becomes the central record.</p>
+      <div class="stages">Create · Sync · Enrich · Manage</div>
+    </a>
+    <a class="card dir-cp" href="journey-team-via-platform-engine.html">
+      <div class="card-top"><span class="card-n">P1 · 04</span><span class="dir cp">Engine → GitHub</span></div>
+      <h3>Create a Team via Platform Engine</h3>
+      <p>A team created in the platform engine, projected to GitHub — through an RBAC and approval gate.</p>
+      <div class="stages">Request · Approve · Provision · Sync</div>
+    </a>
+    <a class="card dir-cp" href="journey-repo-for-team-via-platform-engine.html">
+      <div class="card-top"><span class="card-n">P1 · 05</span><span class="dir cp">Engine → GitHub</span></div>
+      <h3>Create a Team Repo via Platform Engine</h3>
+      <p>A platform-engine team repo through the guided questionnaire — the only place AI capabilities and compliance levels attach.</p>
+      <div class="stages">Guide · Configure · Provision · Wire AI</div>
+    </a>
+    <a class="card" href="journey-ci-github-actions.html">
+      <div class="card-top"><span class="card-n">P1 · 06</span><span class="dir gh">GitHub only</span></div>
+      <h3>CI with GitHub Actions</h3>
+      <p>After a repo exists, a developer adds a GitHub Actions workflow on a shared runner. CI compute is bundled with repo access — the platform engine isn't involved.</p>
+      <div class="stages">Discover · Author · Run · Observe</div>
+    </a>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="section-head">
+    <span class="tag p2">Phase 2</span>
+    <h2>Kubernetes Deployment Platform</h2>
+    <span class="cnt">8 journeys</span>
+  </div>
+  <div class="section-sub">Project &amp; environment lifecycle on Kubernetes — provisioning, secrets, datastores, GitOps deploy, exposure, and the production compliance gate. CLI &amp; AI/MCP are the primary surfaces.</div>
+  <div class="grid">
+    <a class="card p2" href="journey-p2-provision-project-environments.html">
+      <div class="card-top"><span class="card-n">P2 · 01</span><span class="dir cli">anchor</span></div>
+      <h3>Provision Project &amp; Environments</h3>
+      <p>The anchor flow — a project scaffolds its repos, JFrog space, config store, and auto dev/qa/prod environments. Prod lands in a separate cluster/account.</p>
+      <div class="stages">Initiate · Scaffold · Provision Envs · Ready</div>
+    </a>
+    <a class="card p2" href="journey-p2-secrets-config.html">
+      <div class="card-top"><span class="card-n">P2 · 02</span><span class="dir cli">CLI · tool</span></div>
+      <h3>Manage Secrets &amp; Config</h3>
+      <p>One unified store, two write lanes — CLI/agent (audited) or direct in tool. External Secrets syncs values into the namespace.</p>
+      <div class="stages">Set · Store · Sync · Consume &amp; Read</div>
+    </a>
+    <a class="card p2" href="journey-p2-custom-environment.html">
+      <div class="card-top"><span class="card-n">P2 · 03</span><span class="dir cli">self-service</span></div>
+      <h3>Create a Custom Environment</h3>
+      <p>Add staging / uat beyond the auto three — identical golden-path wiring, no gate, defaults to nonprod.</p>
+      <div class="stages">Initiate · Provision · Ready · Retire</div>
+    </a>
+    <a class="card p2" href="journey-p2-add-datastore.html">
+      <div class="card-top"><span class="card-n">P2 · 04</span><span class="dir cli">CLI · manifest</span></div>
+      <h3>Add a Datastore</h3>
+      <p>A new AWS DB tied to an environment — via CLI (needs team-lead approval) or manifest (self-service; the PR is the audit).</p>
+      <div class="stages">Choose · Authorize · Provision · Bind &amp; Use</div>
+    </a>
+    <a class="card p2" href="journey-p2-deploy-dev-qa.html">
+      <div class="card-top"><span class="card-n">P2 · 05</span><span class="dir cli">GitOps</span></div>
+      <h3>Deploy App to Dev / QA</h3>
+      <p>The team builds &amp; publishes to JFrog, bumps the app-of-apps, and Argo syncs. Platform owns the wiring; team owns the trigger.</p>
+      <div class="stages">Build · Update Manifest · Sync · Run</div>
+    </a>
+    <a class="card p2" href="journey-p2-expose-service.html">
+      <div class="card-top"><span class="card-n">P2 · 06</span><span class="dir cli">mesh · cert</span></div>
+      <h3>Expose a Service</h3>
+      <p>A hostname on the platform default domain — Istio mesh, ExternalDNS, and a Venafi-issued certificate, all wired for the consumer.</p>
+      <div class="stages">Request · Wire Mesh · DNS &amp; Cert · Live</div>
+    </a>
+    <a class="card p2 gate" href="journey-p2-promote-production.html">
+      <div class="card-top"><span class="card-n">P2 · 07</span><span class="dir gate">compliance gate</span></div>
+      <h3>Promote to Production</h3>
+      <p>The crown jewel — a tested artifact promoted to the separate prod cluster/account, but only through the verify-at-deploy admission gate.</p>
+      <div class="stages">Initiate · Gate · Record · Deploy / Reject</div>
+    </a>
+    <a class="card p2 skel" href="journey-p2-migrate-in.html">
+      <div class="card-top"><span class="card-n">P2 · 08</span><span class="dir skel">skeleton</span></div>
+      <h3>Migrate a Project In</h3>
+      <p>Bring an external workload onto the platform — self-service, per capability, other-k8s-first. Deliberately thin; tooling still being scoped.</p>
+      <div class="stages">Assess · Land · Migrate · Cutover</div>
+    </a>
+  </div>
+
+  <!-- CREATION MATRICES -->
+  <div class="section-head">
+    <h2>Creation Matrices</h2>
+    <span class="cnt">Phase 1 &amp; 2</span>
+  </div>
+  <div class="section-sub">The two-axis model behind each phase: <b>what</b> you create × <b>which touchpoint</b> you use. Every touchpoint reaches the same platform engine — they're just different front doors. Phase 1 has two (GitHub, CLI); Phase 2 breaks them out further.</div>
+
+  <div class="section-head" style="margin:6px 0 4px;">
+    <span class="tag p1">Phase 1</span>
+    <h2 style="font-size:16px;">What × Touchpoint</h2>
+  </div>
+  <div class="matrix">
+    <table>
+      <tr><th class="corner">create ↓ · touchpoint →</th><th>via GitHub</th><th>via CLI</th></tr>
+      <tr>
+        <td class="corner">Repository</td>
+        <td><b>User-owned base repo.</b> No team, no AI. <span class="muted">→ P1·02</span></td>
+        <td><b>Team repo</b> via guided questionnaire — AI + compliance attach here. <span class="muted">→ P1·05</span></td>
+      </tr>
+      <tr>
+        <td class="corner">Team</td>
+        <td><b>Team in GitHub</b> → webhook → platform engine. <span class="muted">→ P1·03</span></td>
+        <td><b>Team via CLI</b> → RBAC/approval → GitHub. <span class="muted">→ P1·04</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section-head" style="margin:22px 0 4px;">
+    <span class="tag p2">Phase 2</span>
+    <h2 style="font-size:16px;">What × Touchpoint</h2>
+  </div>
+  <div class="section-sub" style="margin-bottom:12px;">The platform engine exposes three touchpoints. <b>CLI</b> and <b>Agent</b> share the same commands (the agent uses your credentials, with human-in-the-loop for destructive actions); <b>Manifest / GitOps</b> is declarative. A dash means the capability isn't offered on that touchpoint.</div>
+  <div class="matrix">
+    <table>
+      <tr><th class="corner">create ↓ · touchpoint →</th><th>via CLI</th><th>via Agent</th><th>via Manifest / GitOps</th></tr>
+      <tr>
+        <td class="corner">Project</td>
+        <td><b>Anchor provision.</b> Scaffolds repos, JFrog, config, envs. <span class="muted">→ P2·01</span></td>
+        <td>Same command, conversationally. <span class="muted">→ P2·01</span></td>
+        <td class="muted">—</td>
+      </tr>
+      <tr>
+        <td class="corner">Environment</td>
+        <td><b>Custom env</b> (staging / uat), self-service. <span class="muted">→ P2·03</span></td>
+        <td>Same command, conversationally. <span class="muted">→ P2·03</span></td>
+        <td class="muted">—</td>
+      </tr>
+      <tr>
+        <td class="corner">Datastore</td>
+        <td><b>Provision new DB</b> — needs team-lead approval. <span class="muted">→ P2·04</span></td>
+        <td>Same command — same approval. <span class="muted">→ P2·04</span></td>
+        <td><b>Operator (Crossplane)</b> — self-service; the PR is the audit. <span class="muted">→ P2·04</span></td>
+      </tr>
+      <tr>
+        <td class="corner">App deploy</td>
+        <td class="muted">—</td>
+        <td class="muted">—</td>
+        <td><b>app-of-apps bump</b> → Argo sync. <span class="muted">→ P2·05</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- DECISION LOG -->
+  <div class="section-head">
+    <h2>Decision Log</h2>
+    <span class="cnt">resolved to date</span>
+  </div>
+  <div class="section-sub">The design decisions the maps are built on — settled enough to draw, open enough to revisit.</div>
+  <div class="panels">
+    <div class="panel">
+      <h4><span class="tick"></span>Phase 1 · GitHub</h4>
+      <div class="dl"><span class="dp p1">P1</span><div class="dt"><b>Source of truth is both.</b> GitHub and the platform engine are both valid edit surfaces; sync is bidirectional. The platform engine is the central, up-to-date record across integrated systems.</div></div>
+      <div class="dl"><span class="dp p1">P1</span><div class="dt"><b>Teams bypass Entra.</b> Phase 1 GitHub teams have no Entra group backing; only Enterprise + org access ties to AD groups.</div></div>
+      <div class="dl"><span class="dp p1">P1</span><div class="dt"><b>AI on team repos only.</b> AI capabilities attach solely to platform-engine team repos — not user-owned repos (adding AI to those is a Phase 2 preview).</div></div>
+      <div class="dl"><span class="dp p1">P1</span><div class="dt"><b>No auto-team on repo creation.</b> Creating a repo never implicitly creates a team; the two are independent acts.</div></div>
+    </div>
+    <div class="panel">
+      <h4><span class="tick" style="background:var(--producer)"></span>Phase 2 · Deployment</h4>
+      <div class="dl"><span class="dp p2">P2</span><div class="dt"><b>Project is the anchor.</b> A new Project object owns repos, JFrog space, and config; Team ↔ Project is many-to-many (1:1 to start). Environments are flat siblings.</div></div>
+      <div class="dl"><span class="dp p2">P2</span><div class="dt"><b>Prod is isolated.</b> Prod runs in a separate cluster in a separate AWS account — a static-stability boundary per the account-topology ADR. Cluster/account is a per-environment detail.</div></div>
+      <div class="dl"><span class="dp p2">P2</span><div class="dt"><b>Compliance verifies at deploy.</b> The platform validates evidence at the prod admission gate (cosign → SBOM) rather than generating it — it doesn't own the build pipeline.</div></div>
+      <div class="dl"><span class="dp p2">P2</span><div class="dt"><b>Datastore approval asymmetry.</b> CLI-provisioned DBs need team-lead approval (no git trail); manifest/operator DBs are self-service because the PR is the audit artifact.</div></div>
+    </div>
+  </div>
+
+  <!-- OPEN QUESTIONS -->
+  <div class="section-head">
+    <h2>Open Questions</h2>
+    <span class="cnt">by theme</span>
+  </div>
+  <div class="section-sub">Consolidated across the library — every amber flag on the maps rolls up to one of these.</div>
+  <div class="panels">
+    <div class="panel">
+      <h4><span class="tick a"></span>Phase 1 themes</h4>
+      <div class="qgroup"><div class="gh">Naming &amp; access</div><ul>
+        <li><b>Conventions</b> for repo and team names; reserved names.</li>
+        <li><b>Access levels</b> confirmation across personas; SSH provisioning timing.</li>
+      </ul></div>
+      <div class="qgroup"><div class="gh">AI &amp; compliance catalog</div><ul>
+        <li><b>Full AI capability catalog</b> and the complete <b>compliance level taxonomy</b>.</li>
+        <li><b>Guided questionnaire</b> content and approval-policy logic.</li>
+      </ul></div>
+      <div class="qgroup"><div class="gh">Governance</div><ul>
+        <li><b>Team deletion</b> handling for owned repos; whether manual repo registration is still needed given webhook auto-registration.</li>
+        <li><b>Out-of-band creation</b> — enforce vs nudge posture.</li>
+      </ul></div>
+    </div>
+    <div class="panel">
+      <h4><span class="tick a"></span>Phase 2 themes</h4>
+      <div class="qgroup"><div class="gh">Secrets &amp; config</div><ul>
+        <li><b>Store backend</b> — GitHub secrets vs Vault / 1Password (cascades widely).</li>
+        <li><b>Direct-write audit</b> and External Secrets wiring per namespace.</li>
+      </ul></div>
+      <div class="qgroup"><div class="gh">Datastore &amp; networking</div><ul>
+        <li><b>Operator</b> — Crossplane vs custom; teardown &amp; prod DB static stability.</li>
+        <li><b>ExternalDNS</b> approach; mesh opt-out path; east-west mTLS &amp; DR.</li>
+      </ul></div>
+      <div class="qgroup"><div class="gh">Compliance &amp; migration</div><ul>
+        <li><b>Evidence &amp; enforcement</b> — cosign→SBOM sequencing, which admission point is authoritative, SNOW integration, exception policy.</li>
+        <li><b>App-of-apps</b> level (team vs project); <b>migration</b> build-vs-buy per capability.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- HORIZON -->
+  <div class="section-head">
+    <h2>On the Horizon &amp; Out of Scope</h2>
+  </div>
+  <div class="horizon">
+    <div class="hrow"><span class="hp p2">P2</span><div class="ht"><b>Add AI to your own repo.</b> Bringing AI capabilities to a user-owned repo via the platform engine (previewed in P1·02).</div></div>
+    <div class="hrow"><span class="hp p2">P2</span><div class="ht"><b>CI status in the platform engine.</b> Surfacing runner/CI status (e.g. <code style="font-family:var(--mono);font-size:11px;">platform status gh runners</code>) rather than the bundled, no-CP CI shown in P1·06.</div></div>
+    <div class="hrow"><span class="hp p2">P2</span><div class="ht"><b>Migration.</b> Spans Phase 2–4+; the P2·08 skeleton captures the shape, not the tooling.</div></div>
+    <div class="hrow"><span class="hp p3">P3</span><div class="ht"><b>Audit trail viewer.</b> A platform-built viewer surfacing the compliance evidence &amp; audit records (captured at the prod gate and across the platform engine) for the governance persona — something we create, not a borrowed surface.</div></div>
+    <div class="hrow"><span class="hp p3">P3</span><div class="ht"><b>Bring-your-own domain.</b> Consumer-owned domains + certs registered on their behalf (P2·06 covers platform-domain only).</div></div>
+    <div class="hrow"><span class="hp p3">P3</span><div class="ht"><b>Web UI.</b> A portal surface alongside CLI and AI/MCP — the third surface, after Phase 1 (GitHub + CLI) and Phase 2 (+ AI/MCP).</div></div>
+    <div class="hrow"><span class="hp p4">P4</span><div class="ht"><b>New-employee HR-triggered onboarding.</b> Automated provisioning on hire — the mapped beta onboarding is manual AD-group add.</div></div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · JOURNEY MAP LIBRARY · v0.2</span>
+    <span>DRAFT FOR WORKSHOP ALIGNMENT · PHASE 1 &amp; 2 · FUTURE STATE</span>
+  </div>
+</div>
+</body>
+</html>

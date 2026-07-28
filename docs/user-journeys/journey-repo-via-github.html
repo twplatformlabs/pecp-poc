@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Map — Flow 2 · Repo via GitHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;--paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;--green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;--amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;--slate:#5A5F73;--blue:#3E6DBF;--blue-wash:#E9EFF9;--blue-line:#BCD0EE;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:44px 40px 72px;}
+  .wrap{max-width:1400px;margin:0 auto;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:22px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-family:var(--body);font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:640px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+  .precond{display:flex;align-items:center;gap:12px;margin:22px 0 0;padding:12px 16px;border:1px dashed var(--green);background:var(--green-wash);border-radius:8px;font-size:13px;color:var(--green-deep);}
+  .precond .pk{font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--green);color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+  .precond b{font-weight:600;color:var(--ink);}
+  .paths{display:flex;gap:10px;margin:14px 0 8px;flex-wrap:wrap;align-items:center;}
+  .path-pill{font-family:var(--mono);font-size:11px;letter-spacing:0.03em;padding:7px 13px;border-radius:7px;border:1px solid var(--hair);background:#fff;color:var(--ink-faint);}
+  .path-pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .path-pill .n{color:var(--green);font-weight:600;}.path-pill.active .n{color:#4de29a;}
+  .path-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);}
+  .guide{display:flex;gap:0;border:1px solid var(--hair);border-radius:10px;overflow:hidden;margin:14px 0 26px;background:var(--card);flex-wrap:wrap;}
+  .guide-cell{padding:12px 16px;border-right:1px solid var(--hair);flex:1;min-width:150px;}
+  .guide-cell:last-child{border-right:none;}
+  .guide-cell .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:4px;font-weight:600;}
+  .guide-cell .v{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+  .map-scroll{overflow-x:auto;border:1px solid var(--hair);border-radius:12px;background:var(--card);padding-bottom:2px;}
+  .map{display:grid;grid-template-columns:118px repeat(4,minmax(250px,1fr));min-width:1180px;}
+  .rowlabel{position:sticky;left:0;z-index:5;background:var(--card);border-right:2px solid var(--ink);padding:16px 12px;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);font-weight:600;display:flex;align-items:flex-start;}
+  .cell{padding:14px 14px;border-right:1px solid var(--hair-soft);border-top:1px solid var(--hair-soft);}
+  .cell:last-child{border-right:none;}
+  .hdr .rowlabel{border-top:none;align-items:center;}
+  .chev{position:relative;display:flex;align-items:stretch;}
+  .chev .arrow{flex:1;background:#fff;border:2px solid var(--green);color:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:13px 20px 13px 16px;margin:12px 6px 12px 0;clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);}
+  .chev:first-of-type .arrow{clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);}
+  .chev.final .arrow{background:var(--green-wash);}
+  .chev .arrow .st-n{font-family:var(--mono);font-size:10px;color:var(--green);font-weight:600;letter-spacing:0.08em;}
+  .chev .arrow .st-name{font-family:var(--display);font-size:16px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;}
+  .band-top .cell,.band-top.rowlabel{border-top:2px solid var(--hair);}
+  .cell ul{list-style:none;}
+  .cell li{font-size:12.5px;color:var(--ink-soft);padding-left:15px;position:relative;margin-bottom:7px;line-height:1.42;}
+  .cell li:last-child{margin-bottom:0;}
+  .cell.fe li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .cell.be li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:1px;background:var(--slate);}
+  .cell.be{background:#FBFCFB;}
+  .tps{display:flex;flex-wrap:wrap;gap:5px;}
+  .tp{font-family:var(--mono);font-size:9.5px;letter-spacing:0.02em;padding:3px 8px;border-radius:5px;background:#F1F3F1;color:var(--ink-soft);border:1px solid var(--hair);white-space:nowrap;}
+  .tp.core{background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;font-weight:600;}
+  .actors-wrap{display:flex;flex-direction:column;gap:8px;}
+  .actor-grp .lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px;}
+  .atags{display:flex;flex-wrap:wrap;gap:4px;}
+  .atag{font-size:11px;padding:3px 8px;border-radius:12px;white-space:nowrap;}
+  .atag.on{background:var(--green);color:#fff;font-weight:500;}
+  .atag.back{background:#fff;border:1px solid var(--hair);color:var(--ink-faint);}
+  .atag.sys{background:#EEF0F3;border:1px solid #DADEE4;color:var(--slate);}
+  .cell.th{font-size:13px;color:var(--ink);font-style:italic;line-height:1.5;}
+  .open{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:0.03em;padding:1px 6px;border-radius:4px;background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);font-weight:600;vertical-align:middle;margin-left:3px;white-space:nowrap;}
+  .flag{margin-top:9px;padding:8px 10px;border-left:3px solid var(--blue);background:var(--blue-wash);border-radius:0 6px 6px 0;font-size:11px;color:var(--blue);line-height:1.4;}
+  .flag b{font-weight:600;}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel.full{grid-column:1 / -1;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .panel h4 .tick{width:8px;height:8px;border-radius:2px;background:var(--amber);}
+  .panel h4 .tick.g{background:var(--green);}
+  .panel h4 .tick.b{background:var(--blue);}
+  .q{display:flex;gap:11px;margin-bottom:13px;font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .q:last-child{margin-bottom:0;}
+  .q .qn{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:5px;padding:1px 6px;height:fit-content;white-space:nowrap;}
+  .q.done .qn{color:var(--green-deep);background:var(--green-wash);border-color:#BFE6D2;}
+  .q b{color:var(--ink);font-weight:600;}
+  .q code{font-family:var(--mono);font-size:12px;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
+  .p2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--blue);margin-top:6px;}
+  .p2 .step{background:var(--blue-wash);border:1px solid var(--blue-line);border-radius:6px;padding:5px 10px;white-space:nowrap;}
+  .p2 .arr{color:var(--blue);font-weight:600;}
+  .flow-item{padding:12px 0;border-bottom:1px solid var(--hair-soft);}
+  .flow-item:first-of-type{padding-top:0;}.flow-item:last-child{border-bottom:none;padding-bottom:0;}
+  .flow-item .ft{font-family:var(--display);font-size:14px;font-weight:600;margin-bottom:2px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .badge{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;padding:2px 7px;border-radius:5px;text-transform:uppercase;font-weight:600;}
+  .badge.done{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .badge.todo{background:#EEF0F3;color:var(--slate);border:1px solid #DADEE4;}
+  .badge.here{background:var(--ink);color:#fff;}
+  .flow-item .fd{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+  .colophon{margin-top:32px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media (max-width:820px){body{padding:28px 16px 52px;}.panels{grid-template-columns:1fr;}.mast h1{font-size:26px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">User Journey Map · Phase 1 · Flow 2 · Future State</div>
+      <h1>Repo via <span>GitHub</span></h1>
+      <div class="mast-sub">A beta user creates a repo on github.com. It's tied to the user — no team — and stays a base repo. The webhook syncs it into the platform engine, managed under the user.</div>
+    </div>
+    <div class="mast-meta">
+      <b>Primary actor</b> · Application Engineer (solo)<br>
+      <b>Ownership</b> · User · no team<br>
+      <b>AI</b> · none in Phase 1 (base repo)<br>
+      <b>Status</b> · Draft · updated
+    </div>
+  </header>
+
+  <div class="precond">
+    <span class="pk">Precondition</span>
+    <span><b>Beta onboarding complete.</b> User is in the beta AD group with GitHub Enterprise + org access. See the <b>Onboarding · Existing Employee (Beta)</b> map — this flow begins at its "Ready" launchpad.</span>
+  </div>
+
+  <div class="paths">
+    <span class="path-pill active"><span class="n">2 ·</span> Repo via GitHub — user-owned, base</span>
+    <span class="path-pill"><span class="n">5 ·</span> Repo for team via Platform Engine <span style="opacity:.7">— team-owned, AI + compliance</span></span>
+    <span class="path-note">↳ AI capabilities live only on control-plane team repos in Phase 1</span>
+  </div>
+
+  <div class="guide">
+    <div class="guide-cell"><div class="k">Stage</div><div class="v">The phase of the journey, front to end.</div></div>
+    <div class="guide-cell"><div class="k">Front-stage</div><div class="v">What the developer does &amp; sees. <span style="color:var(--green)">● round</span></div></div>
+    <div class="guide-cell"><div class="k">Back-stage</div><div class="v">What the platform does behind the scenes. <span style="color:var(--slate)">■ square</span></div></div>
+    <div class="guide-cell"><div class="k">Touchpoints</div><div class="v">Systems in play. Platform engine highlighted.</div></div>
+    <div class="guide-cell"><div class="k">Actors</div><div class="v">On-stage vs back-stage personas.</div></div>
+    <div class="guide-cell"><div class="k">Thoughts</div><div class="v">Synthesized future-state voice (not verbatim).</div></div>
+  </div>
+
+  <div class="map-scroll">
+    <div class="map">
+      <div class="rowlabel hdr">STAGE</div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">01</div><div class="st-name">Create</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">02</div><div class="st-name">Register</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">03</div><div class="st-name">Build</div></div></div>
+      <div class="cell chev final"><div class="arrow"><div class="st-n">04</div><div class="st-name">Delete</div></div></div>
+
+      <!-- FRONT -->
+      <div class="rowlabel band-top">Front-stage actions</div>
+      <div class="cell fe band-top"><ul>
+        <li>Goes to GitHub, clicks <b>New repository</b> inside the org</li>
+        <li>Names the repo per the required convention <span class="open">OPEN Q1</span></li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li>Gets a notification that the repo is now managed by the platform</li>
+        <li>(Uncertain) completes a manual claim / registration step <span class="open">OPEN Q3</span></li>
+      </ul>
+        <div class="flag"><b>Phase 2 preview:</b> a control-plane flow may later let the user add AI capabilities to their own repos — see the panel below. In Phase 1 this stays a base repo.</div>
+      </div>
+      <div class="cell fe band-top"><ul>
+        <li>Clones the repo with their SSH key <span class="open">OPEN Q9</span></li>
+        <li>Reads, writes, updates — uses GitHub normally, inside the org</li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li>Deletes via the platform engine, or on github.com if a repo admin</li>
+        <li>If not an admin, requests deletion from the repo owner <span class="open">OPEN Q8</span></li>
+      </ul></div>
+
+      <!-- BACK -->
+      <div class="rowlabel">Back-stage actions</div>
+      <div class="cell be"><ul>
+        <li>Repo is created <b>tied to the user — no team associated</b></li>
+        <li>Naming convention validated / enforced <span class="open">OPEN Q1</span></li>
+        <li><code>repository.created</code> webhook fires into the platform engine</li>
+        <li>Platform engine auto-registers the repo under the user</li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>The webhook has already associated the repo to the user in the platform engine</li>
+        <li>Recorded as a <b>base, non-AI repo</b> (Phase 1)</li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>Platform engine continues to monitor and manage the repo under the user</li>
+        <li>Repo stays base — no AI capabilities in Phase 1</li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li><code>repository.deleted</code> webhook fires into the platform engine</li>
+        <li>Platform engine tears down and cleans up everything associated with the repo <span class="open">OPEN Q6</span></li>
+        <li>(Likely Phase 2) audit / evidence record of the deletion retained for Compliance</li>
+      </ul></div>
+
+      <!-- TOUCHPOINTS -->
+      <div class="rowlabel band-top">Touchpoints</div>
+      <div class="cell band-top"><div class="tps"><span class="tp">GitHub</span><span class="tp core">Platform Engine</span><span class="tp">Webhook</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">Email</span><span class="tp core">Platform Engine</span><span class="tp">GitHub</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">GitHub</span><span class="tp">Local / IDE</span><span class="tp">SSH</span><span class="tp core">Platform Engine</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">GitHub</span><span class="tp core">Platform Engine</span><span class="tp">Webhook</span></div></div>
+
+      <!-- ACTORS -->
+      <div class="rowlabel band-top">Actors</div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer (solo)</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer (admin)</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span><span class="atag back">Compliance</span></div></div>
+      </div></div>
+
+      <!-- THOUGHTS -->
+      <div class="rowlabel band-top">Thoughts</div>
+      <div class="cell th band-top">"I make a repo the normal GitHub way — it's just mine, no team attached."</div>
+      <div class="cell th band-top">"The platform already knows about my repo — it's just a base repo for now."</div>
+      <div class="cell th band-top">"From here it's just Git — clone, commit, push, the way I always work."</div>
+      <div class="cell th band-top">"I can tear it down from either side and trust the platform cleans up the rest."</div>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h4><span class="tick"></span>Open questions</h4>
+      <div class="q done"><span class="qn">Q2 ✓</span><div><b>Resolved — auto-team.</b> A repo created via GitHub is <b>user-owned with no team</b>. There is no auto-team on repo creation; team creation is its own first-class flow (Flow 3).</div></div>
+      <div class="q done"><span class="qn">Q10 ✓</span><div><b>Resolved — AI on user repos.</b> Phase 1 user-owned github repos are <b>base repos, no AI</b>. AI capabilities are provisioned only through the control-plane team-repo flow (Flow 5). A Phase 2 flow may let users add AI to their own repos — see below.</div></div>
+      <div class="q"><span class="qn">Q1</span><div><b>Naming convention.</b> With no team, what's the pattern for a user repo — <code>username/repo-name</code>? What enforces it: a GitHub ruleset, or the webhook?</div></div>
+      <div class="q"><span class="qn">Q3</span><div><b>Registration purpose.</b> The webhook already registers the repo. Now that AI-unlock is out of Phase 1, is a manual claim/registration step still needed here — and what does it accomplish?</div></div>
+      <div class="q"><span class="qn">Q6</span><div><b>Cleanup on delete.</b> What does cleanup cover — retained audit/evidence for Compliance?</div></div>
+      <div class="q"><span class="qn">Q7</span><div><b>Access levels.</b> Org <b>write</b> / Enterprise <b>read</b> — confirm. Repo-level permission for the creator — admin?</div></div>
+      <div class="q"><span class="qn">Q8</span><div><b>Non-admin delete.</b> Ask the repo admin directly, or a control-plane request? Own mini-flow?</div></div>
+      <div class="q"><span class="qn">Q9</span><div><b>SSH.</b> Only supported auth? Where is the key provisioned in onboarding?</div></div>
+    </div>
+
+    <div class="panel">
+      <h4><span class="tick g"></span>Phase 1 flow set</h4>
+      <div class="flow-item"><div class="ft">1 · Onboarding (beta) <span class="badge done">mapped</span></div><div class="fd">Existing employee enrolled into the beta; precondition for all below.</div></div>
+      <div class="flow-item"><div class="ft">2 · Repo via GitHub <span class="badge here">this map</span></div><div class="fd">User-owned base repo, no team; synced to the platform engine.</div></div>
+      <div class="flow-item"><div class="ft">3 · Team via GitHub <span class="badge done">mapped</span></div><div class="fd">Team made in GitHub, synced into the platform engine.</div></div>
+      <div class="flow-item"><div class="ft">4 · Team via Platform Engine <span class="badge done">mapped</span></div><div class="fd">Team made in the platform engine, projected to GitHub.</div></div>
+      <div class="flow-item"><div class="ft">5 · Repo for team via Platform Engine <span class="badge done">mapped</span></div><div class="fd">Team-owned repo; creation asks AI &amp; compliance questions.</div></div>
+    </div>
+
+    <div class="panel full">
+      <h4><span class="tick b"></span>Phase 2 preview — add AI to your own repos</h4>
+      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:10px;">A candidate Phase 2 flow: from the platform engine, a user views the repos they own and opts to add AI capabilities to one — bringing the user-owned path to parity with team repos, on demand.</div>
+      <div class="p2">
+        <span class="step">CP login</span><span class="arr">→</span>
+        <span class="step">My repos (list)</span><span class="arr">→</span>
+        <span class="step">Add AI capabilities</span><span class="arr">→</span>
+        <span class="step">Sync repo with the capabilities it needs</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · JOURNEY MAP · FLOW 2 · REPO VIA GITHUB</span>
+    <span>DRAFT FROM TRANSCRIPT · PHASE 1 · FUTURE STATE</span>
+  </div>
+</div>
+</body>
+</html>

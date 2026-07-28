@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Object Model — Phase 1 → Phase 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;--paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;--green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;--teal:#0E8F7A;--teal-wash:#E7F4F1;--producer:#2D6E7E;--amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;--gate:#C0492B;--gate-wash:#F8E9E5;--gate-line:#E7C0B6;--blue:#3E6DBF;--blue-wash:#E9EFF9;--blue-line:#BCD0EE;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:48px 40px 72px;}
+  .wrap{max-width:1200px;margin:0 auto;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:24px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:36px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:640px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+
+  .phase-head{display:flex;align-items:baseline;gap:14px;margin:38px 0 6px;flex-wrap:wrap;}
+  .phase-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:6px;color:#fff;}
+  .tag.p1{background:var(--green);}
+  .tag.p2{background:var(--producer);}
+  .phase-head h2{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-0.01em;}
+  .phase-sub{font-size:13px;color:var(--ink-soft);margin:0 0 18px;max-width:780px;}
+
+  /* generic entity */
+  .entity{border-radius:14px;padding:18px;position:relative;}
+  .lvl-tag{position:absolute;top:-11px;left:20px;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:2px 10px;border-radius:5px;color:#fff;}
+  .lvl-team{background:var(--teal);}
+  .lvl-proj{background:var(--green);}
+  .lvl-repo{background:var(--ink-faint);}
+  .lvl-env{background:var(--producer);}
+  .ent-title{font-family:var(--display);font-size:22px;font-weight:600;padding-top:4px;margin-bottom:2px;}
+  .ent-title .sub{font-family:var(--mono);font-size:10px;color:var(--ink-faint);font-weight:400;display:block;margin-top:3px;letter-spacing:0.03em;}
+  .assoc-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin:14px 0 7px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{font-family:var(--mono);font-size:10px;padding:4px 9px;border-radius:6px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;}
+  .chip.proj{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .chip.team{background:var(--teal-wash);color:var(--teal);border:1px solid #BFE0D8;}
+  .chip.mem{background:#fff;color:var(--ink-soft);border:1px solid var(--hair);}
+  .chip.repo{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .chip.more{background:#fff;color:var(--ink-faint);border:1px dashed var(--hair);}
+  .chip .ai{font-family:var(--mono);font-size:8px;letter-spacing:0.03em;background:var(--blue);color:#fff;border-radius:3px;padding:1px 4px;font-weight:600;}
+
+  /* PHASE 1 */
+  .org-bar{border:1px dashed var(--ink-faint);border-radius:10px;background:#fff;padding:11px 16px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:0.03em;display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .org-bar b{color:var(--ink);font-weight:600;}
+  .org-bar .gh{font-family:var(--mono);font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;border-radius:5px;padding:2px 8px;font-weight:600;}
+  .p1-row{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;align-items:stretch;}
+  .team{border:2px solid var(--teal);background:var(--teal-wash);}
+  .userrepo{border:2px dashed var(--ink-faint);background:#fff;}
+  .repos-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin:16px 0 8px;}
+  .attach{margin-top:12px;padding-top:11px;border-top:1px solid rgba(14,143,122,0.25);font-family:var(--mono);font-size:9.5px;color:var(--teal);letter-spacing:0.02em;}
+  .attach .pill{display:inline-block;font-family:var(--mono);font-size:8.5px;padding:2px 7px;border-radius:4px;background:#fff;color:var(--teal);border:1px solid #BFE0D8;margin:0 3px 3px 0;}
+  .userrepo .no{margin-top:12px;padding-top:11px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:0.02em;}
+  .userrepo .no .pill{display:inline-block;font-family:var(--mono);font-size:8.5px;padding:2px 7px;border-radius:4px;background:#F4F5F4;color:var(--ink-faint);border:1px solid var(--hair);margin:0 3px 3px 0;}
+
+  /* shift divider */
+  .shift{display:flex;align-items:center;gap:14px;margin:30px 0;padding:14px 18px;border:1px solid var(--amber-line);background:var(--amber-wash);border-radius:10px;}
+  .shift .sk{font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--amber);color:#fff;padding:3px 9px;border-radius:5px;white-space:nowrap;}
+  .shift .st{font-size:13px;color:var(--ink-soft);line-height:1.45;}
+  .shift .st b{color:var(--ink);font-weight:600;}
+
+  /* PHASE 2 relationship */
+  .rel{display:grid;grid-template-columns:1fr auto 1.9fr;gap:0;align-items:stretch;}
+  .project{border:2px solid var(--green);background:#fff;}
+  .mn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 14px;}
+  .mn .sym{font-family:var(--mono);font-size:22px;color:var(--ink-faint);font-weight:600;}
+  .mn .lbl{font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);letter-spacing:0.05em;text-align:center;margin-top:6px;line-height:1.4;}
+  .owns-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin:16px 0 8px;}
+  .owns-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .owns{border:1px solid var(--hair);border-radius:9px;background:var(--green-wash);padding:10px 12px;}
+  .owns .ol{font-family:var(--mono);font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green-deep);font-weight:600;margin-bottom:3px;}
+  .owns .ov{font-size:11.5px;color:var(--ink-soft);}
+  .owns .ov b{color:var(--ink);font-weight:600;}
+  .env-block{border:2px solid var(--producer);border-radius:14px;background:#FAFBFB;padding:18px;position:relative;margin-top:22px;}
+  .env-intro{font-size:12.5px;color:var(--ink-soft);margin:4px 0 14px;padding-top:4px;}
+  .env-intro b{color:var(--ink);font-weight:600;}
+  .envs{display:flex;gap:12px;flex-wrap:wrap;}
+  .env{border:1px solid var(--hair);border-radius:10px;background:#fff;padding:12px 14px;flex:1;min-width:150px;}
+  .env .en{font-family:var(--display);font-size:15px;font-weight:600;}
+  .env .etype{font-family:var(--mono);font-size:8px;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-faint);margin-top:1px;}
+  .env .detail{font-family:var(--mono);font-size:9px;color:var(--producer);margin-top:8px;background:#EEF3F4;border:1px solid #D6E2E4;border-radius:5px;padding:3px 7px;display:inline-block;}
+  .env.prod .detail{color:var(--gate);background:var(--gate-wash);border-color:var(--gate-line);}
+  .env-wired{margin-top:10px;padding-top:9px;border-top:1px solid var(--hair-soft);}
+  .env-wired .wl{font-family:var(--mono);font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px;}
+  .pill{display:inline-block;font-family:var(--mono);font-size:8.5px;padding:2px 6px;border-radius:4px;background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;margin:0 3px 3px 0;}
+  .pill.later{background:#fff;color:var(--ink-faint);border:1px dashed var(--hair);}
+  .addon-note{margin-top:14px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);}
+  .addon-note .pill{margin-left:4px;}
+
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:14px;font-weight:600;}
+  .lr{font-size:13px;color:var(--ink-soft);margin-bottom:10px;line-height:1.5;padding-left:16px;position:relative;}
+  .lr:last-child{margin-bottom:0;}
+  .lr::before{content:"→";position:absolute;left:0;color:var(--green);font-family:var(--mono);font-weight:600;}
+  .lr.t::before{color:var(--teal);}
+  .lr b{color:var(--ink);font-weight:600;}
+  .colophon{margin-top:36px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media (max-width:820px){body{padding:28px 16px 52px;}.p1-row{grid-template-columns:1fr;}.rel{grid-template-columns:1fr;}.mn{flex-direction:row;padding:10px 0;}.owns-row{grid-template-columns:1fr;}.legend{grid-template-columns:1fr;}.mast h1{font-size:28px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">Reference · Object Model · Phase 1 → Phase 2</div>
+      <h1>Object <span>Model</span></h1>
+      <div class="mast-sub">The shared vocabulary behind every journey map — and how it evolves. Phase 1 is organized around the Team; Phase 2 introduces the Project as the anchor for everything deployment-related.</div>
+    </div>
+    <div class="mast-meta">
+      <b>P1 anchor</b> · Team<br>
+      <b>P2 anchor</b> · Project<br>
+      <b>Constant</b> · Platform engine = record<br>
+      <b>State</b> · Draft
+    </div>
+  </header>
+
+  <!-- ================= PHASE 1 ================= -->
+  <div class="phase-head">
+    <span class="tag p1">Phase 1</span>
+    <h2>GitHub Inner-Sourcing</h2>
+  </div>
+  <div class="phase-sub">Everything hangs off the <b>Team</b>. Repositories are either team-owned (where AI capabilities and compliance attach) or standalone user-owned. Both GitHub and the platform engine are edit surfaces, kept in bidirectional sync.</div>
+
+  <div class="org-bar">
+    <span class="gh">GitHub</span>
+    <span><b>Single GitHub Org</b> (Phase 1) · Enterprise + org access tie to AD groups — teams themselves bypass Entra</span>
+  </div>
+
+  <div class="p1-row">
+    <div class="entity team">
+      <span class="lvl-tag lvl-team">Team · anchor</span>
+      <div class="ent-title">Team <span class="sub">created in GitHub or the platform engine · bidirectional</span></div>
+      <div class="assoc-label">members</div>
+      <div class="chips">
+        <span class="chip mem">member</span>
+        <span class="chip mem">member</span>
+        <span class="chip more">…</span>
+      </div>
+      <div class="repos-label">owns team repositories · 1 to many</div>
+      <div class="chips">
+        <span class="chip repo">repo <span class="ai">AI</span></span>
+        <span class="chip repo">repo <span class="ai">AI</span></span>
+        <span class="chip repo">repo</span>
+        <span class="chip more">…</span>
+      </div>
+      <div class="attach">Team repos are where capabilities attach:
+        <div style="margin-top:6px;"><span class="pill">AI capabilities</span><span class="pill">compliance level</span><span class="pill">CI · GitHub Actions + runners</span></div>
+      </div>
+    </div>
+
+    <div class="entity userrepo">
+      <span class="lvl-tag lvl-repo">Repository · standalone</span>
+      <div class="ent-title" style="font-size:18px;">User-owned Repo <span class="sub">created directly in GitHub</span></div>
+      <div class="no">Deliberately minimal:
+        <div style="margin-top:6px;"><span class="pill">no team</span><span class="pill">no auto-team</span><span class="pill">no AI (Phase 1)</span></div>
+        <div style="margin-top:8px;color:var(--ink-soft);">Registered with the platform engine by webhook, but base-only. Adding AI later is a Phase 2 flow.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend" style="margin-top:22px;">
+    <div class="panel">
+      <h4>Reading Phase 1</h4>
+      <div class="lr t"><b>Team is the anchor.</b> Members and team repositories hang off it; the team is the unit of ownership and AI/compliance scope.</div>
+      <div class="lr t"><b>Two repo kinds.</b> Team repos (AI + compliance eligible) vs standalone user-owned repos (base only, no team, no AI).</div>
+      <div class="lr t"><b>No auto-team.</b> Creating a repo never creates a team; the two are independent acts.</div>
+    </div>
+    <div class="panel">
+      <h4>Constants across phases</h4>
+      <div class="lr"><b>Platform engine is the record.</b> Not a proxy — the central, up-to-date state across integrated systems (GitHub now; JFrog / K8s / Datadog later).</div>
+      <div class="lr"><b>Both surfaces are valid.</b> GitHub and the platform engine can each originate changes; sync is bidirectional.</div>
+      <div class="lr"><b>Teams bypass Entra.</b> Only Enterprise + org access map to AD groups.</div>
+    </div>
+  </div>
+
+  <!-- ================= SHIFT ================= -->
+  <div class="shift">
+    <span class="sk">What shifts</span>
+    <span class="st"><b>Repositories move.</b> In Phase 1 repos hang off the <b>Team</b>. In Phase 2 they hang off the <b>Project</b>, which becomes the anchor for all deployment concerns. The Team stays — but Team ↔ Project becomes a many-to-many pairing.</span>
+  </div>
+
+  <!-- ================= PHASE 2 ================= -->
+  <div class="phase-head">
+    <span class="tag p2">Phase 2</span>
+    <h2>Kubernetes Deployment Platform</h2>
+  </div>
+  <div class="phase-sub">The <b>Project</b> is the new anchor. Team and Project are a many-to-many pair; the Project owns repos, the JFrog space, and the config store; and environments are flat siblings beneath it.</div>
+
+  <div class="rel">
+    <div class="entity team">
+      <span class="lvl-tag lvl-team">Team</span>
+      <div class="ent-title">Team <span class="sub">carries over from Phase 1 · owns membership</span></div>
+      <div class="assoc-label">owns many projects</div>
+      <div class="chips">
+        <span class="chip proj">Project α</span>
+        <span class="chip proj">Project β</span>
+        <span class="chip proj">Project γ</span>
+        <span class="chip more">…</span>
+      </div>
+    </div>
+
+    <div class="mn"><div class="sym">⇄</div><div class="lbl">many-to-many<br>1:1 to start</div></div>
+
+    <div class="entity project">
+      <span class="lvl-tag lvl-proj">Project · anchor</span>
+      <div class="ent-title">Project <span class="sub">anchor for anything deployment-related</span></div>
+      <div class="assoc-label">run by many teams</div>
+      <div class="chips">
+        <span class="chip team">Team A</span>
+        <span class="chip team">Team B</span>
+        <span class="chip more">…</span>
+      </div>
+      <div class="owns-label">owns</div>
+      <div class="owns-row">
+        <div class="owns"><div class="ol">owns</div><div class="ov"><b>Repositories</b> · 1 to many</div></div>
+        <div class="owns"><div class="ol">owns</div><div class="ov"><b>JFrog project space</b></div></div>
+        <div class="owns"><div class="ol">owns</div><div class="ov"><b>Secret / config space</b></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="env-block">
+    <span class="lvl-tag lvl-env">Environments · below the Project</span>
+    <div class="env-intro">Flat siblings under the project. <b>dev / qa / prod are auto-provisioned</b>; staging / uat are optional add-ons. The cluster &amp; account are just a <b>detail of each environment</b> — not a grouping.</div>
+    <div class="envs">
+      <div class="env"><div class="en">dev</div><div class="etype">auto</div>
+        <div class="detail">nonprod cluster · nonprod account</div>
+        <div class="env-wired"><div class="wl">wired</div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span></div>
+      </div>
+      <div class="env"><div class="en">qa</div><div class="etype">auto</div>
+        <div class="detail">nonprod cluster · nonprod account</div>
+        <div class="env-wired"><div class="wl">wired</div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span></div>
+      </div>
+      <div class="env prod"><div class="en">prod</div><div class="etype">auto · gated</div>
+        <div class="detail">prod cluster · prod account</div>
+        <div class="env-wired"><div class="wl">wired</div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span></div>
+      </div>
+      <div class="env"><div class="en">staging</div><div class="etype">add-on · optional</div>
+        <div class="detail">nonprod cluster · nonprod account</div>
+        <div class="env-wired"><div class="wl">wired</div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span></div>
+      </div>
+      <div class="env"><div class="en">uat</div><div class="etype">add-on · optional</div>
+        <div class="detail">nonprod cluster · nonprod account</div>
+        <div class="env-wired"><div class="wl">wired</div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span></div>
+      </div>
+    </div>
+    <div class="addon-note">Per-environment add-ons, later: <span class="pill later">domain</span><span class="pill later">certificate</span><span class="pill later">database</span></div>
+  </div>
+
+  <div class="legend">
+    <div class="panel">
+      <h4>Reading Phase 2</h4>
+      <div class="lr"><b>Project is the anchor.</b> Repos, the JFrog space, and the config/secret space hang off it — shared across the project's environments.</div>
+      <div class="lr"><b>Environments are flat.</b> Each gets the same wiring at provision time: namespace, config/secret binding, JFrog pull config, GitOps.</div>
+      <div class="lr"><b>Cluster/account is a detail.</b> Structurally just an environment; the cluster and account it lands in are attributes (prod → prod cluster/account).</div>
+    </div>
+    <div class="panel">
+      <h4>Cardinality &amp; open points</h4>
+      <div class="lr"><b>Team ↔ Project is many-to-many</b> — a team owns many projects; a project can be run by many teams. Both start 1:1.</div>
+      <div class="lr"><b>Project → Repositories</b> is 1:many — superseding Phase 1's team-owned repo.</div>
+      <div class="lr"><b>Open</b> — JFrog structure, and the unified secret/config store backend (GitHub secrets vs Vault / 1Password).</div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · OBJECT MODEL · PHASE 1 → PHASE 2</span>
+    <span>DRAFT FOR WORKSHOP ALIGNMENT</span>
+  </div>
+</div>
+</body>
+</html>

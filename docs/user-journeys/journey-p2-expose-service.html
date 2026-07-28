@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Map — P2 · Expose a Service</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;--paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;--green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;--amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;--slate:#5A5F73;--blue:#3E6DBF;--blue-wash:#E9EFF9;--blue-line:#BCD0EE;--gate:#C0492B;--gate-wash:#F8E9E5;--gate-line:#E7C0B6;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:44px 40px 72px;}
+  .wrap{max-width:1400px;margin:0 auto;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:22px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-family:var(--body);font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:660px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+  .precond{display:flex;align-items:center;gap:12px;margin:22px 0 0;padding:12px 16px;border:1px dashed var(--green);background:var(--green-wash);border-radius:8px;font-size:13px;color:var(--green-deep);}
+  .precond .pk{font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--green);color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+  .precond b{font-weight:600;color:var(--ink);}
+  .paths{display:flex;gap:10px;margin:14px 0 8px;flex-wrap:wrap;align-items:center;}
+  .path-pill{font-family:var(--mono);font-size:11px;letter-spacing:0.03em;padding:7px 13px;border-radius:7px;border:1px solid var(--hair);background:#fff;color:var(--ink-faint);}
+  .path-pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .path-pill .n{color:var(--green);font-weight:600;}.path-pill.active .n{color:#4de29a;}
+  .path-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);}
+  .guide{display:flex;gap:0;border:1px solid var(--hair);border-radius:10px;overflow:hidden;margin:14px 0 26px;background:var(--card);flex-wrap:wrap;}
+  .guide-cell{padding:12px 16px;border-right:1px solid var(--hair);flex:1;min-width:150px;}
+  .guide-cell:last-child{border-right:none;}
+  .guide-cell .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:4px;font-weight:600;}
+  .guide-cell .v{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+  .map-scroll{overflow-x:auto;border:1px solid var(--hair);border-radius:12px;background:var(--card);padding-bottom:2px;}
+  .map{display:grid;grid-template-columns:118px repeat(4,minmax(250px,1fr));min-width:1180px;}
+  .rowlabel{position:sticky;left:0;z-index:5;background:var(--card);border-right:2px solid var(--ink);padding:16px 12px;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);font-weight:600;display:flex;align-items:flex-start;}
+  .cell{padding:14px 14px;border-right:1px solid var(--hair-soft);border-top:1px solid var(--hair-soft);}
+  .cell:last-child{border-right:none;}
+  .hdr .rowlabel{border-top:none;align-items:center;}
+  .chev{position:relative;display:flex;align-items:stretch;}
+  .chev .arrow{flex:1;background:#fff;border:2px solid var(--green);color:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:13px 20px 13px 16px;margin:12px 6px 12px 0;clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);}
+  .chev:first-of-type .arrow{clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);}
+  .chev.final .arrow{background:var(--green-wash);}
+  .chev .arrow .st-n{font-family:var(--mono);font-size:10px;color:var(--green);font-weight:600;letter-spacing:0.08em;}
+  .chev .arrow .st-name{font-family:var(--display);font-size:16px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;}
+  .band-top .cell,.band-top.rowlabel{border-top:2px solid var(--hair);}
+  .cell ul{list-style:none;}
+  .cell li{font-size:12.5px;color:var(--ink-soft);padding-left:15px;position:relative;margin-bottom:7px;line-height:1.42;}
+  .cell li:last-child{margin-bottom:0;}
+  .cell.fe li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .cell.be li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:1px;background:var(--slate);}
+  .cell.be{background:#FBFCFB;}
+  .muted{color:var(--ink-faint);font-style:italic;font-size:12px;}
+  .tps{display:flex;flex-wrap:wrap;gap:5px;}
+  .tp{font-family:var(--mono);font-size:9.5px;letter-spacing:0.02em;padding:3px 8px;border-radius:5px;background:#F1F3F1;color:var(--ink-soft);border:1px solid var(--hair);white-space:nowrap;}
+  .tp.core{background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;font-weight:600;}
+  .tp.cli{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .tp.ai{background:var(--blue-wash);color:var(--blue);border-color:var(--blue-line);font-weight:600;}
+  .actors-wrap{display:flex;flex-direction:column;gap:8px;}
+  .actor-grp .lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px;}
+  .atags{display:flex;flex-wrap:wrap;gap:4px;}
+  .atag{font-size:11px;padding:3px 8px;border-radius:12px;white-space:nowrap;}
+  .atag.on{background:var(--green);color:#fff;font-weight:500;}
+  .atag.back{background:#fff;border:1px solid var(--hair);color:var(--ink-faint);}
+  .atag.sys{background:#EEF0F3;border:1px solid #DADEE4;color:var(--slate);}
+  .cell.th{font-size:13px;color:var(--ink);font-style:italic;line-height:1.5;}
+  .open{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:0.03em;padding:1px 6px;border-radius:4px;background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);font-weight:600;vertical-align:middle;margin-left:3px;white-space:nowrap;}
+  .flag{margin-top:9px;padding:8px 10px;border-left:3px solid var(--blue);background:var(--blue-wash);border-radius:0 6px 6px 0;font-size:11px;color:var(--blue);line-height:1.4;}
+  .flag.amber{border-left-color:var(--amber);background:var(--amber-wash);color:var(--amber);}
+  .flag b{font-weight:600;}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .panel h4 .tick{width:8px;height:8px;border-radius:2px;background:var(--amber);}
+  .panel h4 .tick.g{background:var(--green);}
+  .q{display:flex;gap:11px;margin-bottom:13px;font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .q:last-child{margin-bottom:0;}
+  .q .qn{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:5px;padding:1px 6px;height:fit-content;white-space:nowrap;}
+  .q b{color:var(--ink);font-weight:600;}
+  .q code{font-family:var(--mono);font-size:12px;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
+  .flow-item{padding:11px 0;border-bottom:1px solid var(--hair-soft);}
+  .flow-item:first-of-type{padding-top:0;}.flow-item:last-child{border-bottom:none;padding-bottom:0;}
+  .flow-item .ft{font-family:var(--display);font-size:13.5px;font-weight:600;margin-bottom:2px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .badge{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;padding:2px 7px;border-radius:5px;text-transform:uppercase;font-weight:600;}
+  .badge.done{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .badge.here{background:var(--ink);color:#fff;}
+  .badge.todo{background:#EEF0F3;color:var(--slate);border:1px solid #DADEE4;}
+  .flow-item .fd{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+  .colophon{margin-top:32px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media (max-width:820px){body{padding:28px 16px 52px;}.panels{grid-template-columns:1fr;}.mast h1{font-size:26px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">User Journey Map · Phase 2 · Flow 6 · Future State</div>
+      <h1>Expose a <span>Service</span></h1>
+      <div class="mast-sub">A developer makes a running service reachable over HTTPS. The platform assigns a hostname on its default domain, wires the service mesh, writes DNS, and issues the certificate.</div>
+    </div>
+    <div class="mast-meta">
+      <b>Primary actor</b> · App Engineer<br>
+      <b>Domain</b> · platform default + subdomain<br>
+      <b>Mesh / cert</b> · Istio · Venafi<br>
+      <b>Status</b> · Draft · needs investigation
+    </div>
+  </header>
+
+  <div class="precond">
+    <span class="pk">Precondition</span>
+    <span><b>Service deployed to an environment.</b> The workload is running (Flow 5). Exposure adds ingress on the platform's default domain — <b>bring-your-own domain is likely Phase 3</b>.</span>
+  </div>
+
+  <div class="paths">
+    <span class="path-pill active"><span class="n">▸</span> Platform default domain — <code style="font-family:var(--mono);">&lt;name&gt;.dev.platform.company.com</code></span>
+    <span class="path-pill"><span class="n">▸</span> Bring your own domain <span style="opacity:.7">— likely Phase 3</span></span>
+    <span class="path-note">↳ mesh is mandatory unless explicitly opted out</span>
+  </div>
+
+  <div class="guide">
+    <div class="guide-cell"><div class="k">Stage</div><div class="v">The phase of the journey, front to end.</div></div>
+    <div class="guide-cell"><div class="k">Front-stage</div><div class="v">What the developer does. <span style="color:var(--green)">● round</span></div></div>
+    <div class="guide-cell"><div class="k">Back-stage</div><div class="v">What the platform does. <span style="color:var(--slate)">■ square</span></div></div>
+    <div class="guide-cell"><div class="k">Touchpoints</div><div class="v"><span class="tp cli" style="font-size:9px;">CLI</span> <span class="tp ai" style="font-size:9px;">AI/MCP</span> surfaces.</div></div>
+    <div class="guide-cell"><div class="k">Actors</div><div class="v">On-stage vs back-stage personas.</div></div>
+    <div class="guide-cell"><div class="k">Thoughts</div><div class="v">Synthesized future-state voice.</div></div>
+  </div>
+
+  <div class="map-scroll">
+    <div class="map">
+      <div class="rowlabel hdr">STAGE</div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">01</div><div class="st-name">Request</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">02</div><div class="st-name">Wire Mesh</div></div></div>
+      <div class="cell chev"><div class="arrow"><div class="st-n">03</div><div class="st-name">DNS &amp; Cert</div></div></div>
+      <div class="cell chev final"><div class="arrow"><div class="st-n">04</div><div class="st-name">Live</div></div></div>
+
+      <!-- FRONT -->
+      <div class="rowlabel band-top">Front-stage actions</div>
+      <div class="cell fe band-top"><ul>
+        <li>Requests exposure via CLI/agent or a manifest for the running service</li>
+        <li>Picks a hostname on the platform default domain (subdomain per env) <span class="open">OPEN Q1</span></li>
+      </ul>
+        <div class="flag"><b>Phase 3:</b> bringing your own domain — the platform would register the domain and its certificate on the consumer's behalf.</div>
+      </div>
+      <div class="cell fe band-top"><ul>
+        <li class="muted">No action — mesh wiring is applied for them</li>
+        <li>(If opting out of the mesh, requests the exception) <span class="open">OPEN Q3</span></li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li class="muted">Waits briefly while DNS and the certificate come up</li>
+      </ul></div>
+      <div class="cell fe band-top"><ul>
+        <li>Reaches the service externally over HTTPS at its hostname</li>
+      </ul></div>
+
+      <!-- BACK -->
+      <div class="rowlabel">Back-stage actions</div>
+      <div class="cell be"><ul>
+        <li>Platform engine derives the hostname and validates it against the default domain <span class="open">OPEN Q2</span></li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>Istio gateway + routing configured for the service — <b>mesh mandatory</b> unless opted out <span class="open">OPEN Q3</span></li>
+        <li>(East-west mTLS raises DR / multi-region questions) <span class="open">OPEN Q5</span></li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>ExternalDNS writes the DNS record <span class="open">OPEN Q4</span></li>
+        <li>cert-manager issues the certificate via <b>Venafi</b>; auto-renewed for platform-domain hosts</li>
+      </ul></div>
+      <div class="cell be"><ul>
+        <li>Platform engine records the exposure (host, cert, mesh route) on the environment</li>
+      </ul></div>
+
+      <!-- TOUCHPOINTS -->
+      <div class="rowlabel band-top">Touchpoints</div>
+      <div class="cell band-top"><div class="tps"><span class="tp cli">CLI</span><span class="tp ai">AI/MCP</span><span class="tp">GitHub · manifest</span><span class="tp core">Platform Engine</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">Istio</span><span class="tp">K8s</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">ExternalDNS</span><span class="tp">cert-manager</span><span class="tp">Venafi</span><span class="tp">DNS</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">K8s</span><span class="tp core">Platform Engine</span></div></div>
+
+      <!-- ACTORS -->
+      <div class="rowlabel band-top">Actors</div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag none" style="background:transparent;border:1px dashed var(--hair);color:var(--ink-faint);font-style:italic;">— none visible</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Istio</span><span class="atag back">Platform Eng · Ops</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag none" style="background:transparent;border:1px dashed var(--hair);color:var(--ink-faint);font-style:italic;">— none visible</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">ExternalDNS</span><span class="atag sys">cert-manager</span><span class="atag back">Platform Eng · Ops</span></div></div>
+      </div></div>
+      <div class="cell band-top"><div class="actors-wrap">
+        <div class="actor-grp"><div class="lbl">On-stage</div><div class="atags"><span class="atag on">App Engineer</span></div></div>
+        <div class="actor-grp"><div class="lbl">Back-stage</div><div class="atags"><span class="atag sys">Platform Engine</span></div></div>
+      </div></div>
+
+      <!-- THOUGHTS -->
+      <div class="rowlabel band-top">Thoughts</div>
+      <div class="cell th band-top">"I ask for a hostname and the platform gives me one on its domain."</div>
+      <div class="cell th band-top">"The mesh is just there — I don't set up ingress or mTLS myself."</div>
+      <div class="cell th band-top">"DNS and the cert come up on their own — no ticket to the network team."</div>
+      <div class="cell th band-top">"My service is live over HTTPS."</div>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h4><span class="tick"></span>Open questions</h4>
+      <div class="q"><span class="qn">Q1</span><div><b>Hostname derivation.</b> How the host is derived — per service, per namespace, per env? Pattern like <code>&lt;name&gt;.&lt;env&gt;.platform.company.com</code>?</div></div>
+      <div class="q"><span class="qn">Q2</span><div><b>Default domain.</b> Confirm the platform-owned default domain and how subdomains map to environments.</div></div>
+      <div class="q"><span class="qn">Q3</span><div><b>Mesh opt-out.</b> Mesh is mandatory — what's the legitimate opt-out path, who approves it, and what does opting out change?</div></div>
+      <div class="q"><span class="qn">Q4</span><div><b>ExternalDNS approach.</b> The right ExternalDNS setup still needs a proper look — flagged as needing more thought.</div></div>
+      <div class="q"><span class="qn">Q5</span><div><b>East-west mTLS &amp; DR.</b> Internal mTLS raises disaster-recovery / multi-region questions worth exploring separately.</div></div>
+      <div class="q"><span class="qn">Q6</span><div><b>BYO domain (Phase 3).</b> When a consumer brings a domain, the platform registers it + its cert — scope and ownership of renewal to be defined.</div></div>
+    </div>
+
+    <div class="panel">
+      <h4><span class="tick g"></span>Phase 2 flow set</h4>
+      <div class="flow-item"><div class="ft">1 · Provision project &amp; environments <span class="badge done">mapped</span></div><div class="fd">The anchor.</div></div>
+      <div class="flow-item"><div class="ft">2 · Manage secrets &amp; config <span class="badge done">mapped</span></div><div class="fd">Unified store.</div></div>
+      <div class="flow-item"><div class="ft">3 · Create a custom environment <span class="badge done">mapped</span></div><div class="fd">Add staging / uat.</div></div>
+      <div class="flow-item"><div class="ft">4 · Add a datastore <span class="badge done">mapped</span></div><div class="fd">CLI or manifest.</div></div>
+      <div class="flow-item"><div class="ft">5 · Deploy app to dev / qa <span class="badge done">mapped</span></div><div class="fd">Build → JFrog → GitOps.</div></div>
+      <div class="flow-item"><div class="ft">6 · Expose a service <span class="badge here">this map</span></div><div class="fd">Domain + mesh + certificate.</div></div>
+      <div class="flow-item"><div class="ft">7 · Promote to production <span class="badge todo">next</span></div><div class="fd">The compliance / admission gate.</div></div>
+      <div class="flow-item"><div class="ft">8 · Migrate a project in <span class="badge todo">last</span></div><div class="fd">Bring an external workload in.</div></div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · JOURNEY MAP · P2 FLOW 6 · EXPOSE A SERVICE</span>
+    <span>DRAFT FROM TRANSCRIPT · PHASE 2 · FUTURE STATE</span>
+  </div>
+</div>
+</body>
+</html>
