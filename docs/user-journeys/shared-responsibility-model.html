@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Responsibility Model &mdash; Phase 1 &amp; Phase 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;--paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;--green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;--teal:#0E8F7A;--teal-wash:#E6F4F1;--teal-line:#B6DED5;--producer:#2D6E7E;--producer-wash:#E8F0F2;--producer-line:#C3DBE0;--amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;--slate:#5A5F73;--blue:#3E6DBF;--blue-wash:#E9EFF9;--blue-line:#BCD0EE;--gate:#C0492B;--gate-wash:#F8E9E5;--gate-line:#E7C0B6;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:44px 40px 72px;}
+  .wrap{max-width:1400px;margin:0 auto;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:22px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:680px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+  .mast-meta a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--hair);}
+  .mast-meta a:hover{color:var(--green);}
+
+  .thesis{display:flex;align-items:flex-start;gap:14px;margin:22px 0 0;padding:14px 18px;border:1px dashed var(--producer);background:var(--producer-wash);border-radius:8px;font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
+  .thesis .pk{font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--producer);color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap;margin-top:1px;}
+  .thesis b{font-weight:600;color:var(--ink);}
+
+  .jump{display:flex;gap:9px;margin:16px 0 0;flex-wrap:wrap;align-items:center;}
+  .jump a{font-family:var(--mono);font-size:11px;letter-spacing:0.03em;padding:7px 13px;border-radius:7px;border:1px solid var(--hair);background:#fff;color:var(--ink-soft);text-decoration:none;}
+  .jump a:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .jump a .n{color:var(--green);font-weight:600;}
+  .jump a:hover .n{color:#4de29a;}
+
+  .guide{display:flex;gap:0;border:1px solid var(--hair);border-radius:10px;overflow:hidden;margin:18px 0 8px;background:var(--card);flex-wrap:wrap;}
+  .guide-cell{padding:12px 16px;border-right:1px solid var(--hair);flex:1;min-width:168px;}
+  .guide-cell:last-child{border-right:none;}
+  .guide-cell .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;font-weight:600;}
+  .guide-cell .k.c{color:var(--green);} .guide-cell .k.s{color:var(--teal);} .guide-cell .k.p{color:var(--producer);}
+  .guide-cell .k.n{color:var(--slate);} .guide-cell .k.a{color:var(--amber);}
+  .guide-cell .v{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+
+  .phasehead{display:flex;align-items:baseline;gap:14px;margin:44px 0 4px;flex-wrap:wrap;padding-top:10px;}
+  .phasehead h2{font-family:var(--display);font-size:24px;font-weight:600;letter-spacing:-0.01em;}
+  .phasehead .tag{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:6px;color:#fff;}
+  .tag.p1{background:var(--green);} .tag.p2{background:var(--producer);}
+  .phasehead .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+  .phasesub{font-size:13px;color:var(--ink-soft);margin:2px 0 16px;max-width:900px;}
+  .phasesub b{color:var(--ink);font-weight:600;}
+
+  .map-scroll{overflow-x:auto;border:1px solid var(--hair);border-radius:12px;background:var(--card);}
+  .srm{display:grid;grid-template-columns:206px repeat(3,minmax(290px,1fr));min-width:1280px;}
+  .colhdr{padding:10px 14px;font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;border-right:1px solid var(--hair-soft);border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:7px;background:#FAFBFA;}
+  .colhdr:last-child{border-right:none;}
+  .colhdr .dot{width:8px;height:8px;border-radius:2px;flex:none;}
+  .colhdr.lab{position:sticky;left:0;z-index:6;color:var(--ink);border-right:2px solid var(--ink);}
+  .colhdr.c{color:var(--green-deep);} .colhdr.c .dot{background:var(--green);}
+  .colhdr.s{color:var(--teal);} .colhdr.s .dot{background:var(--teal);}
+  .colhdr.p{color:var(--producer);} .colhdr.p .dot{background:var(--producer);}
+
+  .domband{grid-column:1 / -1;position:sticky;left:0;display:flex;align-items:baseline;gap:12px;padding:11px 16px;background:#F2F4F2;border-top:2px solid var(--ink);border-bottom:1px solid var(--hair);flex-wrap:wrap;}
+  .domband .dl{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.1em;color:#fff;background:var(--ink);padding:2px 8px;border-radius:5px;}
+  .domband .dn{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  .domband .db{font-size:12px;color:var(--ink-faint);line-height:1.4;}
+
+  .rowlabel{position:sticky;left:0;z-index:5;background:var(--card);border-right:2px solid var(--ink);border-top:1px solid var(--hair-soft);padding:14px 12px;display:flex;flex-direction:column;gap:3px;align-items:flex-start;}
+  .rowlabel .rn{font-family:var(--mono);font-size:9px;color:var(--ink-faint);letter-spacing:0.08em;font-weight:600;}
+  .rowlabel .cn{font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:-0.01em;line-height:1.2;color:var(--ink);}
+  .rowlabel .cs{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:0.02em;line-height:1.3;}
+  .delta{font-family:var(--mono);font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;padding:2px 7px;border-radius:4px;margin-top:5px;}
+  .delta.same{background:#EEF0F3;color:var(--slate);border:1px solid #DADEE4;}
+  .delta.shifts{background:var(--producer-wash);color:var(--producer);border:1px solid var(--producer-line);}
+  .delta.new{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .delta.undecided{background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);}
+  .none.undec{color:var(--amber);border-color:var(--amber-line);background:var(--amber-wash);}
+
+  .cell{padding:13px 15px;border-right:1px solid var(--hair-soft);border-top:1px solid var(--hair-soft);}
+  .cell:last-child{border-right:none;}
+  .cell.c{background:#FFFFFF;} .cell.s{background:#FBFDFC;} .cell.p{background:#FAFCFC;}
+  .cell.wide{grid-column:span 2;}
+  .cell.off{background:#FCFDFC;}
+  .cell.notoffered{background:#F5F6F7;display:flex;align-items:center;}
+  .cell .no{font-family:var(--mono);font-size:10.5px;color:var(--slate);letter-spacing:0.03em;line-height:1.5;padding:7px 11px;border:1px dashed #C7CCD6;border-radius:6px;background:#FAFBFC;}
+  .cell ul{list-style:none;}
+  .cell li{font-size:12.5px;color:var(--ink-soft);padding-left:15px;position:relative;margin-bottom:7px;line-height:1.42;}
+  .cell li:last-child{margin-bottom:0;}
+  .cell li b{color:var(--ink);font-weight:600;}
+  .cell code{font-family:var(--mono);font-size:11px;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
+  .cell.c li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .cell.s li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--teal);}
+  .cell.p li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:1px;background:var(--producer);}
+  .none{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:inline-block;padding:3px 9px;border:1px dashed #C7CCD6;border-radius:5px;background:#FAFBFC;}
+
+  .open{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:0.03em;padding:1px 6px;border-radius:4px;background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);font-weight:600;vertical-align:middle;margin-left:3px;white-space:nowrap;}
+  .flag{margin-top:9px;padding:8px 10px;border-left:3px solid var(--teal);background:var(--teal-wash);border-radius:0 6px 6px 0;font-size:11px;color:#0a6b5b;line-height:1.4;}
+  .flag.amber{border-left-color:var(--amber);background:var(--amber-wash);color:var(--amber);}
+  .flag.gate{border-left-color:var(--gate);background:var(--gate-wash);color:var(--gate);}
+  .flag.shift{border-left-color:var(--producer);background:var(--producer-wash);color:var(--producer);}
+  .flag b{font-weight:600;}
+  .src{margin-top:9px;display:flex;flex-wrap:wrap;gap:4px;}
+  .src a{font-family:var(--mono);font-size:9px;letter-spacing:0.02em;padding:2px 7px;border-radius:4px;background:#F1F3F1;color:var(--ink-soft);border:1px solid var(--hair);text-decoration:none;white-space:nowrap;}
+  .src a:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .src .lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);width:100%;margin-bottom:1px;}
+
+  .section-head{display:flex;align-items:baseline;gap:14px;margin:40px 0 4px;flex-wrap:wrap;}
+  .section-head h2{font-family:var(--display);font-size:21px;font-weight:600;letter-spacing:-0.01em;}
+  .section-head .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+  .section-sub{font-size:13px;color:var(--ink-soft);margin:2px 0 16px;max-width:860px;}
+
+  .shifts{border:1px solid var(--hair);border-radius:12px;background:var(--card);overflow:hidden;}
+  .shift{display:grid;grid-template-columns:186px 1fr 34px 1fr;border-bottom:1px solid var(--hair-soft);}
+  .shift:last-child{border-bottom:none;}
+  .shift .sc{padding:13px 16px;font-family:var(--mono);font-size:10px;letter-spacing:0.07em;text-transform:uppercase;font-weight:600;color:var(--ink);display:flex;align-items:center;border-right:1px solid var(--hair-soft);background:#FAFBFA;}
+  .shift .from,.shift .to{padding:13px 16px;font-size:12.5px;line-height:1.45;display:flex;align-items:center;}
+  .shift .from{color:var(--green-deep);background:#FCFEFD;}
+  .shift .to{color:var(--producer);background:#FAFCFC;}
+  .shift b{font-weight:600;}
+  .shift .arw{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--ink-faint);background:#FAFBFA;border-left:1px solid var(--hair-soft);border-right:1px solid var(--hair-soft);}
+
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .panel h4 .tick{width:8px;height:8px;border-radius:2px;background:var(--green);}
+  .panel h4 .tick.a{background:var(--amber);}
+  .dl2{padding:10px 0;border-bottom:1px solid var(--hair-soft);display:flex;gap:11px;}
+  .dl2:first-of-type{padding-top:0;} .dl2:last-child{border-bottom:none;padding-bottom:0;}
+  .dl2 .dp{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.05em;padding:2px 7px;border-radius:5px;height:fit-content;white-space:nowrap;text-transform:uppercase;}
+  .dl2 .dp.k{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .dl2 .dp.q{background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);}
+  .dl2 .dt{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+  .dl2 .dt b{color:var(--ink);font-weight:600;}
+  .dl2 .dt code,.cell li code{font-family:var(--mono);font-size:11px;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
+
+  .colophon{margin-top:34px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media (max-width:900px){.panels{grid-template-columns:1fr;}.shift{grid-template-columns:1fr;}.shift .arw{display:none;}.shift .sc{border-right:none;border-bottom:1px solid var(--hair-soft);}}
+  @media (max-width:820px){body{padding:28px 16px 52px;}.mast h1{font-size:26px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">Reference &middot; Shared Responsibility Model &middot; Phase 1 &amp; 2</div>
+      <h1>Shared <span>Responsibility</span> Model</h1>
+      <div class="mast-sub">Where the line falls between what the consumer owns and what the platform owns &mdash; a complete model per phase, at capability granularity. Phase 2 carries every Phase 1 capability forward and adds to it, so each section stands on its own.</div>
+    </div>
+    <div class="mast-meta">
+      <b>Phase 1</b> &middot; 53 capabilities<br>
+      <b>Phase 2</b> &middot; 56 capabilities<br>
+      <b>Sourced from</b> &middot; <a href="index-journey-library.html">14 journey maps</a><br>
+      <b>State</b> &middot; Future / draft
+    </div>
+  </header>
+  <div class="thesis">
+    <span class="pk">Read this first</span>
+    <span><b>Nothing is &ldquo;not offered&rdquo; to the consumer &mdash; it is only not offered by the platform.</b> Where Phase 1 has no platform capability, the responsibility does not vanish; it sits <i>wholly</i> with the team, on infrastructure they already run. 34 of Phase 1's 53 capabilities are carried alone in exactly this way. That reframes Phase 2: the platform is not filling blanks, it is <b>absorbing load the team was already bearing</b> &mdash; taking provisioning, wiring and the production gate, while the consumer keeps application code, the build, and the trigger.</span>
+  </div>
+  <div class="jump">
+    <a href="#p1"><span class="n">&#9656;</span> Phase 1 &mdash; complete model</a>
+    <a href="#p2"><span class="n">&#9656;</span> Phase 2 &mdash; complete model</a>
+    <a href="#shifts"><span class="n">&#9656;</span> What shifts</a>
+    <a href="#questions"><span class="n">&#9656;</span> Questions to resolve</a>
+  </div>
+  <div class="guide">
+    <div class="guide-cell"><div class="k c">Consumer</div><div class="v">The team does it themselves. <span style="color:var(--green)">&#9679; round</span></div></div>
+    <div class="guide-cell"><div class="k s">Shared</div><div class="v">A handoff, approval, or declaration crossing the line. <span style="color:var(--teal)">&#9679; round</span></div></div>
+    <div class="guide-cell"><div class="k p">Platform</div><div class="v">Done for the consumer, usually invisibly. <span style="color:var(--producer)">&#9632; square</span></div></div>
+    <div class="guide-cell"><div class="k n">Wholly consumer</div><div class="v">The consumer cell spans the row &mdash; no shared step, no platform offering.</div></div>
+    <div class="guide-cell"><div class="k a">Open</div><div class="v">The boundary itself is undecided. All flags roll up at the foot of the page.</div></div>
+  </div>
+  <div class="phasehead" id="p1"><span class="tag p1">Phase 1</span><h2>GitHub Inner-Sourcing</h2><span class="cnt">53 capabilities &middot; 34 carried wholly by the consumer</span></div>
+  <div class="phasesub">The complete responsibility picture for Phase 1 &mdash; including the capabilities the platform does not offer, because the team is carrying those regardless. The platform acts here as a <b>record and sync layer</b> over GitHub, plus one guided creation path where AI and compliance attach.</div>
+  <div class="map-scroll">
+    <div class="srm">
+      <div class="colhdr lab">Capability</div>
+      <div class="colhdr c"><span class="dot"></span>Consumer</div>
+      <div class="colhdr s"><span class="dot"></span>Shared</div>
+      <div class="colhdr p"><span class="dot"></span>Platform</div>
+      <div class="domband"><span class="dl">A</span><span class="dn">Identity &amp; Access</span><span class="db">Who the person is, what they are entitled to, and how they authenticate to the estate.</span></div>
+      <div class="rowlabel"><span class="rn">A1</span><span class="cn">Workforce identity</span><span class="cs">AD / Entra / EMU</span></div>
+      <div class="cell c"><ul><li>Nothing — identity is done <i>to</i> the user, not by them</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>IAM Admin manages <b>Entra groups, EMU users and SCIM</b> group→team sync</li><li>Alpha users added manually to the core AD group</li><li><b>Teams deliberately bypass Entra</b> — only Enterprise + org access tie to AD groups</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-onboarding-alpha.html">P1·01 Onboarding</a><a href="persona-reference-sheet.html">Personas</a></div></div>
+      <div class="rowlabel"><span class="rn">A2</span><span class="cn">Platform entitlement</span><span class="cs">RBAC · alpha rights</span></div>
+      <div class="cell c"><ul><li>(Optionally) expresses interest in the alpha cohort <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Platform Product Owner <b>selects the cohort</b></li><li>Creates the RBAC entitlement granting alpha rights, including team creation</li><li>What alpha actually unlocks, and the backing RBAC model, is undefined <span class="open">OPEN</span></li></ul><div class="flag amber">Nomination itself is unresolved — self-nominate vs hand-picked, and who approves.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-onboarding-alpha.html">P1·01 Onboarding</a></div></div>
+      <div class="rowlabel"><span class="rn">A3</span><span class="cn">GitHub Enterprise &amp; org access</span><span class="cs">the estate itself</span></div>
+      <div class="cell c"><ul><li>Uses the org normally once granted</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Grants GitHub Enterprise access; org access ties to the AD group</li><li>Access levels unconfirmed — Enterprise read / org write, and the creator's default repo permission <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-onboarding-alpha.html">P1·01 Onboarding</a></div></div>
+      <div class="rowlabel"><span class="rn">A4</span><span class="cn">Git credentials</span><span class="cs">SSH · PAT · gh CLI</span></div>
+      <div class="cell c"><ul><li>Chooses how to authenticate — <b>an SSH key, HTTPS with a PAT, or the <code>gh</code> CLI</b></li><li><b>Creates and manages their own credentials in GitHub.</b> The platform provisions none of them</li><li>Rotates and revokes them; carries the consequence if one leaks</li></ul></div>
+      <div class="cell s"><ul><li><b>Whether SSH is offered at all is still open with Security.</b> The intent is to make it available; PAT and <code>gh</code> CLI are the paths that work today <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>Ensures users <i>can</i> manage their own SSH keys and PATs via GitHub</b> — org and Enterprise settings permit self-service credential management</li><li>Performs no SSH or PAT setup on the user's behalf</li></ul><div class="flag"><b>Corrected on the onboarding map.</b> It previously showed the platform provisioning an SSH key as a back-stage action; it now states that org and Enterprise settings permit self-service, and Q5 has been rewritten to the Security question.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-onboarding-alpha.html">P1·01 Onboarding</a><a href="journey-repo-via-github.html">P1·02 Repo via GitHub</a></div></div>
+      <div class="rowlabel"><span class="rn">A5</span><span class="cn">Team lifecycle</span><span class="cs">create · delete</span></div>
+      <div class="cell c"><ul><li>Creates a team — natively in GitHub, <i>or</i> in the platform engine</li><li>Winds it down from either surface</li></ul></div>
+      <div class="cell s"><ul><li><b>Self-service but RBAC-gated.</b> Policy decides auto-approve vs route to the Platform PO — the only approval gate in Phase 1, and it is conditional</li><li>What happens to team-owned repos on delete — reassign, orphan, or block until moved — is undecided <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Creates the corresponding record; projects engine-created teams out to GitHub with idempotent wiring</li><li>Reconciles bidirectionally; cleans up the record on delete</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-team-via-github.html">P1·03 Team via GitHub</a><a href="journey-team-via-platform-engine.html">P1·04 Team via Engine</a></div></div>
+      <div class="rowlabel"><span class="rn">A6</span><span class="cn">Team membership &amp; roles</span><span class="cs">who is on the team</span></div>
+      <div class="cell c"><ul><li>Team owner adds and removes members and assigns admins — from either surface</li></ul></div>
+      <div class="cell s"><ul><li>Platform Product Owner can <b>delete teams and reassign owners</b> — authority sitting above any single team</li><li>Whether the creator is always the initial owner, or can name someone else, is undecided <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Records membership and ownership; syncs both ways; captures the audit trail <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-team-via-platform-engine.html">P1·04 Team via Engine</a></div></div>
+      <div class="domband"><span class="dl">B</span><span class="dn">Source &amp; Code</span><span class="db">The repositories, the code inside them, and the conventions around both.</span></div>
+      <div class="rowlabel"><span class="rn">B1</span><span class="cn">Repository lifecycle</span><span class="cs">user-owned</span></div>
+      <div class="cell c"><ul><li>Creates the repo directly in GitHub inside the org</li><li>Clones, reads, writes, pushes — normal Git</li><li>Deletes it if a repo admin; asks the admin otherwise <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li>Naming convention — the consumer follows it, the platform defines it. <b>What enforces it</b> (GitHub ruleset vs webhook) is undecided <span class="open">OPEN</span></li><li>Deletion is valid from <b>both surfaces</b></li></ul></div>
+      <div class="cell p"><ul><li><b>Auto-registers</b> the repo by webhook under the user; holds the central record</li><li>Stays a <b>base repo</b> — no team, no auto-team, no AI capabilities</li><li>Tears down and cleans up on delete; retains audit evidence <span class="open">OPEN</span></li></ul><div class="flag">The high-water mark of consumer ownership. In Phase 1 a repo is essentially <b>yours</b> — the platform only observes it.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-repo-via-github.html">P1·02 Repo via GitHub</a></div></div>
+      <div class="rowlabel"><span class="rn">B2</span><span class="cn">Repository lifecycle</span><span class="cs">team-owned</span></div>
+      <div class="cell c"><ul><li>Opens the engine, chooses Create repository, selects the <b>owning team</b></li><li>Answers the guided questionnaire — AI capabilities, compliance level, other options <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li><b>The questionnaire is the boundary.</b> The consumer declares what they need; the platform decides what that declaration permits</li><li>How team ownership is represented — GitHub team-repo permission, engine association, or both in sync — is undecided <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Creates the repo tied to the team; applies AI capabilities and compliance posture</li><li>Projects it to GitHub with team permissions; idempotent wiring</li><li>Deregisters AI on delete <span class="open">OPEN</span></li><li><b>Out of scope here:</b> CI/CD, secrets, observability, deploy environments</li></ul><div class="flag">The only place in Phase 1 where AI and compliance attach. That is the whole value of this path over a GitHub-created repo.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-repo-for-team-via-platform-engine.html">P1·05 Team Repo via Engine</a></div></div>
+      <div class="rowlabel"><span class="rn">B3</span><span class="cn">Repository settings</span><span class="cs">constrained vs open</span></div>
+      <div class="cell c"><ul><li><b>Sets every setting that isn't constrained</b> — the open portion is genuinely theirs to configure</li><li>Reads the published documentation to know which settings are fixed for them and which are not</li></ul></div>
+      <div class="cell s"><ul><li><b>This split <i>is</i> the model.</b> A team's compliance or security classification — and the information given about that team — causes <b>certain settings to be decided for them</b>, while the rest stay open <span class="open">OPEN</span></li><li>Which settings land on which side of that line is still to be determined <span class="open">OPEN</span></li><li>The constraint is not authored at the team level — it is <b>derived from a requirement the team's context triggers</b> <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Determines the constrained subset from the team's classification and <b>applies it to repositories created for that team</b></li><li><b>Publishes documentation</b> on which settings are fixed and why, so the constraint is visible up front rather than discovered on rejection</li><li>How it is enforced — GitHub ruleset, engine reconciliation, or both — is undefined <span class="open">OPEN</span></li></ul><div class="flag amber"><b>The whole row lives in the shared column.</b> Neither side owns repository settings outright: a requirement decides some, the consumer decides the rest, and the boundary between them moves with the team's classification.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-repo-for-team-via-platform-engine.html">P1·05 Team Repo</a><a href="persona-reference-sheet.html">Personas</a></div></div>
+      <div class="rowlabel"><span class="rn">B4</span><span class="cn">Application source code</span><span class="cs">the code itself</span></div>
+      <div class="cell c"><ul><li>Writes, reviews and owns <b>all application and product code</b></li><li>Tech lead sets conventions, reviews, mentors, guards quality</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Nothing, by design</li></ul><div class="flag">The one row that never moves. Worth stating explicitly precisely because it is assumed.</div><div class="src"><span class="lbl">Sourced from</span><a href="persona-reference-sheet.html">Personas</a></div></div>
+      <div class="rowlabel"><span class="rn">B5</span><span class="cn">Naming conventions &amp; rulesets</span><span class="cs">guardrails on names</span></div>
+      <div class="cell c"><ul><li>Names repos and teams to the convention</li></ul></div>
+      <div class="cell s"><ul><li>Conventions are <b>defined by the platform, applied by the consumer</b> — but the enforcement mechanism is unresolved across every creation flow <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Validates / enforces on creation. Reserved names undefined <span class="open">OPEN</span></li></ul><div class="flag amber">Open on four separate maps — repo names, team names from GitHub, team names from the engine, and whether the two conventions match.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-repo-via-github.html">P1·02</a><a href="journey-team-via-github.html">P1·03</a></div></div>
+      <div class="domband"><span class="dl">C</span><span class="dn">Build &amp; CI</span><span class="db">Split three ways, because the responsibilities genuinely differ: the service, the compute it runs on, and the pipeline definition.</span></div>
+      <div class="rowlabel"><span class="rn">C1</span><span class="cn">CI/CD service</span><span class="cs">GitHub Actions</span></div>
+      <div class="cell c"><ul><li>Uses GitHub Actions as the CI service</li><li>Authors workflows in <code>.github/workflows</code></li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Provides access to Actions as part of the GitHub Enterprise / org estate</li><li><b>Whether the platform holds any Actions-level policy</b> — allowed-actions lists, org rulesets, required workflows — is not covered on any map <span class="open">OPEN</span></li></ul><div class="flag amber">A genuine gap. Governing which Actions may run is a common platform control and nothing in the current maps claims it either way.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-ci-github-actions.html">P1·06 CI with Actions</a></div></div>
+      <div class="rowlabel"><span class="rn">C2</span><span class="cn">CI/CD runners</span><span class="cs">the compute</span></div>
+      <div class="cell c"><ul><li>Checks the org docs page to see which runners exist</li><li>Sets <code>runs-on</code>, or simply takes the default <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li><b>Runner access is bundled with repo access</b> — nothing to request, nothing to approve, no allocation step</li></ul></div>
+      <div class="cell p"><ul><li>Maintains the <b>docs page listing available basic runners</b> — and on the current map, that is the entire platform contribution</li><li>Runners are basic and shared org-wide</li><li>Platform engine <b>not involved</b> — no registration, no audit capture on runner usage <span class="open">OPEN</span></li></ul><div class="flag amber"><b>The boundary here depends on an unanswered question.</b> If runners are GitHub-hosted, the platform owns a documentation page and nothing else. If they are a self-hosted pool, the platform silently owns compute — provisioning, scaling, patching, capacity and cost. Same row, two very different models.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-ci-github-actions.html">P1·06 CI with Actions</a></div></div>
+      <div class="rowlabel"><span class="rn">C3</span><span class="cn">Build definition</span><span class="cs">the pipeline itself</span></div>
+      <div class="cell c"><ul><li>Writes the workflow, sets triggers, iterates on it</li><li>Wholly the consumer's — the platform authors nothing</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Nothing</li></ul><div class="flag">Phase 1's clearest boundary, and the model the other rows are measured against.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-ci-github-actions.html">P1·06 CI with Actions</a></div></div>
+      <div class="rowlabel"><span class="rn">C4</span><span class="cn">Build execution</span><span class="cs">running the build</span></div>
+      <div class="cell c"><ul><li>Triggers runs — push, PR, or manual</li><li>Views status and logs in GitHub Actions</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Actions schedules the job onto an available runner and surfaces logs and status <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-ci-github-actions.html">P1·06 CI with Actions</a></div></div>
+      <div class="domband"><span class="dl">D</span><span class="dn">Artifacts</span><span class="db">Where build output lives, and what is known about it. Entirely the team's problem in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">D1</span><span class="cn">Artifact registry</span><span class="cs">the registry &amp; the integration</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> Whatever registry they already use, on their own account and their own terms — the platform provides none</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">D2</span><span class="cn">Artifact scanning</span><span class="cs">vulnerability posture</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — if they scan at all, with their own tooling</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">D3</span><span class="cn">Artifact signing &amp; provenance</span><span class="cs">cosign · SBOM</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> No gate exists in Phase 1, so nothing requires it — but any signing their own auditors expect is theirs to do</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">E</span><span class="dn">Environments &amp; Runtime</span><span class="db">Deliberately separated. The environment is the provisioned container; the runtime is the workload living inside it.</span></div>
+      <div class="rowlabel"><span class="rn">E1</span><span class="cn">Environment provisioning</span><span class="cs">the container</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> They stand up and wire their own environments, wherever they deploy today. Named explicitly as out of scope at onboarding and again at team-repo creation</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">E2</span><span class="cn">Environment lifecycle</span><span class="cs">custom envs · retire</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — they create and tear down their own environments with no platform involvement</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">E3</span><span class="cn">Cluster &amp; account topology</span><span class="cs">where it all lands</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their own clusters and accounts</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">E4</span><span class="cn">Runtime workload</span><span class="cs">the running app</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — they run the app themselves, on their own infrastructure</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">E5</span><span class="cn">Resource quotas &amp; capacity</span><span class="cs">how much you get</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their infrastructure, their capacity planning</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">E6</span><span class="cn">Cost &amp; chargeback</span><span class="cs">who pays</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their own cloud spend, on their own accounts</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">F</span><span class="dn">Configuration &amp; Secrets</span><span class="db">Split into the store, the values inside it, and the delivery path into the runtime — three different owners.</span></div>
+      <div class="rowlabel"><span class="rn">F1</span><span class="cn">Secret &amp; config store</span><span class="cs">the backend</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> Named explicitly as out of scope — the team uses whatever secret management they already have</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">F2</span><span class="cn">Secret &amp; config values</span><span class="cs">the content</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — they set and manage every value themselves</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">F3</span><span class="cn">Secret delivery into runtime</span><span class="cs">store → namespace</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — however they get secrets to their running app today</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">F4</span><span class="cn">Secret rotation</span><span class="cs">keeping them fresh</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">F5</span><span class="cn">Build-time secrets</span><span class="cs">credentials for CI</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — GitHub Actions secrets, managed by them</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">G</span><span class="dn">Data</span><span class="db">The database, the data inside it, and keeping both alive.</span></div>
+      <div class="rowlabel"><span class="rn">G1</span><span class="cn">Database provisioning</span><span class="cs">the infrastructure</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their own databases, on their own accounts</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">G2</span><span class="cn">Schema &amp; data</span><span class="cs">the content</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">G3</span><span class="cn">Connection credentials</span><span class="cs">getting to the DB</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">G4</span><span class="cn">Backup, DR &amp; durability</span><span class="cs">keeping data alive</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">H</span><span class="dn">Networking &amp; Exposure</span><span class="db">Broken out per concern, because ingress, mesh, DNS and certificates have genuinely different owners.</span></div>
+      <div class="rowlabel"><span class="rn">H1</span><span class="cn">Ingress &amp; routing</span><span class="cs">getting traffic in</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their own ingress, load balancers and routing</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">H2</span><span class="cn">Service mesh &amp; east-west mTLS</span><span class="cs">service-to-service</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">H3</span><span class="cn">DNS records</span><span class="cs">names resolving</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their own DNS, or a ticket to a network team</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">H4</span><span class="cn">TLS certificates</span><span class="cs">issuance &amp; renewal</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">H5</span><span class="cn">Domain ownership</span><span class="cs">whose name is it</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">H6</span><span class="cn">Network policy &amp; egress</span><span class="cs">what can talk to what</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">I</span><span class="dn">Delivery &amp; Release</span><span class="db">Getting the artifact into an environment, and back out again.</span></div>
+      <div class="rowlabel"><span class="rn">I1</span><span class="cn">Delivery mechanism</span><span class="cs">Argo · the reconciliation loop</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — whatever deployment mechanism they run today, wherever they run it</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">I2</span><span class="cn">Deployment trigger</span><span class="cs">the act of saying go</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">I3</span><span class="cn">Promotion to production</span><span class="cs">the gated step</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — their own promotion process, their own approvals</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">I4</span><span class="cn">Rollback</span><span class="cs">undoing it</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">J</span><span class="dn">Observability &amp; Operations</span><span class="db">Seeing what is happening, and who gets woken up. The thinnest-covered domain in the library.</span></div>
+      <div class="rowlabel"><span class="rn">J1</span><span class="cn">Logs, metrics &amp; dashboards</span><span class="cs">seeing the system</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> Observability is named explicitly as out of scope at onboarding and at team-repo creation</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">J2</span><span class="cn">Alerting &amp; on-call</span><span class="cs">who gets paged</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b></li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">J3</span><span class="cn">Incident response &amp; support</span><span class="cs">the escalation path</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — they operate their own stack end to end</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="domband"><span class="dl">K</span><span class="dn">Compliance, Audit &amp; Governance</span><span class="db">The guardrail layer — and the only domain where the governance persona ever steps on-stage.</span></div>
+      <div class="rowlabel"><span class="rn">K1</span><span class="cn">Compliance posture</span><span class="cs">declaring the level</span></div>
+      <div class="cell c"><ul><li><b>Declares the compliance level</b> at team-repo creation via the guided questionnaire <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li><b>Declare-and-constrain.</b> The consumer declares the level; the platform decides what that level permits. Neither side holds it alone</li><li>The discrete level taxonomy is undefined <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Governs which AI capabilities are offered for the declared level</li><li>Compliance posture is a <b>team attribute, not a persona</b> — the team's context forks the provisioning step</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-repo-for-team-via-platform-engine.html">P1·05 Team Repo</a><a href="persona-reference-sheet.html">Personas</a></div></div>
+      <div class="rowlabel"><span class="rn">K2</span><span class="cn">AI capability provisioning</span><span class="cs">the catalog</span></div>
+      <div class="cell c"><ul><li>Tech lead <b>decides which AI capabilities</b> the team's repos should carry</li><li>Chooses from the catalog during the questionnaire</li></ul></div>
+      <div class="cell s"><ul><li>Consumer chooses; <b>platform defines the catalog and gates it by compliance level</b></li><li>The full Phase 1 catalog is undefined <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Defines the golden paths and the AI-capability catalog</li><li>Provisions capabilities onto <b>team repos only</b>; user-owned repos get none</li><li>Deregisters on delete <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-repo-for-team-via-platform-engine.html">P1·05 Team Repo</a><a href="persona-reference-sheet.html">Personas</a></div></div>
+      <div class="rowlabel"><span class="rn">K3</span><span class="cn">Evidence production</span><span class="cs">making the proof</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> No gate exists in Phase 1 — whatever evidence their own auditors require is theirs to produce</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">K4</span><span class="cn">Evidence verification</span><span class="cs">the admission gate</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's.</b> There is no platform gate in Phase 1 — any check on the way to production is one the team runs itself</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">K5</span><span class="cn">Audit trail capture</span><span class="cs">recording what happened</span></div>
+      <div class="cell c"><ul><li>Nothing — capture is automatic and invisible</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Captures create / modify / delete events as <b>evidence in the platform DB</b></li><li>Confirmation that team events are captured is still outstanding <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-team-via-github.html">P1·03</a><a href="journey-repo-via-github.html">P1·02</a></div></div>
+      <div class="rowlabel"><span class="rn">K6</span><span class="cn">Audit trail exposure</span><span class="cs">showing the auditor</span></div>
+      <div class="cell c"><ul><li><b>Satisfies their own auditors from their own records</b> — the platform captures evidence but does not surface it</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Compliance sits <b>backstage</b> throughout Phase 1 — policy and audit, never on-stage</li><li>Evidence is held in the platform DB and exposed when needed — likely Phase 2 or later</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="persona-reference-sheet.html">Personas</a></div></div>
+      <div class="rowlabel"><span class="rn">K7</span><span class="cn">Change record</span><span class="cs">ServiceNow</span></div>
+      <div class="cell c wide off"><ul><li><b>Wholly the team's</b> — they raise their own change records for their own deployments</li></ul></div>
+      <div class="cell p notoffered"><span class="no">Not offered by the platform in Phase 1.</span></div>
+    </div>
+  </div>
+  <div class="phasehead" id="p2"><span class="tag p2">Phase 2</span><h2>Kubernetes Deployment Platform</h2><span class="cnt">56 capabilities &middot; every Phase 1 row carried forward, plus 3 new</span></div>
+  <div class="phasesub">The complete picture for Phase 2 &mdash; <b>cumulative</b>, not a delta. Every Phase 1 capability appears again with its Phase 2 position, badged <span class="delta same" style="margin:0 2px;">same</span> where it holds, <span class="delta shifts" style="margin:0 2px;">shifts</span> where the line moves, <span class="delta new" style="margin:0 2px;">new</span> where the capability did not exist before, and <span class="delta undecided" style="margin:0 2px;">undecided</span> where the platform now touches a capability but the split has not been agreed. The platform becomes a <b>provider and a gate</b>.</div>
+  <div class="map-scroll">
+    <div class="srm">
+      <div class="colhdr lab">Capability</div>
+      <div class="colhdr c"><span class="dot"></span>Consumer</div>
+      <div class="colhdr s"><span class="dot"></span>Shared</div>
+      <div class="colhdr p"><span class="dot"></span>Platform</div>
+      <div class="domband"><span class="dl">A</span><span class="dn">Identity &amp; Access</span><span class="db">Who the person is, what they are entitled to, and how they authenticate to the estate.</span></div>
+      <div class="rowlabel"><span class="rn">A1</span><span class="cn">Workforce identity</span><span class="cs">AD / Entra / EMU</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged — identity plumbing runs silently, backstage</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Same as Phase 1. The future-state aspiration is that this becomes fully invisible</li></ul></div>
+      <div class="rowlabel"><span class="rn">A2</span><span class="cn">Platform entitlement</span><span class="cs">RBAC · alpha rights</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Rights on a project are <b>inherited from team membership</b> — nothing separate to request</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Validates the user's rights on the team or project <b>on every command</b> — CLI and agent alike</li><li>The agent uses the user's own credentials; entitlement is not widened for automation</li></ul><div class="flag shift">Entitlement stops being a one-time grant and becomes a per-action check.</div></div>
+      <div class="rowlabel"><span class="rn">A3</span><span class="cn">GitHub Enterprise &amp; org access</span><span class="cs">the estate itself</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Unchanged — the Phase 1 estate carries forward</li></ul></div>
+      <div class="rowlabel"><span class="rn">A4</span><span class="cn">Git credentials</span><span class="cs">SSH · PAT · gh CLI</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged — still the user's own credentials, their own rotation</li></ul></div>
+      <div class="cell s"><ul><li>The same Security discussion on SSH carries forward <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Unchanged. A <b>streamlined credential experience on the platform's own interface</b> is a stated ambition for a later version — not committed to Phase 2 <span class="open">OPEN</span></li></ul></div>
+      <div class="rowlabel"><span class="rn">A5</span><span class="cn">Team lifecycle</span><span class="cs">create · delete</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged — the Team carries over from Phase 1 and keeps owning membership</li></ul></div>
+      <div class="cell s"><ul><li>Unchanged</li></ul></div>
+      <div class="cell p"><ul><li>Unchanged. The Team stops being the anchor for repos but remains the unit of people</li></ul></div>
+      <div class="rowlabel"><span class="rn">A6</span><span class="cn">Team membership &amp; roles</span><span class="cs">who is on the team</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><ul><li>The <b>team lead gains a standing approver role</b> — signing off CLI-provisioned datastores. Ownership stops being purely about membership and starts carrying operational authority</li></ul></div>
+      <div class="cell p"><ul><li>Unchanged</li></ul></div>
+      <div class="rowlabel"><span class="rn">A7</span><span class="cn">Project lifecycle</span><span class="cs">the Phase 2 anchor</span><span class="delta new">new</span></div>
+      <div class="cell c"><ul><li>Runs <b>one command</b> — CLI or agent — to create a project under the team</li><li>Names it; confirms the team association <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li><b>No approval gate.</b> Project provisioning is deliberately self-service — worth confirming explicitly <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Validates team rights, then records the project as the anchor for everything deployment-related</li><li>Team ↔ Project is many-to-many in the model, 1:1 to start <span class="open">OPEN</span></li></ul><div class="flag shift">A wholly new object. In Phase 1 there is nothing to own here — the Team was the anchor.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-provision-project-environments.html">P2·01 Provision</a><a href="object-model.html">Object Model</a></div></div>
+      <div class="domband"><span class="dl">B</span><span class="dn">Source &amp; Code</span><span class="db">The repositories, the code inside them, and the conventions around both.</span></div>
+      <div class="rowlabel"><span class="rn">B1</span><span class="cn">Repository lifecycle</span><span class="cs">user-owned</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Unchanged for the code itself</li></ul></div>
+      <div class="cell s"><ul><li>A candidate Phase 2 flow lets a user <b>add AI capabilities to their own repo</b>, bringing the user-owned path to parity <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Unchanged, except repos now hang off the <b>Project</b> rather than the Team</li></ul></div>
+      <div class="rowlabel"><span class="rn">B2</span><span class="cn">Repository lifecycle</span><span class="cs">team-owned</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Repos <b>re-anchor from Team to Project</b>. The Project owns them, and is scaffolded with them at provision time</li></ul><div class="flag shift">Ownership of the code does not move. The anchor underneath it does.</div></div>
+      <div class="rowlabel"><span class="rn">B3</span><span class="cn">Repository settings</span><span class="cs">constrained vs open</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><ul><li>Unchanged — the same constrained-vs-open split, now also spanning project-scoped repos <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Unchanged</li></ul></div>
+      <div class="rowlabel"><span class="rn">B4</span><span class="cn">Application source code</span><span class="cs">the code itself</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged — wholly the consumer's</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Nothing, by design</li></ul></div>
+      <div class="rowlabel"><span class="rn">B5</span><span class="cn">Naming conventions &amp; rulesets</span><span class="cs">guardrails on names</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Also names projects and custom environments</li></ul></div>
+      <div class="cell s"><ul><li>Same unresolved enforcement question, now spanning more object types <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Rejects <b>reserved environment names</b> — dev / qa / prod cannot be reused</li></ul></div>
+      <div class="rowlabel"><span class="rn">B6</span><span class="cn">GitOps manifest repo</span><span class="cs">app-of-apps · the repo itself</span><span class="delta new">new</span></div>
+      <div class="cell c"><ul><li><b>Owns the contents</b> — the repo is the team's declarative statement of desired state</li><li>Commits to it like any other repo</li></ul></div>
+      <div class="cell s"><ul><li>Whether the app-of-apps sits at <b>project or team</b> level is open; it can span all of a team's projects <span class="open">OPEN</span></li><li>Whether platform-set repo settings apply to it as they do to team repos (see B3) <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>Creates the repo</b> at project provisioning as the default GitOps scaffold, and owns its existence</li><li>Naming and structure, and how per-environment paths are laid out inside it, undefined <span class="open">OPEN</span></li></ul><div class="flag"><b>The repo, not the pipeline.</b> The platform owns that this repo exists and how it is wired; the team owns every line in it. What Argo does with it is I1; the act of committing is I2.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-provision-project-environments.html">P2·01 Provision</a><a href="journey-p2-deploy-dev-qa.html">P2·05 Deploy</a></div></div>
+      <div class="domband"><span class="dl">C</span><span class="dn">Build &amp; CI</span><span class="db">Split three ways, because the responsibilities genuinely differ: the service, the compute it runs on, and the pipeline definition.</span></div>
+      <div class="rowlabel"><span class="rn">C1</span><span class="cn">CI/CD service</span><span class="cs">GitHub Actions</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Unchanged — Phase 2 builds still run through Actions</li></ul></div>
+      <div class="rowlabel"><span class="rn">C2</span><span class="cn">CI/CD runners</span><span class="cs">the compute</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged — Phase 2 builds run on the <b>Phase 1 runners</b></li></ul></div>
+      <div class="cell s"><ul><li>Concurrency limits, quotas and cost allocation remain undefined <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Unchanged. A later idea surfaces runner health via the engine, but that is Phase 2+ horizon, not committed</li></ul></div>
+      <div class="rowlabel"><span class="rn">C3</span><span class="cn">Build definition</span><span class="cs">the pipeline itself</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged. <b>The team writes and owns the build</b> — stated explicitly on the deploy map</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li><b>Not the pipeline.</b> The platform declines to absorb this even as it takes everything around it</li></ul><div class="flag shift">Of every row in the model, this is the one the platform deliberately refuses. Everything else in Phase 2 moves toward the platform; this stays put.</div></div>
+      <div class="rowlabel"><span class="rn">C4</span><span class="cn">Build execution</span><span class="cs">running the build</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Runs their own build workflow to produce the image, then <b>publishes it to the project's JFrog space</b></li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Provides the registry target and the credentials to reach it (see D1) — the team's workflow just consumes them</li><li>Still <b>not the build</b>. The platform supplies the destination, never the pipeline</li></ul></div>
+      <div class="domband"><span class="dl">D</span><span class="dn">Artifacts</span><span class="db">Where build output lives, and what is known about it. Entirely the team's problem in Phase 1.</span></div>
+      <div class="rowlabel"><span class="rn">D1</span><span class="cn">Artifact registry</span><span class="cs">the registry &amp; the integration</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li><b>Owns what they publish</b> — which images go in, how they are tagged, and what is inside them</li><li>Publishes to the project's space as part of their own build</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Runs <b>the artifact registry itself</b> — JFrog, as a platform service</li><li>Creates the <b>project space</b> so artifacts are isolated per project</li><li><b>Owns the integration to it end to end</b> — push credentials and their rotation, and imagePullSecrets injected into every environment namespace, so both directions just work</li><li>Naming and folder layout, and how collisions are avoided, undefined <span class="open">OPEN</span></li></ul><div class="flag"><b>A clean two-column row, unlike GitOps.</b> The platform runs the registry <i>and</i> the plumbing on both sides of it; the consumer's only responsibility is the artifact they put in. Nothing sits on the line.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-provision-project-environments.html">P2·01 Provision</a><a href="journey-p2-deploy-dev-qa.html">P2·05 Deploy</a></div></div>
+      <div class="rowlabel"><span class="rn">D2</span><span class="cn">Artifact scanning</span><span class="cs">vulnerability posture</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Fixes what the scan surfaces</li></ul></div>
+      <div class="cell s"><ul><li><b>Scan timing is unresolved</b> — whether Xray runs at publish so evidence is ready for the prod gate, or only at promotion time <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Xray scanning may run at publish, feeding later prod evidence <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-deploy-dev-qa.html">P2·05</a></div></div>
+      <div class="rowlabel"><span class="rn">D3</span><span class="cn">Artifact signing &amp; provenance</span><span class="cs">cosign · SBOM</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li><b>Produces the evidence</b> — signs the image with cosign, and builds toward a valid SBOM</li></ul></div>
+      <div class="cell s"><ul><li>Sequencing and format undecided — cosign first, SBOM as the goal state; CycloneDX vs SPDX unresolved <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>Validates, never generates.</b> The platform checks the signature at admission because it does not own the build pipeline</li></ul><div class="flag shift">The cleanest expression of the model: because the platform refuses the pipeline, it can only ever verify.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-promote-production.html">P2·07 Promote</a></div></div>
+      <div class="domband"><span class="dl">E</span><span class="dn">Environments &amp; Runtime</span><span class="db">Deliberately separated. The environment is the provisioned container; the runtime is the workload living inside it.</span></div>
+      <div class="rowlabel"><span class="rn">E1</span><span class="cn">Environment provisioning</span><span class="cs">the container</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Nothing to wire — dev, qa and prod simply appear</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li><b>Auto-provisions dev, qa and prod.</b> Each gets: namespace, default resource quota, config/secret binding, JFrog pull config, GitOps wiring</li><li>Identical wiring for every environment — the golden path is the same one every time</li></ul><div class="flag shift">The single largest transfer in the model — from wholly-consumer to almost wholly-platform in one phase.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-provision-project-environments.html">P2·01 Provision</a></div></div>
+      <div class="rowlabel"><span class="rn">E2</span><span class="cn">Environment lifecycle</span><span class="cs">custom envs · retire</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Adds staging / uat self-service — <b>no ticket, no approval gate</b></li><li>Retires them when no longer needed</li></ul></div>
+      <div class="cell s"><ul><li><b>Teardown scope is unresolved</b> — what a retire actually removes (datastores, secrets, GitOps apps tied to the env), and whether there is a guardrail against deleting an env with running workloads <span class="open">OPEN</span></li><li>Whether retire needs elevated rights, and whether any member or only a team lead can create <span class="open">OPEN</span></li><li>Whether a custom env can be <b>prod-like</b> — which would drag the compliance gate with it <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Provisions a namespace in nonprod with identical wiring to the auto three</li><li>Rejects reserved names</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-custom-environment.html">P2·03 Custom Env</a></div></div>
+      <div class="rowlabel"><span class="rn">E3</span><span class="cn">Cluster &amp; account topology</span><span class="cs">where it all lands</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Nothing. Not a consumer concern by design</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li><b>Wholly platform.</b> Prod runs in a separate cluster in a separate AWS account — static-stability isolation per the account-topology ADR</li><li>Cluster and account are a <b>per-environment attribute</b>, not a grouping the consumer navigates</li></ul><div class="flag shift">The purest platform row in the model — nothing about it surfaces to the consumer at all.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-provision-project-environments.html">P2·01</a><a href="object-model.html">Object Model</a></div></div>
+      <div class="rowlabel"><span class="rn">E4</span><span class="cn">Runtime workload</span><span class="cs">the running app</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Owns the workload — its behaviour, health and correctness</li><li>Sees it running in the namespace</li></ul></div>
+      <div class="cell s"><ul><li><b>Resilience configuration is uncovered.</b> Replica counts, autoscaling, pod disruption budgets, probes and restart policy appear on no map — whether the consumer sets them, the platform defaults them, or both, is unresolved <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Argo applies workloads to the target namespace; External Secrets supplies config and secrets</li><li>Reflects deployment state as part of the environment's record</li></ul><div class="flag amber">Separating runtime from environment exposes this gap: the environment is thoroughly specified, what runs inside it much less so.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-deploy-dev-qa.html">P2·05 Deploy</a></div></div>
+      <div class="rowlabel"><span class="rn">E5</span><span class="cn">Resource quotas &amp; capacity</span><span class="cs">how much you get</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Lives within the default quota — no customization available yet</li></ul></div>
+      <div class="cell s"><ul><li><b>No path to request more.</b> Per-environment customization is acknowledged as not yet landed, and how a team asks for a larger quota is undefined <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Applies a default ResourceQuota / LimitRange per environment tier — <b>the actual default values are undefined</b> <span class="open">OPEN</span></li><li>Owns cluster capacity</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-custom-environment.html">P2·03</a><a href="journey-p2-provision-project-environments.html">P2·01</a></div></div>
+      <div class="rowlabel"><span class="rn">E6</span><span class="cn">Cost &amp; chargeback</span><span class="cs">who pays</span><span class="delta undecided">undecided</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Entirely uncovered.</b> Cost visibility, attribution to a project or team, budget limits and chargeback appear on no map. Once the platform owns the accounts and the clusters, this becomes a real boundary question <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><span class="none undec">&mdash; undecided</span><div class="flag amber">Raised by this exercise, not found in the maps. Worth an explicit position before Phase 2 lands.</div></div>
+      <div class="domband"><span class="dl">F</span><span class="dn">Configuration &amp; Secrets</span><span class="db">Split into the store, the values inside it, and the delivery path into the runtime — three different owners.</span></div>
+      <div class="rowlabel"><span class="rn">F1</span><span class="cn">Secret &amp; config store</span><span class="cs">the backend</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Nothing — the store is provided</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Provides <b>one unified store per project</b> — secrets and config together, no juggling multiple systems</li><li><b>Backend undecided</b> — GitHub secrets vs Vault / 1Password, with the lean away from GitHub. This single decision cascades through the whole capability <span class="open">OPEN</span></li></ul><div class="flag amber">The most load-bearing unresolved decision in Phase 2 — it shapes rows F2, F3, G3 and the External Secrets wiring.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-secrets-config.html">P2·02 Secrets &amp; Config</a></div></div>
+      <div class="rowlabel"><span class="rn">F2</span><span class="cn">Secret &amp; config values</span><span class="cs">the content</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Sets values scoped to <b>project + environment</b> — via CLI/agent, or directly in the tool</li><li>Follows the key naming convention <span class="open">OPEN</span></li><li>Owns <b>what the values are</b> — the platform never sees them as content</li></ul></div>
+      <div class="cell s"><ul><li><b>The live boundary question.</b> Whether the platform can capture equivalent audit on a direct-in-tool write is under investigation — and may decide whether that lane is allowed at all <span class="open">OPEN</span></li><li>Project-wide vs per-environment scoping, and how overrides work <span class="open">OPEN</span></li><li>Whether config and secrets are handled identically or config is lower-sensitivity <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Writes via CLI with a <b>full audit record</b> — who, what, when, including &ldquo;user via Claude&rdquo;</li><li>Records provenance — strong on the CLI lane, TBD on direct writes</li></ul><div class="flag amber">If direct writes cannot be audited, this cell collapses into the platform column and the consumer loses a lane.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-secrets-config.html">P2·02 Secrets &amp; Config</a></div></div>
+      <div class="rowlabel"><span class="rn">F3</span><span class="cn">Secret delivery into runtime</span><span class="cs">store → namespace</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>App consumes from the namespace as env var or mounted file</li><li>Runs a read command to fetch current values on demand</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li><b>External Secrets Operator</b> pulls values into the target namespace as a K8s Secret, scoped to the environment</li><li>Which backend ESO reads from, and how it is configured per namespace, depends on F1 <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-secrets-config.html">P2·02 Secrets &amp; Config</a></div></div>
+      <div class="rowlabel"><span class="rn">F4</span><span class="cn">Secret rotation</span><span class="cs">keeping them fresh</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Rotation ownership is explicitly open</b> — who initiates it, and whether a rotated value auto-resyncs into the namespace <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><span class="none undec">&mdash; undecided</span><div class="flag amber">Flagged on the map as an open question, not an answered one. Called out here because rotation is where secret models usually fail.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-secrets-config.html">P2·02 Secrets &amp; Config</a></div></div>
+      <div class="rowlabel"><span class="rn">F5</span><span class="cn">Build-time secrets</span><span class="cs">credentials for CI</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Whether the unified store covers build-time secrets at all</b>, or only runtime secrets consumed in-cluster, is an open question on the map <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Issues JFrog push credentials — which are themselves build-time secrets, and sit awkwardly if the store is runtime-only <span class="open">OPEN</span></li></ul><div class="flag amber">Splitting CI from runtime surfaces a real tension: the platform issues a build-time credential while the store may only cover runtime.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-secrets-config.html">P2·02</a><a href="journey-p2-deploy-dev-qa.html">P2·05</a></div></div>
+      <div class="domband"><span class="dl">G</span><span class="dn">Data</span><span class="db">The database, the data inside it, and keeping both alive.</span></div>
+      <div class="rowlabel"><span class="rn">G1</span><span class="cn">Database provisioning</span><span class="cs">the infrastructure</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Picks the DB type — DynamoDB or Postgres — and the target environment <span class="open">OPEN</span></li><li>Chooses the lane: a CLI command, or a manifest in the repo</li><li>Opens the PR on the manifest lane</li></ul></div>
+      <div class="cell s"><ul><li><b>The asymmetry.</b> CLI provisioning routes to a <b>team lead for approval</b> because it leaves no git trail. The manifest lane is self-service — the PR history <i>is</i> the audit artifact</li><li>Whether prod DBs always need approval regardless of lane <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Provisions a <b>real AWS database</b> tied to the environment — directly, or via a Crossplane/custom operator reconciling the manifest <span class="open">OPEN</span></li><li>Both lanes are intended to converge on the same provisioning <span class="open">OPEN</span></li></ul><div class="flag">The sharpest illustration in the model that <b>the boundary is drawn by evidence, not by risk</b> — same database, different paperwork.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-add-datastore.html">P2·04 Add a Datastore</a></div></div>
+      <div class="rowlabel"><span class="rn">G2</span><span class="cn">Schema &amp; data</span><span class="cs">the content</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Owns the <b>schema, migrations and the data itself</b> — the platform provisions the box and never looks inside</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Nothing</li></ul><div class="flag">Stated explicitly because it is the kind of thing that gets assumed and then argued about during an incident.</div></div>
+      <div class="rowlabel"><span class="rn">G3</span><span class="cn">Connection credentials</span><span class="cs">getting to the DB</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Runs a read command to fetch details, or the app consumes them from the namespace</li><li>Connects the app</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Writes connection details into the unified store; ESO syncs them in-cluster as a K8s Secret</li><li>How they flow through External Secrets depends on the store backend <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-add-datastore.html">P2·04 Add a Datastore</a></div></div>
+      <div class="rowlabel"><span class="rn">G4</span><span class="cn">Backup, DR &amp; durability</span><span class="cs">keeping data alive</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Backup and restore ownership appears on no map.</b> Once the platform provisions the database, who takes backups, who can restore, and what the RPO/RTO commitment is all become open <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Teardown on environment delete needs a <b>guardrail against dropping a database with data</b> <span class="open">OPEN</span></li><li>Prod DB static stability / multi-AZ per the account-topology ADR <span class="open">OPEN</span></li></ul><div class="flag amber">Partially raised on the map as a teardown guardrail; the broader backup and restore question is surfaced here for the first time.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-add-datastore.html">P2·04 Add a Datastore</a></div></div>
+      <div class="domband"><span class="dl">H</span><span class="dn">Networking &amp; Exposure</span><span class="db">Broken out per concern, because ingress, mesh, DNS and certificates have genuinely different owners.</span></div>
+      <div class="rowlabel"><span class="rn">H1</span><span class="cn">Ingress &amp; routing</span><span class="cs">getting traffic in</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Requests exposure via CLI/agent or a manifest for the running service</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Configures the <b>Istio gateway and routing</b> for the service</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-expose-service.html">P2·06 Expose a Service</a></div></div>
+      <div class="rowlabel"><span class="rn">H2</span><span class="cn">Service mesh &amp; east-west mTLS</span><span class="cs">service-to-service</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Nothing — mesh wiring is applied for them</li><li>Requests an exception if opting out</li></ul></div>
+      <div class="cell s"><ul><li><b>Mesh is mandatory unless explicitly opted out</b> — but who approves the exception, and what opting out actually changes, is undecided <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Istio mesh with east-west mTLS</li><li>Internal mTLS raises <b>disaster-recovery and multi-region questions</b> worth exploring separately <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-expose-service.html">P2·06 Expose a Service</a></div></div>
+      <div class="rowlabel"><span class="rn">H3</span><span class="cn">DNS records</span><span class="cs">names resolving</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Picks a hostname on the platform default domain</li></ul></div>
+      <div class="cell s"><ul><li><b>Hostname derivation undecided</b> — per service, per namespace, or per environment <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>ExternalDNS</b> writes the record — with the approach flagged as still needing a proper look <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-expose-service.html">P2·06 Expose a Service</a></div></div>
+      <div class="rowlabel"><span class="rn">H4</span><span class="cn">TLS certificates</span><span class="cs">issuance &amp; renewal</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Nothing</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li><b>cert-manager issues via Venafi</b>, auto-renewed for platform-domain hosts</li></ul><div class="flag shift">One of the few rows with an empty shared column in Phase 2 — a clean, total handover.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-expose-service.html">P2·06 Expose a Service</a></div></div>
+      <div class="rowlabel"><span class="rn">H5</span><span class="cn">Domain ownership</span><span class="cs">whose name is it</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Uses the <b>platform default domain</b> — a subdomain per environment <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Owns and operates the default domain</li><li><b>Bring-your-own domain is Phase 3</b> — the platform would register the domain and its certificate on the consumer's behalf; scope and renewal ownership TBD <span class="open">OPEN</span></li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-expose-service.html">P2·06 Expose a Service</a></div></div>
+      <div class="rowlabel"><span class="rn">H6</span><span class="cn">Network policy &amp; egress</span><span class="cs">what can talk to what</span><span class="delta undecided">undecided</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Entirely uncovered.</b> Namespace network policy, egress restrictions and whether a workload can reach the internet or other namespaces appear on no map <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><span class="none undec">&mdash; undecided</span><div class="flag amber">Raised by this exercise. The mesh is specified in detail; the network policy around it is not mentioned at all.</div></div>
+      <div class="domband"><span class="dl">I</span><span class="dn">Delivery &amp; Release</span><span class="db">Getting the artifact into an environment, and back out again.</span></div>
+      <div class="rowlabel"><span class="rn">I1</span><span class="cn">Delivery mechanism</span><span class="cs">Argo · the reconciliation loop</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Defines <b>what &ldquo;deploy&rdquo; means</b> for their application — what a release contains and what a good one looks like</li></ul></div>
+      <div class="cell s"><ul><li><b>The platform builds the mechanism; the consumer gives it meaning.</b> Argo is wired to the GitOps repo (B6) for the team, but what a deploy <i>is</i> remains theirs to decide</li><li>Neither side can ship alone: the platform will reconcile whatever it is told, and the team cannot reconcile without it</li></ul></div>
+      <div class="cell p"><ul><li><b>Wires Argo to watch the GitOps repo</b> and runs the reconciliation loop</li><li>Pulls the image from JFrog using the injected imagePullSecrets; applies workloads to the target namespace</li><li>External Secrets supplies config and secrets at apply time</li></ul><div class="flag shift"><b>Platform owns the machinery, consumer owns the meaning.</b> The one delivery row that lands on the line rather than below it &mdash; and the only shared box inside the platform block on the stakeholder diagram.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-deploy-dev-qa.html">P2·05 Deploy</a><a href="journey-p2-provision-project-environments.html">P2·01 Provision</a></div></div>
+      <div class="rowlabel"><span class="rn">I2</span><span class="cn">Deployment trigger</span><span class="cs">the act of saying go</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Bumps the image reference and <b>triggers however the team prefers</b> — a commit, a PR merge, or their own automation</li></ul></div>
+      <div class="cell s"><ul><li>Whether the platform offers a <b>bump-and-deploy CLI helper</b> is open — noted as possibly Phase 3/4 <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>No platform action at trigger time.</b> The mechanism (I1) is already watching; the trigger is simply a commit</li></ul><div class="flag">Platform owns the wiring, the team owns the trigger &mdash; which is why nothing on the platform side happens here at all.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-deploy-dev-qa.html">P2·05 Deploy</a></div></div>
+      <div class="rowlabel"><span class="rn">I3</span><span class="cn">Promotion to production</span><span class="cs">the gated step</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Points the prod app-of-apps at the <b>qa-proven image</b></li><li>Confirms the human-in-the-loop step — promotion is a destructive prod action</li></ul></div>
+      <div class="cell s"><ul><li><b>Human-in-the-loop confirmation is required</b>, including when driven through an agent. How that step is presented and audited is open <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Routes the promotion toward the separate prod cluster/account</li><li>Syncs on pass; blocks and returns reasons on fail</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-promote-production.html">P2·07 Promote</a></div></div>
+      <div class="rowlabel"><span class="rn">I4</span><span class="cn">Rollback</span><span class="cs">undoing it</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Likely a <b>git revert</b> of the app-of-apps — which the team owns</li></ul></div>
+      <div class="cell s"><ul><li>Whether rollback is just a revert or a <b>platform-assisted</b> operation is open <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Argo reconciles whatever the repo says — which makes revert work, but is not the same as a rollback feature</li></ul><div class="flag amber">Also unresolved: whether a rolled-back prod image needs to re-pass the compliance gate.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-deploy-dev-qa.html">P2·05 Deploy</a></div></div>
+      <div class="domband"><span class="dl">J</span><span class="dn">Observability &amp; Operations</span><span class="db">Seeing what is happening, and who gets woken up. The thinnest-covered domain in the library.</span></div>
+      <div class="rowlabel"><span class="rn">J1</span><span class="cn">Logs, metrics &amp; dashboards</span><span class="cs">seeing the system</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Observes status and logs <b>via Argo and Kubernetes</b></li><li>Owns application-level instrumentation</li></ul></div>
+      <div class="cell s"><ul><li><b>Whether the platform provides an observability stack in Phase 2 is unresolved.</b> Datadog appears only as a future integrated system on the platform engine — no observability journey is mapped <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Surfaces deployment state in the engine record; provides Argo and K8s as viewing surfaces</li></ul><div class="flag amber">The gap this exercise surfaced most clearly. Phase 2 gives the team a runtime they can no longer see into with their own tooling, without yet committing to replace it.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-deploy-dev-qa.html">P2·05</a><a href="object-model.html">Object Model</a></div></div>
+      <div class="rowlabel"><span class="rn">J2</span><span class="cn">Alerting &amp; on-call</span><span class="cs">who gets paged</span><span class="delta undecided">undecided</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Entirely uncovered.</b> Who is paged for a failing workload versus a failing cluster, mesh or Argo, and where that line sits, appears on no map <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><span class="none undec">&mdash; undecided</span><div class="flag amber">Raised by this exercise. The consumer keeps the app but no longer owns the platform underneath it — that split needs a paging model.</div></div>
+      <div class="rowlabel"><span class="rn">J3</span><span class="cn">Incident response &amp; support</span><span class="cs">the escalation path</span><span class="delta undecided">undecided</span></div>
+      <div class="cell c"><span class="none undec">&mdash; undecided</span></div>
+      <div class="cell s"><ul><li><b>Entirely uncovered.</b> Support hours, severity definitions, escalation into the Platform Engineering team, and any service-level commitment on platform-owned components <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><span class="none undec">&mdash; undecided</span><div class="flag amber">Raised by this exercise. Every capability the platform absorbs creates an escalation path that does not exist yet.</div></div>
+      <div class="domband"><span class="dl">K</span><span class="dn">Compliance, Audit &amp; Governance</span><span class="db">The guardrail layer — and the only domain where the governance persona ever steps on-stage.</span></div>
+      <div class="rowlabel"><span class="rn">K1</span><span class="cn">Compliance posture</span><span class="cs">declaring the level</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><ul><li>Unchanged — and now feeds the production gate policy</li></ul></div>
+      <div class="cell p"><ul><li>Unchanged</li></ul></div>
+      <div class="rowlabel"><span class="rn">K2</span><span class="cn">AI capability provisioning</span><span class="cs">the catalog</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Unchanged</li></ul></div>
+      <div class="cell s"><ul><li>A candidate flow extends AI capabilities to <b>user-owned repos</b>, closing the Phase 1 gap <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Unchanged</li></ul></div>
+      <div class="rowlabel"><span class="rn">K3</span><span class="cn">Evidence production</span><span class="cs">making the proof</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li><b>Produces the evidence</b> — signs the image, builds toward a valid SBOM, supplies scan and test evidence as policy expands <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li>Which evidence types, and the sequencing, is being decided — cosign first, SBOM as the goal <span class="open">OPEN</span></li><li>The broader policy taxonomy — scans, licence, test-coverage thresholds — and how it grows <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>Defines what evidence is required</b>, but generates none of it</li></ul><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-promote-production.html">P2·07 Promote</a></div></div>
+      <div class="rowlabel"><span class="rn">K4</span><span class="cn">Evidence verification</span><span class="cs">the admission gate</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Waits on the gate — nothing to do but pass it</li><li>On reject, sees the specific reasons, fixes them and re-runs</li></ul></div>
+      <div class="cell s"><ul><li><b>Compliance steps on-stage</b> as gatekeeper — the only place in either phase where the governance persona is visible rather than backstage</li><li><b>No exceptions initially.</b> Who could approve one later — Product Owner or department manager — is undecided <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li><b>Verify-at-deploy.</b> Validates evidence at admission; blocks the sync and returns reasons when proof is missing</li><li>Which enforcement point is authoritative — admission controller, Argo pre-sync, or Xray policy — is open <span class="open">OPEN</span></li></ul><div class="flag gate"><b>Prod only.</b> The gate does not apply to dev, qa, or any custom environment — which is exactly why the prod-like custom env question matters.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-promote-production.html">P2·07 Promote</a></div></div>
+      <div class="rowlabel"><span class="rn">K5</span><span class="cn">Audit trail capture</span><span class="cs">recording what happened</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li><b>The consumer's choice of surface now determines auditability</b> — CLI is fully audited, manifest leaves a PR trail, direct-in-tool is under investigation</li></ul></div>
+      <div class="cell s"><ul><li>This is the model's quiet principle: the platform does not forbid the less-auditable lane, it prices it with an approval instead <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Records who, what and when — including &ldquo;user via Claude&rdquo; for agent-driven actions</li></ul><div class="flag shift">In Phase 1 audit was purely platform-side. In Phase 2 the consumer can materially affect what gets recorded.</div></div>
+      <div class="rowlabel"><span class="rn">K6</span><span class="cn">Audit trail exposure</span><span class="cs">showing the auditor</span><span class="delta same">same</span></div>
+      <div class="cell c"><ul><li>Unchanged — still no self-serve view</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Still not surfaced. The <b>audit trail viewer is Phase 3</b> — platform-built, for the governance persona</li></ul><div class="flag amber">Two phases of capturing evidence before anyone can read it without asking. Worth checking that is acceptable to Compliance.</div></div>
+      <div class="rowlabel"><span class="rn">K7</span><span class="cn">Change record</span><span class="cs">ServiceNow</span><span class="delta shifts">shifts</span></div>
+      <div class="cell c"><ul><li>Nothing — the record is generated from evidence they already produced</li></ul></div>
+      <div class="cell s"><span class="none">&mdash; none</span></div>
+      <div class="cell p"><ul><li>Validated evidence <b>feeds the SNOW integration</b> for prod deploys</li><li>Shape and timing of that integration undecided <span class="open">OPEN</span></li></ul><div class="flag shift">A rare row where the platform removes work outright rather than redistributing it.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-promote-production.html">P2·07 Promote</a></div></div>
+      <div class="rowlabel"><span class="rn">K8</span><span class="cn">Migration onto the platform</span><span class="cs">getting in</span><span class="delta new">new</span></div>
+      <div class="cell c"><ul><li>Inventories what to bring in — repos, manifests, secrets <span class="open">OPEN</span></li><li>Runs the migration tool <b>one capability at a time</b>; reviews what came across</li><li>Validates on the platform, cuts traffic over, decommissions the source <span class="open">OPEN</span></li></ul></div>
+      <div class="cell s"><ul><li><b>Build vs buy per capability</b> is unscoped — a manifest translator, state tools, or off-the-shelf <span class="open">OPEN</span></li><li>Which capabilities are Phase 2 vs 3 vs 4+ <span class="open">OPEN</span></li></ul></div>
+      <div class="cell p"><ul><li>Provisions the landing-zone project via the <b>standard path</b> — nothing bespoke about the target</li><li>Provides the migration tool; shape still TBD <span class="open">OPEN</span></li></ul><div class="flag amber">Deliberately thin — the underlying map is a skeleton. Shown here so the capability is not silently absent from the model.</div><div class="src"><span class="lbl">Sourced from</span><a href="journey-p2-migrate-in.html">P2·08 Migrate In</a></div></div>
+    </div>
+  </div>
+  <div class="section-head" id="shifts"><h2>What Shifts, Domain by Domain</h2><span class="cnt">Phase 1 &rarr; Phase 2</span></div>
+  <div class="section-sub">The one-minute read. Eleven domains reduced to the sentence that describes how the line moved.</div>
+  <div class="shifts">
+    <div class="shift"><div class="sc">A · Access</div><div class="from">One conditional gate, on team creation.</div><div class="arw">&rarr;</div><div class="to">A per-action RBAC check, and the team lead becomes a standing approver.</div></div>
+    <div class="shift"><div class="sc">B · Source &amp; code</div><div class="from">Repos are consumer-owned, platform observes. Code is wholly theirs.</div><div class="arw">&rarr;</div><div class="to">Code unchanged. Repos <b>re-anchor to the Project</b>; the platform owns the GitOps repo.</div></div>
+    <div class="shift"><div class="sc">C · Build &amp; CI</div><div class="from">Wholly the team's. The platform maintains a docs page.</div><div class="arw">&rarr;</div><div class="to"><b>Still the team's.</b> The platform adds a registry and credentials &mdash; never the pipeline.</div></div>
+    <div class="shift"><div class="sc">D · Artifacts</div><div class="from">Wholly the team's registry, scanning and signing.</div><div class="arw">&rarr;</div><div class="to">Platform provides and isolates the registry; consumer still <b>produces the proof</b>.</div></div>
+    <div class="shift"><div class="sc">E · Environments</div><div class="from">Wholly the team's &mdash; their clusters, their capacity, their runtime.</div><div class="arw">&rarr;</div><div class="to">Almost wholly platform. Runtime stays consumer, but its resilience config is undefined.</div></div>
+    <div class="shift"><div class="sc">F · Secrets</div><div class="from">Wholly the team's store, values and delivery.</div><div class="arw">&rarr;</div><div class="to">Platform owns store and delivery; <b>consumer owns the values</b> &mdash; with an audit question on one lane.</div></div>
+    <div class="shift"><div class="sc">G · Data</div><div class="from">Wholly the team's databases, schema and backups.</div><div class="arw">&rarr;</div><div class="to">Platform provisions, consumer owns the data &mdash; approval depends on which lane leaves a trail.</div></div>
+    <div class="shift"><div class="sc">H · Networking</div><div class="from">Wholly the team's ingress, DNS and certificates.</div><div class="arw">&rarr;</div><div class="to">The most lopsided domain: consumer picks a name, platform does the rest.</div></div>
+    <div class="shift"><div class="sc">I · Delivery</div><div class="from">Wholly the team's deploy mechanism and promotion.</div><div class="arw">&rarr;</div><div class="to">Platform owns the wiring, <b>consumer owns the trigger</b>, gate sits at prod.</div></div>
+    <div class="shift"><div class="sc">J · Observability</div><div class="from">Wholly the team's &mdash; explicitly out of scope.</div><div class="arw">&rarr;</div><div class="to"><b>Least resolved.</b> The team loses the runtime but the platform has not committed to replacing the tooling.</div></div>
+    <div class="shift"><div class="sc">K · Compliance</div><div class="from">Backstage. Evidence captured quietly; nothing blocks.</div><div class="arw">&rarr;</div><div class="to">On-stage at prod. The platform gains a <b>veto</b> &mdash; over consumer-produced proof only.</div></div>
+  </div>
+  <div class="section-head" id="questions"><h2>Constants &amp; Questions to Resolve</h2><span class="cnt">what holds &middot; what this exercise exposed</span></div>
+  <div class="section-sub">Five principles hold the line steady. Twelve questions would move it &mdash; and most of them only became visible once the capabilities were split finely enough to ask.</div>
+  <div class="panels">
+    <div class="panel"><h4><span class="tick"></span>Constants across both phases</h4>
+      <div class="dl2"><span class="dp k">Hold</span><div class="dt"><b>The consumer always owns the application code.</b> Every other row moves. This one never does, in either phase.</div></div>
+      <div class="dl2"><span class="dp k">Hold</span><div class="dt"><b>The platform never owns the build pipeline.</b> Runners in Phase 1, a registry and credentials in Phase 2 &mdash; but authoring CI stays with the team throughout. It is the only capability the platform actively declines.</div></div>
+      <div class="dl2"><span class="dp k">Hold</span><div class="dt"><b>Not offered is not the same as not needed.</b> Every Phase 1 gap is a load the team is already carrying somewhere else. Phase 2 absorbs work rather than filling blanks.</div></div>
+      <div class="dl2"><span class="dp k">Hold</span><div class="dt"><b>The platform engine is the record, not a proxy.</b> Central, up-to-date state across integrated systems rather than sitting in the request path.</div></div>
+      <div class="dl2"><span class="dp k">Hold</span><div class="dt"><b>The boundary is drawn by evidence, not by risk.</b> The datastore lanes prove it &mdash; the same database is self-service with a PR trail and approval-gated without one.</div></div>
+    </div>
+    <div class="panel"><h4><span class="tick a"></span>Questions to resolve</h4>
+      <div class="dl2"><span class="dp q">B3</span><div class="dt"><b>Which repository settings are constrained, and which stay open?</b> A team's compliance or security classification decides a subset for them and leaves the rest to the consumer. The membership of each subset, the enforcement mechanism, and how a classification maps to concrete settings are all undrawn.</div></div>
+      <div class="dl2"><span class="dp q">A4</span><div class="dt"><b>Is SSH going to be offered?</b> PAT over HTTPS and the gh CLI work today; SSH needs a Security discussion, and the intent is to offer it. The onboarding map has been corrected to match &mdash; the platform provisions no credentials.</div></div>
+      <div class="dl2"><span class="dp q">C2</span><div class="dt"><b>Are the CI runners GitHub-hosted or a self-hosted pool?</b> The single question that decides whether the platform owns compute in Phase 1 or owns a documentation page. Everything about capacity, patching, contention and cost follows from it.</div></div>
+      <div class="dl2"><span class="dp q">C1</span><div class="dt"><b>Does the platform hold any Actions-level policy?</b> Allowed-actions lists, org rulesets, required workflows. A common platform control that no map claims either way.</div></div>
+      <div class="dl2"><span class="dp q">E4</span><div class="dt"><b>Who configures workload resilience?</b> Replicas, autoscaling, pod disruption budgets, probes, restart policy. The environment is thoroughly specified; what runs inside it is not.</div></div>
+      <div class="dl2"><span class="dp q">E5</span><div class="dt"><b>How does a team request more quota?</b> Defaults are applied but undefined, and no path exists to ask for more.</div></div>
+      <div class="dl2"><span class="dp q">E6</span><div class="dt"><b>Who sees and who pays the cost?</b> Once the platform owns the accounts and clusters, attribution, budgets and chargeback become a real boundary.</div></div>
+      <div class="dl2"><span class="dp q">F4/F5</span><div class="dt"><b>Who rotates secrets, and are build-time secrets in scope?</b> Rotation is flagged open on the map. Build-time coverage is unresolved &mdash; awkward, since the platform issues JFrog push credentials.</div></div>
+      <div class="dl2"><span class="dp q">G4</span><div class="dt"><b>Who backs up the database, and who can restore it?</b> The map covers teardown guardrails but not backup, restore, RPO or RTO.</div></div>
+      <div class="dl2"><span class="dp q">H6</span><div class="dt"><b>What is the network policy and egress model?</b> The mesh is specified in detail; namespace network policy and egress control are not mentioned at all.</div></div>
+      <div class="dl2"><span class="dp q">J1</span><div class="dt"><b>Does the platform provide an observability stack in Phase 2?</b> Datadog appears only as a future integrated system. The team loses direct access to the runtime without a committed replacement.</div></div>
+      <div class="dl2"><span class="dp q">J2/J3</span><div class="dt"><b>Who gets paged, and what is the support commitment?</b> Failing workload versus failing cluster, mesh or Argo. Every absorbed capability creates an escalation path that does not exist yet.</div></div>
+      <div class="dl2"><span class="dp q">I4</span><div class="dt"><b>Is rollback a git revert or a platform feature &mdash; and does it re-pass the gate?</b> Open on the map, and the compliance interaction is unaddressed.</div></div>
+      <div class="dl2"><span class="dp q">K6</span><div class="dt"><b>Is two phases of capture-without-exposure acceptable to Compliance?</b> Evidence accumulates from Phase 1; the viewer is Phase 3.</div></div>
+    </div>
+  </div>
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING &middot; SHARED RESPONSIBILITY MODEL &middot; PHASE 1 &amp; 2</span>
+    <span>DRAFT FOR WORKSHOP ALIGNMENT &middot; FUTURE STATE</span>
+  </div>
+</div>
+</body>
+</html>

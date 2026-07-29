@@ -82,6 +82,8 @@
   .open{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:0.03em;padding:1px 6px;border-radius:4px;background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);font-weight:600;vertical-align:middle;margin-left:3px;white-space:nowrap;}
   .flag{margin-top:9px;padding:8px 10px;background:var(--green-wash);border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:11px;color:var(--green-deep);line-height:1.4;}
   .flag b{font-weight:600;}
+  .flag.amber{background:var(--amber-wash);border-left-color:var(--amber);color:var(--amber);}
+  .cell li code{font-family:var(--mono);font-size:11px;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
 
   .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;}
   .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
@@ -179,7 +181,8 @@
       <div class="cell fe band-top"><ul>
         <li>Logs into the platform engine; sees alpha status and what it unlocks</li>
         <li>Sees "my repositories" (empty to start)</li>
-        <li>Reviews the shared-responsibility model — what's in vs out of scope</li>
+        <li>Reviews the <a href="shared-responsibility-model.html" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">shared-responsibility model</a> — what's in vs out of scope</li>
+        <li><b>Sets up their own git credential</b> in GitHub — an SSH key, a PAT for HTTPS, or the <code>gh</code> CLI <span class="open">OPEN Q5</span></li>
       </ul></div>
       <div class="cell fe band-top"><ul>
         <li>Chooses what to create: a <b>user-owned repo</b>, or a <b>team</b> (then team-owned repos)</li>
@@ -198,8 +201,10 @@
         <li>User is added to the core AD / Entra group → inner-source org access</li>
         <li>Granted GitHub Enterprise access <span class="open">OPEN Q4</span></li>
         <li>Platform engine records the alpha entitlement against the user</li>
-        <li>SSH key set up so the user can clone later <span class="open">OPEN Q5</span></li>
-      </ul></div>
+        <li>Org &amp; Enterprise settings <b>permit self-service credential management</b> — so the user can add their own SSH key or PAT <span class="open">OPEN Q5</span></li>
+      </ul>
+        <div class="flag amber"><b>Boundary:</b> the platform provisions <b>no</b> SSH key and <b>no</b> PAT. It ensures the user <i>can</i> manage their own via GitHub. A streamlined credential experience on the platform's own interface is a later version.</div>
+      </div>
       <div class="cell be"><ul>
         <li>Platform engine sends the onboarding email with access details + a capability overview</li>
       </ul></div>
@@ -283,7 +288,7 @@
       <div class="q"><span class="qn">Q2</span><div><b>Prior access.</b> Does the existing employee already have GitHub Enterprise access, or does alpha enrollment grant it for the first time?</div></div>
       <div class="q"><span class="qn">Q3</span><div><b>Entitlement scope.</b> What exactly does alpha unlock — is <b>team creation</b> gated to alpha users only in Phase 1? What's the backing RBAC model?</div></div>
       <div class="q"><span class="qn">Q4</span><div><b>Access level.</b> GitHub Enterprise <b>read</b>, org <b>write</b> — confirm. What repo-level permission does a creator get by default?</div></div>
-      <div class="q"><span class="qn">Q5</span><div><b>SSH provisioning.</b> When/where in onboarding does the user's SSH key get set up, so cloning works later? (Connects to the SSH-vs-PAT question.)</div></div>
+      <div class="q"><span class="qn">Q5</span><div><b>Credential options.</b> <code>PAT</code> over HTTPS and the <code>gh</code> CLI work today; <b>SSH is still to be agreed with Security</b> — the intent is to offer it. Confirm SSH is available, and whether a streamlined way to manage credentials from the platform's own interface lands in a later version.<br><span style="color:var(--green-deep);font-size:12px;">✓ Resolved in part — the platform provisions no credentials; setup is the user's. See the <a href="shared-responsibility-model.html" style="color:inherit;">shared responsibility model</a>, row A4.</span></div></div>
     </div>
 
     <div class="panel">
