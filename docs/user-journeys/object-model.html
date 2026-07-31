@@ -137,7 +137,7 @@
     <div>
       <div class="mast-eyebrow">Reference · Object Model · Phase 1 → Phase 2</div>
       <h1>Object <span>Model</span></h1>
-      <div class="mast-sub">The shared vocabulary behind every journey map — and how it evolves. Phase 1 is organized around the Team; Phase 2 introduces the Project as the anchor for everything deployment-related; and the proposed Sandbox sits alongside the Project, owned by a person rather than a team.</div>
+      <div class="mast-sub">The shared vocabulary behind every journey map — and how it evolves. Phase 1 is organized around the Team; Phase 2 introduces the Project as the anchor for everything deployment-related; and the proposed Prototype sits alongside the Project, owned by a user or a team.</div>
     </div>
     <div class="mast-meta">
       <b>P1 anchor</b> · Team<br>
@@ -295,31 +295,32 @@
     </div>
   </div>
 
-  <!-- ================= SANDBOX ================= -->
+  <!-- ================= PROTOTYPE ================= -->
   <div class="phase-head">
     <span class="tag sbx">Proposed</span>
-    <h2>Sandbox — a sibling of Project, not a child</h2>
+    <h2>Prototype — a sibling of Project, not a child</h2>
   </div>
-  <div class="phase-sub">Introduced for the <a href="journey-prototype-sandbox.html" style="color:#6B4FA0;">Prototyper</a>. A <b>Sandbox</b> is not a custom environment beneath a Project — it is its own anchor, owned by a <b>person</b> rather than a Team, and it is the only object in the model that <b>deletes itself</b>.</div>
+  <div class="phase-sub">Introduced for the <a href="journey-prototype-share.html" style="color:#6B4FA0;">Prototyper</a>. A <b>Prototype</b> is not a custom environment beneath a Project — it is its own anchor, owned by a <b>user or a team</b>. It runs a <b>live service</b>, reachable internally only, and it is the only object in the model that <b>deletes itself</b>.</div>
 
   <div class="sbx-block">
-    <span class="lvl-tag lvl-sbx">Sandbox · anchor</span>
-    <div class="sbx-intro">Making it a custom environment was the tempting shortcut. It fails because a custom environment inherits a Project — and with it a Team owner, a dev/qa/prod triplet, a promotion path and no lifespan. <b>A Sandbox wants none of those.</b></div>
+    <span class="lvl-tag lvl-sbx">Prototype · anchor</span>
+    <div class="sbx-intro">Making it a custom environment was the tempting shortcut. It fails because a custom environment inherits a Project — and with it a Team owner, a dev/qa/prod triplet, a promotion path and no lifespan. <b>A Prototype wants none of those.</b></div>
 
     <div class="sbx-cols">
       <div class="sbx-ent">
-        <div class="t">Sandbox <span>the object</span></div>
-        <div class="sbx-attr"><span class="k">owner</span><div>A <b>person</b>, not a Team. This is what lets a non-engineer hold one at all.</div></div>
-        <div class="sbx-attr"><span class="k">lifespan</span><div>Carries a <b>TTL</b>. Expires by default and must be actively extended.</div></div>
+        <div class="t">Prototype <span>the object</span></div>
+        <div class="sbx-attr"><span class="k">owner</span><div>A <b>user or a team</b>. A team can stand one up alongside its Projects; a user can hold one with no team at all &mdash; which is what lets a non-engineer have one. <b>The rules are identical either way</b>; only the owner field differs.</div></div>
+        <div class="sbx-attr"><span class="k">lifespan</span><div>Expires after <b>a week by default</b>. Extended by choice, as often as the owner wants — but it goes away if nobody decides otherwise.</div></div>
         <div class="sbx-attr"><span class="k">viewers</span><div>Carries a <b>viewer group</b> — a membership list the owner controls, enforced at the edge. No other object has this.</div></div>
         <div class="sbx-attr"><span class="k">cost</span><div>A hard <b>ceiling</b>, attributed to the owner.</div></div>
         <div class="sbx-attr"><span class="k">owns</span><div>One repo (agent-written), one artifact space, one config space — cut-down versions of the Project's.</div></div>
       </div>
       <div class="sbx-ent">
-        <div class="t">Its single environment <span>always nonprod</span></div>
+        <div class="t">Its single environment <span>live · internally accessible only</span></div>
         <div class="sbx-attr"><span class="k">count</span><div><b>Exactly one.</b> No dev/qa/prod triplet, no siblings, no promotion path.</div></div>
-        <div class="sbx-attr"><span class="k">cluster</span><div>Nonprod cluster, nonprod account. A Sandbox can never reach the prod cluster.</div></div>
-        <div class="sbx-attr"><span class="k">gate</span><div><b>No compliance gate</b> — the gate is a prod admission check, and nothing here targets prod.</div></div>
+        <div class="sbx-attr"><span class="k">nature</span><div><b>Live, not scratch.</b> A real running service that people actually use — production-like in every way <i>except reach</i>. Calling it &ldquo;nonprod&rdquo; understates what it is.</div></div>
+        <div class="sbx-attr"><span class="k">reach</span><div><b>Internally accessible only</b> — never public. The viewer group narrows it further, to a handful of named people.</div></div>
+        <div class="sbx-attr"><span class="k">isolation</span><div>Runs <b>independently</b> of other workloads. <i>Where</i> it physically lands is a platform detail this persona never sees, and the model deliberately does not say.</div></div>
         <div class="sbx-attr"><span class="k">data</span><div><b>Synthetic or seeded only.</b> A datastore is permitted; production data is not.</div></div>
         <div class="sbx-attr"><span class="k">wired</span><div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span><span class="pill later">group-scoped ingress</span></div></div>
       </div>
@@ -327,36 +328,41 @@
 
     <div class="contrast">
       <table>
-        <tr><th>&nbsp;</th><th>Project</th><th>Sandbox</th></tr>
-        <tr><td class="kk">Owned by</td><td class="pj">A Team (many-to-many)</td><td class="sb">A person</td></tr>
-        <tr><td class="kk">Environments</td><td class="pj">dev / qa / prod, plus optional add-ons</td><td class="sb">Exactly one, always nonprod</td></tr>
-        <tr><td class="kk">Lifespan</td><td class="pj">Indefinite — deleted deliberately</td><td class="sb">TTL — expires unless extended</td></tr>
-        <tr><td class="kk">Who can reach it</td><td class="pj">Anyone on the network, once exposed</td><td class="sb">A viewer group the owner controls</td></tr>
+        <tr><th>&nbsp;</th><th>Project</th><th>Prototype</th></tr>
+        <tr><td class="kk">Owned by</td><td class="pj">A Team (many-to-many)</td><td class="sb">A user <i>or</i> a team</td></tr>
+        <tr><td class="kk">Environments</td><td class="pj">dev / qa / prod, plus optional add-ons</td><td class="sb">Exactly one — live, internal-only</td></tr>
+        <tr><td class="kk">Lifespan</td><td class="pj">Indefinite — deleted deliberately</td><td class="sb">A week by default — extended by choice</td></tr>
+        <tr><td class="kk">Who can reach it</td><td class="pj">Anyone internal, once exposed</td><td class="sb">A viewer group the owner controls</td></tr>
         <tr><td class="kk">Path to production</td><td class="pj">Promotion, through the admission gate</td><td class="sb">None — graduation to a Project instead</td></tr>
         <tr><td class="kk">Primary surface</td><td class="pj">CLI · Agent · Manifest</td><td class="sb">Agent only</td></tr>
       </table>
     </div>
 
-    <div class="gapnote"><b>Nothing here exists yet.</b> The Sandbox object, its TTL and expiry, and the viewer-group enforcement are three of the eight capabilities the <a href="journey-prototype-sandbox.html">Prototyper journey</a> depends on. It is drawn here so the shape can be argued about before it is built.</div>
+    <div class="gapnote"><b>Nothing here exists yet.</b> The Prototype object, its TTL and expiry, and the viewer-group enforcement are three of the eight capabilities the <a href="journey-prototype-share.html">Prototyper journey</a> depends on. It is drawn here so the shape can be argued about before it is built.</div>
   </div>
 
   <div class="legend">
     <div class="panel">
-      <h4>Reading the Sandbox</h4>
-      <div class="lr"><b>It is an anchor, not an environment.</b> Sitting it under a Project would give it an owning Team and a prod sibling — the two things it most needs not to have.</div>
-      <div class="lr"><b>Person-owned is the load-bearing choice.</b> Every other object in the model is owned by a Team. A prototyper may not be on one.</div>
-      <div class="lr"><b>It deletes itself.</b> The only object with a lifespan, which is what stops the prototyping persona becoming a sprawl generator.</div>
+      <h4>Reading the Prototype</h4>
+      <div class="lr"><b>It is an anchor, not an environment.</b> Sitting it under a Project would give it an owning Team and a dev/qa/prod triplet — two things it most needs not to have.</div>
+      <div class="lr"><b>&ldquo;Nonprod&rdquo; is the wrong axis.</b> A Prototype is <i>live</i> — a real service people use. What makes it different is <b>reach</b>, not seriousness: internally accessible only, and narrowed further to a named group.</div>
+      <div class="lr"><b>The deadline is the load-bearing property</b> &mdash; not the owner. Every other object persists until deleted; this one expires. User-ownership is a useful consequence (it lets a non-engineer have one), not the reason the object exists.</div>
+      <div class="lr"><b>It deletes itself.</b> A week by default, extended by choice. The only object with a lifespan — which is what stops this persona becoming a sprawl generator.</div>
+      <div class="lr"><b>Teams use them too.</b> A team can run a Prototype alongside its Projects — to spike an idea, trial a migration, or demo something — without standing up a full Project it will later have to tear down.</div>
+      <div class="lr"><b>Placement is deliberately unstated.</b> Which cluster or account it lands in is a platform concern below this persona's line of sight; the model only asks that the workload runs <b>independently</b>.</div>
     </div>
     <div class="panel">
       <h4>Open points</h4>
-      <div class="lr"><b>Graduation</b> — how a Sandbox becomes a Project, and what carries across. Undefined, and the sharpest risk: without it, successful prototypes become shadow production.</div>
+      <div class="lr"><b>Does the compliance gate apply?</b> This is the question the &ldquo;live, not nonprod&rdquo; framing forces. A Prototype is a running service with real internal users and today has no signing, no SBOM and no admission check. Defensible for a week-long internal prototype on synthetic data — but it should be <b>a decision Compliance makes</b>, not a side effect of the word we chose.</div>
+      <div class="lr"><b>Graduation has a definition now: a Prototype becomes a Project by acquiring a Team.</b> For a team-owned one that is nearly in place — the owner is already right. For a user-owned one, the missing ingredient <i>is</i> the team. What still needs deciding is <b>what carries across</b>: the repo almost certainly, the URL probably not (it moves to a real domain), the data probably not (synthetic becomes real).</div>
       <div class="lr"><b>Viewer group backing</b> — an Entra group, a platform-native list, or something else. Teams deliberately bypass Entra today, which makes reusing it awkward.</div>
-      <div class="lr"><b>Concurrency &amp; entitlement</b> — how many live Sandboxes one person may hold, and whether creating them is part of the alpha grant or separate.</div>
+      <div class="lr"><b>Isolation level</b> — how independently the workload actually needs to run, and whether &ldquo;internal only&rdquo; is enforced at the edge, the network, or both.</div>
+      <div class="lr"><b>Concurrency &amp; entitlement</b> — how many live Prototypes one user may hold, and whether creating them is part of the alpha grant or separate.</div>
     </div>
   </div>
 
   <div class="colophon">
-    <span>AI PLATFORM ENGINEERING · OBJECT MODEL · PHASE 1 → PHASE 2 → SANDBOX</span>
+    <span>AI PLATFORM ENGINEERING · OBJECT MODEL · PHASE 1 → PHASE 2 → PROTOTYPE</span>
     <span>DRAFT FOR WORKSHOP ALIGNMENT</span>
   </div>
 </div>

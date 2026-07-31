@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Journey Map — Prototype &amp; Share (Sandbox)</title>
+<title>Journey Map — Prototype &amp; Share</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -133,20 +133,21 @@
   <header class="mast">
     <div>
       <div class="mast-eyebrow">User Journey Map · Prototyper · AI-first · Future State</div>
-      <h1>Prototype &amp; Share<br><span>Sandbox</span></h1>
+      <h1>Prototype<br>&amp; <span>Share</span></h1>
       <div class="mast-sub">Someone describes what they want in plain language and gets back a working, running thing on a link they can send to five people. The eight platform journeys underneath fire back-stage, in one shot, and the prototyper sees none of them.</div>
     </div>
     <div class="mast-meta">
       <b>Primary actor</b> · Prototyper<br>
       <b>Surface</b> · AI / MCP<br>
-      <b>Target</b> · Sandbox · TTL · group-scoped<br>
+      <b>Target</b> · Prototype · live · internal-only<br>
+      <b>Lifespan</b> · a week, extendable<br>
       <b>Status</b> · Draft · new persona
     </div>
   </header>
 
   <div class="precond">
     <span class="pk">Precondition</span>
-    <span><b>Onboarded, and the MCP catalog exists.</b> The user has an alpha entitlement, and the platform publishes a set of MCP servers the agent can reach and act through, using the user's own credentials. <b>Neither the catalog nor the Sandbox object exists today</b> — see the gap list below.</span>
+    <span><b>Onboarded, and the MCP catalog exists.</b> The user has an alpha entitlement, and the platform publishes a set of MCP servers the agent can reach and act through, using the user's own credentials. <b>Neither the catalog nor the Prototype object exists today</b> — see the gap list below.</span>
   </div>
 
   <div class="thesis">
@@ -205,7 +206,7 @@
       <div class="cell fe band-top"><ul>
         <li>Prompts changes in plain language; the agent redeploys</li>
         <li>Extends the lifespan, or lets it expire <span class="gapmark">GAP 3</span></li>
-        <li>Asks for it to be <b>graduated</b> into a real project if it proves out <span class="gapmark">GAP 4</span></li>
+        <li>Asks for it to be <b>graduated</b> into a Project if it proves out &mdash; which means giving it an owning <b>Team</b> <span class="gapmark">GAP 4</span></li>
       </ul></div>
 
       <!-- ENGINEER DEPTH -->
@@ -233,11 +234,11 @@
       <div class="rowlabel band-top">Back-stage actions</div>
       <div class="cell be band-top"><ul>
         <li>Agent resolves intent against the <b>MCP server catalog</b> the platform publishes <span class="gapmark">GAP 2</span></li>
-        <li>Platform validates the user's entitlement to create a sandbox <span class="open">OPEN Q3</span></li>
+        <li>Platform validates the user's entitlement to create a prototype <span class="open">OPEN Q3</span></li>
         <li>Acts <b>as the user</b>, with their credentials — entitlement is not widened for the agent</li>
       </ul></div>
       <div class="cell be band-top"><ul>
-        <li>Creates the <b>Sandbox object</b> — TTL, group-scoped access, cost cap, no prod environment <span class="gapmark">GAP 3</span></li>
+        <li>Creates the <b>Prototype object</b> — a week-long lifespan, group-scoped access, a cost cap, and one live internal-only environment <span class="gapmark">GAP 3</span></li>
         <li>Creates a prototype repo; the agent writes the application code into it</li>
         <li><b>Generates a default build workflow</b> — the platform supplies it rather than the team <span class="open">OPEN Q5</span></li>
         <li>Provisions the namespace, config/secret binding, JFrog pull config and GitOps wiring</li>
@@ -247,13 +248,13 @@
       </div>
       <div class="cell be band-top"><ul>
         <li>Build runs on the Phase 1 shared runners; image published to the project's JFrog space</li>
-        <li>Argo reconciles into the sandbox namespace</li>
-        <li><b>No production gate</b> — a sandbox is nonprod by definition and never reaches prod</li>
+        <li>Argo reconciles into the prototype, which runs <b>independently</b> of other workloads <span class="open">OPEN Q8</span></li>
+        <li>No admission gate is applied today <span class="open">OPEN Q9</span></li>
       </ul>
-        <div class="flag"><b>Why there is no compliance gate here:</b> the gate is a prod admission check. Nothing in this journey targets prod — which is exactly why graduation (GAP 4) matters.</div>
+        <div class="flag amber"><b>The gate question is open, not settled.</b> A prototype is a <b>live service</b> — real, running, used by real colleagues. It is not &ldquo;nonprod&rdquo; in any meaningful sense; what makes it different is <b>reach</b>. So &ldquo;no signing, no SBOM, no admission check&rdquo; is defensible for a week-long internal prototype on synthetic data — but it is a decision Compliance should make, not a consequence of the label. <span class="open">OPEN Q9</span></div>
       </div>
       <div class="cell be band-top"><ul>
-        <li>Hostname on the platform sandbox domain; Istio route, ExternalDNS record, Venafi certificate</li>
+        <li>Hostname on the platform prototype domain; Istio route, ExternalDNS record, Venafi certificate</li>
         <li><b>Access scoped to the named group</b> — SSO in front, membership enforced at the edge <span class="gapmark">GAP 1</span></li>
       </ul>
         <div class="flag gap"><b>The capability that does not exist.</b> P2·06 exposes a service on the platform default domain with <b>no group scoping</b> — anyone on the network can reach it. &ldquo;Shareable with a small group&rdquo; needs an authorization layer the platform does not have.</div>
@@ -269,8 +270,8 @@
       <!-- TOUCHPOINTS -->
       <div class="rowlabel band-top">Touchpoints</div>
       <div class="cell band-top"><div class="tps"><span class="tp ai">AI/MCP</span><span class="tp core">Platform Engine</span><span class="tp new">MCP catalog</span></div></div>
-      <div class="cell band-top"><div class="tps"><span class="tp ai">AI/MCP</span><span class="tp core">Platform Engine</span><span class="tp">GitHub</span><span class="tp new">Sandbox object</span><span class="tp">K8s · sandbox</span></div></div>
-      <div class="cell band-top"><div class="tps"><span class="tp">GitHub Actions</span><span class="tp">Runners</span><span class="tp">JFrog</span><span class="tp">ArgoCD</span><span class="tp">K8s · sandbox</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp ai">AI/MCP</span><span class="tp core">Platform Engine</span><span class="tp">GitHub</span><span class="tp new">Prototype object</span><span class="tp">K8s · prototype</span></div></div>
+      <div class="cell band-top"><div class="tps"><span class="tp">GitHub Actions</span><span class="tp">Runners</span><span class="tp">JFrog</span><span class="tp">ArgoCD</span><span class="tp">K8s · prototype</span></div></div>
       <div class="cell band-top"><div class="tps"><span class="tp">Istio</span><span class="tp">ExternalDNS</span><span class="tp">cert-manager</span><span class="tp">Venafi</span><span class="tp new">SSO · group scope</span></div></div>
       <div class="cell band-top"><div class="tps"><span class="tp ai">AI/MCP</span><span class="tp core">Platform Engine</span><span class="tp new">TTL &amp; expiry</span><span class="tp new">Graduation</span></div></div>
 
@@ -325,60 +326,65 @@
       <div class="gw"><b>Blocks</b> the AI touchpoint entirely.<br><b>Nearest existing thing</b> is the AI capability catalog (K2), which attaches to repos, not to the platform's own actions.</div>
     </div>
     <div class="gap">
-      <div class="gn"><span>Gap 3 · blocking</span><b>The Sandbox object &amp; TTL</b></div>
-      <div class="gd">Sandbox is <b>not a custom environment</b>. A custom env inherits a project anchor, dev/qa/prod siblings and no lifespan. A Sandbox needs its own rules: a <b>time to live</b>, group-scoped access, a cost cap, no prod sibling, and automatic teardown of everything it created. Reusing E2 would drag in assumptions that actively do not fit.</div>
+      <div class="gn"><span>Gap 3 · blocking</span><b>The Prototype object &amp; TTL</b></div>
+      <div class="gd">Prototype is <b>not a custom environment</b>. A custom env inherits a project anchor, dev/qa/prod siblings and no lifespan. A Prototype needs its own rules: a <b>week-long lifespan</b> that must be actively extended, group-scoped access, a cost cap, and automatic teardown of everything it created. It runs a <b>live</b> service &mdash; what makes it different is reach, not seriousness. Reusing E2 would drag in assumptions that actively do not fit.</div>
       <div class="gw"><b>Without expiry</b> this persona is a sprawl and cost generator.<br><b>Touches</b> E2 teardown and E6 cost — both already open.</div>
     </div>
     <div class="gap">
       <div class="gn"><span>Gap 4 · high</span><b>Graduation path</b></div>
-      <div class="gd">What happens when a prototype is good? Either it becomes a real project — inheriting a proper environment set, the compliance gate and an owning team — or a team rebuilds it from scratch. <b>Nothing in between is safe.</b> Without a defined path, successful prototypes quietly become shadow production: running, depended on, and outside every gate the platform built.</div>
+      <div class="gd"><b>A Prototype becomes a Project by acquiring a Team</b> — that is the definition. A team-owned one is nearly there already; a user-owned one is missing exactly that. What is still undecided is <b>what carries across</b>: the repo almost certainly, the URL probably not (it moves to a real domain), the data probably not (synthetic becomes real). Without the mechanism, successful prototypes quietly become shadow production — running, depended on, and outside every gate the platform built.</div>
       <div class="gw"><b>The first question</b> a stakeholder will ask.<br><b>Relates to</b> P2·08 Migrate In — the same problem, from inside.</div>
     </div>
     <div class="gap">
       <div class="gn"><span>Gap 5 · high</span><b>Synthetic-data rule</b></div>
-      <div class="gd">A sandbox with a shareable link and a real datastore is a data-exposure path. The safe position is that <b>sandboxes carry synthetic or seeded data only, never production data</b> — but that has to be a stated and enforced rule, not an assumption. Enforcement is the hard part: nothing stops someone pasting real records into a prototype.</div>
+      <div class="gd">A prototype with a shareable link and a real datastore is a data-exposure path. The safe position is that <b>prototypes carry synthetic or seeded data only, never production data</b> — but that has to be a stated and enforced rule, not an assumption. Enforcement is the hard part: nothing stops someone pasting real records into a prototype.</div>
       <div class="gw"><b>Compliance will raise this</b> whether or not the team does.<br><b>Interacts with</b> Gap 1 — the risk is only contained if sharing is genuinely scoped.</div>
     </div>
     <div class="gap">
       <div class="gn"><span>Gap 6 · medium</span><b>Platform-generated build</b></div>
-      <div class="gd">The responsibility model states as a constant that <b>the platform never owns the build pipeline</b>. This persona cannot write one — so either the platform supplies a default build for sandboxes, or the agent generates it on the user's behalf and the user nominally owns it. Both are defensible; the current wording allows neither.</div>
+      <div class="gd">The responsibility model states as a constant that <b>the platform never owns the build pipeline</b>. This persona cannot write one — so either the platform supplies a default build for prototypes, or the agent generates it on the user's behalf and the user nominally owns it. Both are defensible; the current wording allows neither.</div>
       <div class="gw"><b>Forces a decision</b> on a stated constant.<br><b>Touches</b> C3 build definition, which is currently consumer-only in both phases.</div>
     </div>
     <div class="gap">
       <div class="gn"><span>Gap 7 · medium</span><b>Cost caps &amp; attribution</b></div>
-      <div class="gd">Anyone who can write a sentence can now provision an environment, a database and a hostname. Multiplied across the organisation, that needs a per-sandbox cost ceiling and attribution back to a person or team. E6 in the responsibility model is entirely undecided — this persona makes it urgent.</div>
+      <div class="gd">Anyone who can write a sentence can now provision an environment, a database and a hostname. Multiplied across the organisation, that needs a per-prototype cost ceiling and attribution back to a user or team. E6 in the responsibility model is entirely undecided — this persona makes it urgent.</div>
       <div class="gw"><b>Scales badly</b> without a ceiling.<br><b>E6</b> is currently badged undecided.</div>
     </div>
     <div class="gap">
       <div class="gn"><span>Gap 8 · medium</span><b>Prompt-to-code provenance</b></div>
-      <div class="gd">The responsibility model says the consumer always owns the application code. When an agent wrote it, that holds legally but weakly in practice. For a sandbox that never leaves nonprod it may not matter — but the moment a prototype graduates, it meets the compliance gate, and &ldquo;an agent wrote this&rdquo; becomes a conversation with Compliance about evidence and review.</div>
+      <div class="gd">The responsibility model says the consumer always owns the application code. When an agent wrote it, that holds legally but weakly in practice. While the prototype stays inside its viewer group it may not matter — but the moment a prototype graduates, it meets the compliance gate, and &ldquo;an agent wrote this&rdquo; becomes a conversation with Compliance about evidence and review.</div>
       <div class="gw"><b>Only bites on graduation</b> (Gap 4).<br><b>Touches</b> B4 application source code and K3 evidence production.</div>
     </div>
   </div>
 
   <!-- OBJECT + QUESTIONS -->
   <div class="section-head">
-    <h2>The Sandbox Object &amp; Open Questions</h2>
+    <h2>The Prototype Object &amp; Open Questions</h2>
   </div>
   <div class="panels">
     <div class="panel">
-      <h4><span class="tick v"></span>Sandbox — proposed shape</h4>
-      <div class="obj"><span class="ok">anchor</span><div class="od"><b>Owned by a person, not a team.</b> Unlike a Project, a Sandbox belongs to whoever created it — which is what lets a non-engineer have one at all.</div></div>
-      <div class="obj"><span class="ok">lifespan</span><div class="od"><b>Has a TTL.</b> Expires by default and must be actively extended. The only object in the model that deletes itself.</div></div>
+      <h4><span class="tick v"></span>Prototype — proposed shape</h4>
+      <div class="obj"><span class="ok">owner</span><div class="od"><b>A user or a team.</b> A team can run one alongside its Projects; a user can hold one with no team at all — which is what lets a non-engineer have one. <b>Identical rules either way</b>; only the owner field differs.</div></div>
+      <div class="obj"><span class="ok">lifespan</span><div class="od"><b>A week by default</b>, extended by choice as often as the owner wants. The only object in the model that deletes itself.</div></div>
       <div class="obj"><span class="ok">access</span><div class="od"><b>Carries a viewer group.</b> A membership list the owner controls, enforced at the edge — not a property any other object has.</div></div>
-      <div class="obj"><span class="ok">envs</span><div class="od"><b>Exactly one environment, always nonprod.</b> No dev/qa/prod triplet, no promotion path, no compliance gate.</div></div>
+      <div class="obj"><span class="ok">envs</span><div class="od"><b>Exactly one environment.</b> No dev/qa/prod triplet and no promotion path.</div></div>
+      <div class="obj"><span class="ok">nature</span><div class="od"><b>Live, not scratch.</b> A real running service — production-like in every way <i>except reach</i>. &ldquo;Nonprod&rdquo; understates it.</div></div>
+      <div class="obj"><span class="ok">reach</span><div class="od"><b>Internally accessible only</b>, then narrowed to the viewer group. Never public.</div></div>
+      <div class="obj"><span class="ok">isolation</span><div class="od">Runs <b>independently</b> of other workloads. <i>Where</i> it lands is a platform detail this persona never sees.</div></div>
       <div class="obj"><span class="ok">data</span><div class="od"><b>Synthetic or seeded only.</b> A datastore is permitted but production data is not.</div></div>
       <div class="obj"><span class="ok">cost</span><div class="od"><b>Capped.</b> A hard ceiling, attributed to the owner.</div></div>
     </div>
     <div class="panel">
       <h4><span class="tick"></span>Open questions</h4>
-      <div class="q"><span class="qn">Q1</span><div><b>Starting point.</b> Can the prototyper point the agent at an existing repo, or is every sandbox generated from a blank prompt? Affects whether this is also a &ldquo;fork and try something&rdquo; tool.</div></div>
+      <div class="q"><span class="qn">Q1</span><div><b>Starting point.</b> Can the prototyper point the agent at an existing repo, or is every prototype generated from a blank prompt? Affects whether this is also a &ldquo;fork and try something&rdquo; tool.</div></div>
       <div class="q"><span class="qn">Q2</span><div><b>The approval wait state.</b> The agent shares the CLI lane, so a datastore needs team-lead sign-off. For a non-engineer with no team lead, who approves? And does a stateless prototype stay genuinely zero-wait?</div></div>
-      <div class="q"><span class="qn">Q3</span><div><b>Who gets to prototype.</b> Is sandbox creation part of the alpha entitlement, a separate grant, or open to anyone with an account? This decides whether the persona is ten people or ten thousand.</div></div>
-      <div class="q"><span class="qn">Q4</span><div><b>Human-in-the-loop scope.</b> Promotion to prod requires confirmation. Does provisioning a sandbox, a database, or a public hostname require one too — and how many confirmations before the flow stops feeling conversational?</div></div>
+      <div class="q"><span class="qn">Q3</span><div><b>Who gets to prototype.</b> Is creation part of the alpha entitlement, a separate grant, or open to anyone with an account? This decides whether the persona is ten people or ten thousand &mdash; and it now covers teams as well as individuals.</div></div>
+      <div class="q"><span class="qn">Q4</span><div><b>Human-in-the-loop scope.</b> Promotion to prod requires confirmation. Does provisioning a prototype, a database, or a public hostname require one too — and how many confirmations before the flow stops feeling conversational?</div></div>
       <div class="q"><span class="qn">Q5</span><div><b>Who owns the generated build.</b> Platform-supplied default, or agent-generated and nominally the user's? See Gap 6 — this contradicts a stated constant either way.</div></div>
-      <div class="q"><span class="qn">Q6</span><div><b>Sandbox domain.</b> Does a sandbox sit on a separate domain from real services, so a link is visibly a prototype rather than mistaken for a product?</div></div>
-      <div class="q"><span class="qn">Q7</span><div><b>Concurrency.</b> How many live sandboxes may one person hold at once, and what happens at the limit?</div></div>
+      <div class="q"><span class="qn">Q6</span><div><b>Prototype domain.</b> Does a prototype sit on a separate domain from real services, so a link is visibly a prototype rather than mistaken for a product?</div></div>
+      <div class="q"><span class="qn">Q7</span><div><b>Concurrency.</b> How many live prototypes may one user hold at once, and what happens at the limit?</div></div>
+      <div class="q"><span class="qn">Q8</span><div><b>Isolation level.</b> How independently does the workload actually need to run, and is &ldquo;internal only&rdquo; enforced at the edge, in the network, or both? The <i>placement</i> is deliberately unstated — it is below this persona's line of sight — but the <b>degree of isolation</b> is a real decision.</div></div>
+      <div class="q"><span class="qn">Q9</span><div><b>Does the compliance gate apply to a live internal service?</b> A prototype is genuinely live, with real users. Today it carries no signing, no SBOM and no admission check. Defensible for a week-long internal prototype on synthetic data — but Compliance should decide that deliberately.</div></div>
     </div>
   </div>
 
@@ -393,21 +399,21 @@
       <h4><span class="tick g"></span>Reused as-is</h4>
       <div class="obj"><span class="ok" style="background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;">P1·01</span><div class="od"><a href="journey-onboarding-alpha.html" style="color:inherit;"><b>Onboarding</b></a> — the entitlement precondition, unchanged.</div></div>
       <div class="obj"><span class="ok" style="background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;">P1·06</span><div class="od"><a href="journey-ci-github-actions.html" style="color:inherit;"><b>CI with GitHub Actions</b></a> — the runners, though <b>not</b> the authoring (see Gap 6).</div></div>
-      <div class="obj"><span class="ok" style="background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;">P2·05</span><div class="od"><a href="journey-p2-deploy-dev-qa.html" style="color:inherit;"><b>Deploy to Dev / QA</b></a> — the GitOps mechanism, targeting the sandbox namespace.</div></div>
+      <div class="obj"><span class="ok" style="background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;">P2·05</span><div class="od"><a href="journey-p2-deploy-dev-qa.html" style="color:inherit;"><b>Deploy to Dev / QA</b></a> — the GitOps mechanism, targeting the prototype namespace.</div></div>
       <div class="obj"><span class="ok" style="background:var(--green-wash);color:var(--green-deep);border-color:#BFE6D2;">P2·04</span><div class="od"><a href="journey-p2-add-datastore.html" style="color:inherit;"><b>Add a Datastore</b></a> — including its team-lead approval, which is what creates path B.</div></div>
     </div>
     <div class="panel">
       <h4><span class="tick"></span>Reused but altered</h4>
-      <div class="obj"><span class="ok">P1·05</span><div class="od"><a href="journey-repo-for-team-via-platform-engine.html" style="color:inherit;"><b>Team repo via engine</b></a> — closest existing shape, but the repo here is <b>agent-created and person-owned</b>. P1·02 is the wrong fit: it explicitly carries no AI.</div></div>
-      <div class="obj"><span class="ok">P2·01</span><div class="od"><a href="journey-p2-provision-project-environments.html" style="color:inherit;"><b>Provision project</b></a> — auto-creates <b>dev, qa and prod</b>. A sandbox wants exactly one nonprod environment and no promotion path.</div></div>
+      <div class="obj"><span class="ok">P1·05</span><div class="od"><a href="journey-repo-for-team-via-platform-engine.html" style="color:inherit;"><b>Team repo via engine</b></a> — closest existing shape, but the repo here is <b>agent-created and user- or team-owned</b>. P1·02 is the wrong fit: it explicitly carries no AI.</div></div>
+      <div class="obj"><span class="ok">P2·01</span><div class="od"><a href="journey-p2-provision-project-environments.html" style="color:inherit;"><b>Provision project</b></a> — auto-creates <b>dev, qa and prod</b>. A prototype wants exactly one environment, live and internal-only, with no promotion path.</div></div>
       <div class="obj"><span class="ok">P2·03</span><div class="od"><a href="journey-p2-custom-environment.html" style="color:inherit;"><b>Custom environment</b></a> — the tempting fit, and the wrong one. See Gap 3.</div></div>
       <div class="obj"><span class="ok">P2·06</span><div class="od"><a href="journey-p2-expose-service.html" style="color:inherit;"><b>Expose a service</b></a> — gives a hostname with <b>no group scoping</b>. This is Gap 1, the blocking one.</div></div>
-      <div class="obj"><span class="ok">P2·02</span><div class="od"><a href="journey-p2-secrets-config.html" style="color:inherit;"><b>Secrets &amp; config</b></a> — needed minimally for app config, with a hard rule that <b>no real credentials</b> enter a shareable sandbox.</div></div>
+      <div class="obj"><span class="ok">P2·02</span><div class="od"><a href="journey-p2-secrets-config.html" style="color:inherit;"><b>Secrets &amp; config</b></a> — needed minimally for app config, with a hard rule that <b>no real credentials</b> enter a shareable prototype.</div></div>
     </div>
   </div>
 
   <div class="colophon">
-    <span>AI PLATFORM ENGINEERING · JOURNEY MAP · PROTOTYPE &amp; SHARE (SANDBOX)</span>
+    <span>AI PLATFORM ENGINEERING · JOURNEY MAP · PROTOTYPE &amp; SHARE</span>
     <span>DRAFT · NEW PERSONA · 8 CAPABILITY GAPS</span>
   </div>
 </div>
