@@ -101,6 +101,32 @@
   .lr::before{content:"→";position:absolute;left:0;color:var(--green);font-family:var(--mono);font-weight:600;}
   .lr.t::before{color:var(--teal);}
   .lr b{color:var(--ink);font-weight:600;}
+  .tag.sbx{background:#6B4FA0;}
+  .lvl-sbx{background:#6B4FA0;}
+  .sbx-block{border:2px dashed #6B4FA0;border-radius:14px;background:#FCFBFE;padding:18px;position:relative;margin-top:22px;}
+  .sbx-intro{font-size:13px;color:var(--ink-soft);margin:6px 0 16px;line-height:1.5;}
+  .sbx-intro b{color:var(--ink);font-weight:600;}
+  .sbx-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .sbx-ent{border:1px solid #D9CDEC;border-radius:10px;background:#fff;padding:14px 16px;}
+  .sbx-ent .t{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:-0.01em;margin-bottom:3px;}
+  .sbx-ent .t span{font-family:var(--body);font-size:11.5px;font-weight:400;color:var(--ink-faint);letter-spacing:0;}
+  .sbx-attr{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--hair-soft);font-size:12.5px;color:var(--ink-soft);line-height:1.42;}
+  .sbx-attr:last-child{border-bottom:none;padding-bottom:0;}
+  .sbx-attr .k{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;color:#6B4FA0;background:#EFEAF6;border:1px solid #D9CDEC;border-radius:5px;padding:2px 7px;height:fit-content;white-space:nowrap;min-width:74px;text-align:center;}
+  .sbx-attr b{color:var(--ink);font-weight:600;}
+  .contrast{margin-top:16px;border:1px solid var(--hair);border-radius:10px;overflow:hidden;background:#fff;}
+  .contrast table{width:100%;border-collapse:collapse;}
+  .contrast th,.contrast td{padding:9px 13px;text-align:left;font-size:12px;border-bottom:1px solid var(--hair-soft);border-right:1px solid var(--hair-soft);}
+  .contrast th{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;background:#FAFBFA;font-weight:600;color:var(--ink);}
+  .contrast td:last-child,.contrast th:last-child{border-right:none;}
+  .contrast tr:last-child td{border-bottom:none;}
+  .contrast .kk{color:var(--ink-faint);font-weight:600;font-family:var(--mono);font-size:10px;letter-spacing:0.04em;text-transform:uppercase;}
+  .contrast .pj{color:var(--producer);}
+  .contrast .sb{color:#6B4FA0;font-weight:600;}
+  .gapnote{margin-top:16px;padding:11px 14px;border-left:3px solid #6B4FA0;background:#EFEAF6;border-radius:0 8px 8px 0;font-size:12.5px;color:#6B4FA0;line-height:1.45;}
+  .gapnote b{font-weight:600;}
+  .gapnote a{color:inherit;}
+  @media (max-width:900px){.sbx-cols{grid-template-columns:1fr;}}
   .colophon{margin-top:36px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
   @media (max-width:820px){body{padding:28px 16px 52px;}.p1-row{grid-template-columns:1fr;}.rel{grid-template-columns:1fr;}.mn{flex-direction:row;padding:10px 0;}.owns-row{grid-template-columns:1fr;}.legend{grid-template-columns:1fr;}.mast h1{font-size:28px;}}
 </style>
@@ -111,7 +137,7 @@
     <div>
       <div class="mast-eyebrow">Reference · Object Model · Phase 1 → Phase 2</div>
       <h1>Object <span>Model</span></h1>
-      <div class="mast-sub">The shared vocabulary behind every journey map — and how it evolves. Phase 1 is organized around the Team; Phase 2 introduces the Project as the anchor for everything deployment-related.</div>
+      <div class="mast-sub">The shared vocabulary behind every journey map — and how it evolves. Phase 1 is organized around the Team; Phase 2 introduces the Project as the anchor for everything deployment-related; and the proposed Sandbox sits alongside the Project, owned by a person rather than a team.</div>
     </div>
     <div class="mast-meta">
       <b>P1 anchor</b> · Team<br>
@@ -269,8 +295,68 @@
     </div>
   </div>
 
+  <!-- ================= SANDBOX ================= -->
+  <div class="phase-head">
+    <span class="tag sbx">Proposed</span>
+    <h2>Sandbox — a sibling of Project, not a child</h2>
+  </div>
+  <div class="phase-sub">Introduced for the <a href="journey-prototype-sandbox.html" style="color:#6B4FA0;">Prototyper</a>. A <b>Sandbox</b> is not a custom environment beneath a Project — it is its own anchor, owned by a <b>person</b> rather than a Team, and it is the only object in the model that <b>deletes itself</b>.</div>
+
+  <div class="sbx-block">
+    <span class="lvl-tag lvl-sbx">Sandbox · anchor</span>
+    <div class="sbx-intro">Making it a custom environment was the tempting shortcut. It fails because a custom environment inherits a Project — and with it a Team owner, a dev/qa/prod triplet, a promotion path and no lifespan. <b>A Sandbox wants none of those.</b></div>
+
+    <div class="sbx-cols">
+      <div class="sbx-ent">
+        <div class="t">Sandbox <span>the object</span></div>
+        <div class="sbx-attr"><span class="k">owner</span><div>A <b>person</b>, not a Team. This is what lets a non-engineer hold one at all.</div></div>
+        <div class="sbx-attr"><span class="k">lifespan</span><div>Carries a <b>TTL</b>. Expires by default and must be actively extended.</div></div>
+        <div class="sbx-attr"><span class="k">viewers</span><div>Carries a <b>viewer group</b> — a membership list the owner controls, enforced at the edge. No other object has this.</div></div>
+        <div class="sbx-attr"><span class="k">cost</span><div>A hard <b>ceiling</b>, attributed to the owner.</div></div>
+        <div class="sbx-attr"><span class="k">owns</span><div>One repo (agent-written), one artifact space, one config space — cut-down versions of the Project's.</div></div>
+      </div>
+      <div class="sbx-ent">
+        <div class="t">Its single environment <span>always nonprod</span></div>
+        <div class="sbx-attr"><span class="k">count</span><div><b>Exactly one.</b> No dev/qa/prod triplet, no siblings, no promotion path.</div></div>
+        <div class="sbx-attr"><span class="k">cluster</span><div>Nonprod cluster, nonprod account. A Sandbox can never reach the prod cluster.</div></div>
+        <div class="sbx-attr"><span class="k">gate</span><div><b>No compliance gate</b> — the gate is a prod admission check, and nothing here targets prod.</div></div>
+        <div class="sbx-attr"><span class="k">data</span><div><b>Synthetic or seeded only.</b> A datastore is permitted; production data is not.</div></div>
+        <div class="sbx-attr"><span class="k">wired</span><div><span class="pill">namespace</span><span class="pill">config/secret</span><span class="pill">JFrog pull</span><span class="pill">GitOps</span><span class="pill later">group-scoped ingress</span></div></div>
+      </div>
+    </div>
+
+    <div class="contrast">
+      <table>
+        <tr><th>&nbsp;</th><th>Project</th><th>Sandbox</th></tr>
+        <tr><td class="kk">Owned by</td><td class="pj">A Team (many-to-many)</td><td class="sb">A person</td></tr>
+        <tr><td class="kk">Environments</td><td class="pj">dev / qa / prod, plus optional add-ons</td><td class="sb">Exactly one, always nonprod</td></tr>
+        <tr><td class="kk">Lifespan</td><td class="pj">Indefinite — deleted deliberately</td><td class="sb">TTL — expires unless extended</td></tr>
+        <tr><td class="kk">Who can reach it</td><td class="pj">Anyone on the network, once exposed</td><td class="sb">A viewer group the owner controls</td></tr>
+        <tr><td class="kk">Path to production</td><td class="pj">Promotion, through the admission gate</td><td class="sb">None — graduation to a Project instead</td></tr>
+        <tr><td class="kk">Primary surface</td><td class="pj">CLI · Agent · Manifest</td><td class="sb">Agent only</td></tr>
+      </table>
+    </div>
+
+    <div class="gapnote"><b>Nothing here exists yet.</b> The Sandbox object, its TTL and expiry, and the viewer-group enforcement are three of the eight capabilities the <a href="journey-prototype-sandbox.html">Prototyper journey</a> depends on. It is drawn here so the shape can be argued about before it is built.</div>
+  </div>
+
+  <div class="legend">
+    <div class="panel">
+      <h4>Reading the Sandbox</h4>
+      <div class="lr"><b>It is an anchor, not an environment.</b> Sitting it under a Project would give it an owning Team and a prod sibling — the two things it most needs not to have.</div>
+      <div class="lr"><b>Person-owned is the load-bearing choice.</b> Every other object in the model is owned by a Team. A prototyper may not be on one.</div>
+      <div class="lr"><b>It deletes itself.</b> The only object with a lifespan, which is what stops the prototyping persona becoming a sprawl generator.</div>
+    </div>
+    <div class="panel">
+      <h4>Open points</h4>
+      <div class="lr"><b>Graduation</b> — how a Sandbox becomes a Project, and what carries across. Undefined, and the sharpest risk: without it, successful prototypes become shadow production.</div>
+      <div class="lr"><b>Viewer group backing</b> — an Entra group, a platform-native list, or something else. Teams deliberately bypass Entra today, which makes reusing it awkward.</div>
+      <div class="lr"><b>Concurrency &amp; entitlement</b> — how many live Sandboxes one person may hold, and whether creating them is part of the alpha grant or separate.</div>
+    </div>
+  </div>
+
   <div class="colophon">
-    <span>AI PLATFORM ENGINEERING · OBJECT MODEL · PHASE 1 → PHASE 2</span>
+    <span>AI PLATFORM ENGINEERING · OBJECT MODEL · PHASE 1 → PHASE 2 → SANDBOX</span>
     <span>DRAFT FOR WORKSHOP ALIGNMENT</span>
   </div>
 </div>

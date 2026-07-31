@@ -301,6 +301,19 @@
     font-family:var(--mono);
     font-weight:600;
   }
+  .span-all{grid-column:1 / -1;}
+  .pnote{
+    margin-top:12px;
+    padding:9px 11px;
+    border-left:3px solid #6B4FA0;
+    background:#EFEAF6;
+    border-radius:0 6px 6px 0;
+    font-size:11.5px;
+    color:#6B4FA0;
+    line-height:1.45;
+  }
+  .pnote b{font-weight:600;}
+  .pnote a{color:inherit;}
   .note b{color:var(--ink);font-weight:600;}
   .note code{
     font-family:var(--mono);
@@ -420,6 +433,27 @@
           <span class="chip"><span class="swatch r-support"></span><span class="flow">Team</span><span class="role">supporting</span></span>
           <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Repo A</span><span class="role">solo = App Eng</span></span>
         </div>
+      </div>
+
+      <div class="persona span-all" style="--dot:#3E6DBF">
+        <div class="persona-head">
+          <h3>Prototyper</h3>
+          <span class="subtitle">AI-first · may not write code at all</span>
+        </div>
+        <p class="essence">Describes what they want in plain language and gets back a working thing on a link they can send to five people. The only persona whose primary surface is <b>the agent</b> rather than GitHub or the CLI — and the only one who need not be an engineer.</p>
+        <div class="resp-label">Owns / does</div>
+        <ul>
+          <li>Describes the prototype, its data, and <b>who should be able to see it</b></li>
+          <li>Owns the prototype and its viewer group — sharing is the deliverable, not the repo</li>
+          <li>Iterates by prompting; extends or lets the sandbox expire</li>
+          <li>An engineer wearing this hat can drop into the generated repo; a non-engineer never does</li>
+        </ul>
+        <div class="flows">
+          <span class="chip"><span class="swatch r-primary"></span><span class="flow"><a href="journey-prototype-sandbox.html" style="color:inherit;">Prototype &amp; Share</a></span><span class="role">primary</span></span>
+          <span class="chip"><span class="swatch r-support"></span><span class="flow">Datastore</span><span class="role">needs a team-lead approval</span></span>
+          <span class="chip"><span class="swatch r-offmap"></span><span class="flow">Prod</span><span class="role">never — sandbox only</span></span>
+        </div>
+        <div class="pnote">Depends on <b>eight capabilities that do not exist yet</b> — group-scoped sharing, an MCP server catalog, and a Sandbox object with a TTL among them. See the <a href="journey-prototype-sandbox.html">journey map</a> for the full gap list.</div>
       </div>
 
     </div>
