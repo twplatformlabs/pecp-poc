@@ -114,7 +114,7 @@
     <div class="mast-meta">
       <b>Scope</b> · Phase 1 &amp; 2<br>
       <b>Journeys</b> · 14 mapped<br>
-      <b>Reference</b> · 3 artifacts<br>
+      <b>Foundation</b> · 1 artifact<br>
       <b>State</b> · Future / draft
     </div>
   </header>
@@ -150,6 +150,22 @@
       <h3>Who Owns What — Stakeholder Diagram</h3>
       <p>The one-page version, in the style of the AWS model. The same 19 boxes in both phases — only the dividing line moves, and the hatching disappears. Present this; keep REF · C for the detail.</p>
       <div class="stages">Phase 1 → Phase 2 · one line, two positions</div>
+    </a>
+  </div>
+
+  <!-- PLATFORM FOUNDATION -->
+  <div class="section-head">
+    <span class="tag ref">Foundation</span>
+    <h2>Platform Bootstrap &amp; Delivery</h2>
+    <span class="cnt">1 artifact</span>
+  </div>
+  <div class="section-sub">The IaC layer beneath every journey — how the platform is bootstrapped across providers, the order the infrastructure repos come online, and the pipeline every IaC repo runs.</div>
+  <div class="grid">
+    <a class="card ref" href="foundation-bootstrap-and-delivery.html">
+      <div class="card-top"><span class="card-n">FND · A</span><span class="dir cli">OIDC · central state</span></div>
+      <h3>Platform Bootstrap &amp; IaC Delivery</h3>
+      <p>One <code style="font-family:var(--mono);font-size:11px;">platform-bootstrap</code> repo (GitHub + AWS-per-account modules) → the infra repo DAG (iam-roles → networking → eks → services) → the standard plan/approve/apply/post-apply pipeline, plus the org-settings canary variant.</p>
+      <div class="stages">Bootstrap · Order of Ops · Pipeline · Variant</div>
     </a>
   </div>
 

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundation — Platform Bootstrap &amp; Delivery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#14181A;--ink-soft:#3D4448;--ink-faint:#6B7378;--paper:#F6F7F5;--card:#FFFFFF;--hair:#E3E6E2;--hair-soft:#EEF0ED;--green:#0FA968;--green-deep:#0a7a4b;--green-wash:#EAF7F0;--teal:#0E8F7A;--producer:#2D6E7E;--producer-wash:#E8F0F2;--amber:#C77A0A;--amber-wash:#FBF1DF;--amber-line:#E9C77E;--slate:#5A5F73;--slate-wash:#EEF0F3;--blue:#3E6DBF;--blue-wash:#E9EFF9;--blue-line:#BCD0EE;--gate:#C0492B;--gate-wash:#F8E9E5;--gate-line:#E7C0B6;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding:44px 40px 72px;}
+  .wrap{max-width:1320px;margin:0 auto;}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-bottom:22px;border-bottom:2px solid var(--ink);flex-wrap:wrap;}
+  .mast-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);margin-bottom:12px;font-weight:600;}
+  .mast h1{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:-0.02em;line-height:1.05;}
+  .mast h1 span{color:var(--green);}
+  .mast-sub{font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:680px;}
+  .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:right;line-height:1.7;letter-spacing:0.02em;}
+  .mast-meta b{color:var(--ink-soft);font-weight:600;}
+  .backlink{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);text-decoration:none;letter-spacing:0.04em;display:inline-block;margin-bottom:18px;}
+  .backlink:hover{color:var(--green-deep);}
+
+  .precond{display:flex;align-items:center;gap:12px;margin:22px 0 0;padding:12px 16px;border:1px dashed var(--green);background:var(--green-wash);border-radius:8px;font-size:13px;color:var(--green-deep);}
+  .precond .pk{font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--green);color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+  .precond b{font-weight:600;color:var(--ink);}
+
+  .section-head{display:flex;align-items:baseline;gap:14px;margin:42px 0 4px;flex-wrap:wrap;}
+  .section-head .n{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--ink-faint);border:1px solid var(--hair);border-radius:6px;padding:3px 9px;}
+  .section-head h2{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-0.01em;}
+  .section-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:6px;background:var(--slate);color:#fff;}
+  .section-head .tag.manual{background:var(--gate);}
+  .section-sub{font-size:13px;color:var(--ink-soft);margin:6px 0 20px;max-width:840px;}
+  .section-sub b{color:var(--ink);font-weight:600;}
+  code{font-family:var(--mono);font-size:.92em;background:#F1F3F1;padding:1px 5px;border-radius:4px;color:var(--ink);}
+
+  /* ---------- BOOTSTRAP ---------- */
+  .bootstrap{border:1px solid var(--hair);border-radius:14px;background:var(--card);padding:22px 22px 26px;}
+  .boot-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .boot-repo{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;}
+  .boot-repo .dotm{width:9px;height:9px;border-radius:2px;background:var(--gate);}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+  .chip.manual{color:var(--gate);background:var(--gate-wash);border:1px solid var(--gate-line);}
+  .chip.state{color:var(--slate);background:var(--slate-wash);border:1px solid #DADEE4;}
+  .boot-desc{font-size:12.5px;color:var(--ink-soft);max-width:900px;margin-bottom:18px;}
+  .modules{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .mod{border:1px solid var(--hair);border-radius:11px;padding:15px 16px;background:#FBFCFB;}
+  .mod.gh{border-top:3px solid var(--green);}
+  .mod.aws{border-top:3px solid var(--amber);}
+  .mod h3{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:0.02em;display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+  .mod .cadence{font-family:var(--mono);font-size:9px;letter-spacing:0.05em;text-transform:uppercase;padding:2px 7px;border-radius:5px;margin-left:auto;font-weight:600;}
+  .cadence.once{background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .cadence.repeat{background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber-line);}
+  .mod .cap{font-size:11.5px;color:var(--ink-faint);margin-bottom:13px;line-height:1.4;}
+  .creates{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .creates li{position:relative;padding-left:16px;font-size:12.3px;color:var(--ink-soft);line-height:1.4;}
+  .creates li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;}
+  .mod.gh .creates li::before{background:var(--green);}
+  .mod.aws .creates li::before{background:var(--amber);}
+  .creates li b{color:var(--ink);font-weight:600;}
+  .xref{display:block;margin-top:14px;padding:9px 11px;border-radius:8px;font-size:11px;line-height:1.4;}
+  .xref.link{background:var(--blue-wash);border:1px solid var(--blue-line);color:var(--blue);}
+  .xref b{font-weight:600;}
+  .gate-bar{margin-top:20px;text-align:center;padding:13px;border:1px solid var(--green);background:var(--green-wash);border-radius:10px;color:var(--green-deep);font-size:13px;font-weight:500;}
+  .gate-bar b{color:var(--ink);font-weight:600;}
+  .subgrp{margin-top:12px;}
+  .subgrp:first-of-type{margin-top:2px;}
+  .sglbl{font-family:var(--mono);font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:8px;padding-bottom:5px;border-bottom:1px dashed var(--hair);}
+  /* trust flow */
+  .trust{display:flex;align-items:stretch;gap:0;margin-top:20px;flex-wrap:wrap;}
+  .tstep{flex:1;min-width:150px;border:1px solid var(--hair);border-radius:10px;background:#FBFCFB;padding:11px 13px;font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.35;}
+  .tstep span{display:block;font-weight:400;font-size:9.5px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px;}
+  .tstep.gh{border-left:3px solid var(--green);}
+  .tstep.dev{border-left:3px solid var(--slate);}
+  .tstep.acct{border-left:3px solid var(--amber);}
+  .tarrow{flex:0 0 74px;align-self:center;position:relative;text-align:center;}
+  .tarrow span{font-family:var(--mono);font-size:8.5px;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-faint);background:var(--paper);position:relative;z-index:2;padding:0 4px;}
+  .tarrow::before{content:"";position:absolute;left:6px;right:6px;top:50%;height:2px;background:var(--hair);}
+  .tarrow::after{content:"";position:absolute;right:5px;top:50%;transform:translateY(-50%);border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid var(--ink-faint);}
+  /* scaffold */
+  .tag.scaffold{background:transparent;color:var(--slate);border:1px dashed #C7CCD6;}
+  .scaffold-note{display:flex;align-items:center;gap:11px;margin:0 0 16px;padding:10px 14px;border:1px dashed var(--slate);background:var(--slate-wash);border-radius:8px;font-size:12.5px;color:var(--slate);}
+  .scaffold-note .sk{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--slate);color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+  .scaffold-note b{color:var(--ink);font-weight:600;}
+  .box.build{border-color:var(--producer);background:var(--producer-wash);}
+  .box.build .bn{color:var(--producer);}
+
+  /* ---------- DAG ---------- */
+  .dag-scroll{overflow-x:auto;border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:20px;}
+  .dag{display:flex;align-items:stretch;gap:0;min-width:920px;}
+  .dnode{flex:1;min-width:190px;border:1px solid var(--hair);border-radius:11px;padding:14px 15px;background:#FBFCFB;position:relative;}
+  .dnode.iam{border-left:4px solid var(--green);}
+  .dnode.aws{border-left:4px solid var(--amber);}
+  .dnode .di{position:absolute;top:-10px;left:-10px;width:24px;height:24px;border-radius:50%;background:var(--card);border:1px solid var(--hair);color:var(--ink-faint);font-family:var(--mono);font-size:11px;font-weight:600;display:grid;place-items:center;}
+  .dnode .rn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);line-height:1.3;}
+  .dnode .rd{font-size:11.8px;color:var(--ink-soft);margin-top:7px;line-height:1.4;}
+  .dnode .dep{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);margin-top:10px;padding-top:8px;border-top:1px dashed var(--hair);}
+  .dep b{color:var(--slate);font-weight:600;}
+  .darrow{flex:0 0 30px;align-self:center;position:relative;height:2px;background:var(--green);}
+  .darrow::after{content:"";position:absolute;right:-1px;top:50%;transform:translateY(-50%);border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--green);}
+  .dag-parallel{border-top:1px solid var(--hair);margin-top:16px;padding-top:16px;display:flex;align-items:center;gap:14px;}
+  .dnode.org{border-left:4px solid var(--blue);flex:0 0 340px;}
+  .parallel-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);font-weight:600;writing-mode:horizontal-tb;}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);}
+  .legend .li{display:flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;}
+
+  /* ---------- PIPELINE ---------- */
+  .pipe-block{margin-top:8px;}
+  .branch-row{display:flex;align-items:center;gap:12px;margin:22px 0 12px;flex-wrap:wrap;}
+  .branch-tag{font-family:var(--mono);font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:7px;}
+  .branch-tag.main{color:var(--blue);background:var(--blue-wash);border:1px solid var(--blue-line);}
+  .branch-tag.tag{color:var(--green-deep);background:var(--green-wash);border:1px solid #BFE6D2;}
+  .branch-tag.org{color:var(--blue);background:var(--blue-wash);border:1px solid var(--blue-line);}
+  .branch-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);}
+  .env-divider{font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 8px;font-weight:600;display:flex;align-items:center;gap:10px;}
+  .env-divider::after{content:"";flex:1;height:1px;background:var(--hair);}
+
+  .flow{display:flex;align-items:stretch;overflow-x:auto;padding:6px 2px 10px;}
+  .stg{flex:0 0 auto;display:flex;align-items:center;}
+  .box{border:1.5px solid var(--green);border-radius:9px;padding:9px 12px;min-width:120px;max-width:160px;background:#fff;}
+  .box .bn{font-family:var(--mono);font-size:8.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--green);font-weight:600;}
+  .box .bt{font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;line-height:1.15;}
+  .box .bs{font-size:10.5px;color:var(--ink-faint);margin-top:4px;line-height:1.35;}
+  .box.approve{border-color:var(--gate);background:var(--gate-wash);}
+  .box.approve .bn{color:var(--gate);}
+  .box.apply{border-color:var(--ink);background:#fff;}
+  .box.apply .bn{color:var(--ink);}
+  .box.apply.prod{border-color:var(--green-deep);background:var(--green-wash);}
+  .box.hook{border-style:dashed;border-color:var(--slate);background:var(--slate-wash);}
+  .box.hook .bn{color:var(--slate);}
+  .box.test{border-color:var(--blue);background:var(--blue-wash);}
+  .box.test .bn{color:var(--blue);}
+  .conn{flex:0 0 22px;align-self:center;position:relative;height:2px;background:var(--hair);margin:0 2px;}
+  .conn::after{content:"";position:absolute;right:-1px;top:50%;transform:translateY(-50%);border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid var(--ink-faint);}
+  .conn.wide{flex-basis:34px;}
+  /* parallel group */
+  .par{border:1px dashed var(--green);border-radius:11px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--green-wash);}
+  .par .plab{font-family:var(--mono);font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green-deep);font-weight:600;text-align:center;}
+  .par .box{min-width:150px;}
+  .box.checks{border-color:var(--slate);}
+  .box.checks .bn{color:var(--slate);}
+  .check-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+  .check-tags span{font-family:var(--mono);font-size:8px;letter-spacing:0.01em;padding:2px 5px;border-radius:4px;background:#fff;border:1px solid var(--hair);color:var(--ink-faint);}
+
+  /* ---------- PANELS ---------- */
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;}
+  .panel{border:1px solid var(--hair);border-radius:12px;background:var(--card);padding:22px 24px;}
+  .panel h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .panel h4 .tick{width:8px;height:8px;border-radius:2px;background:var(--green);}
+  .panel h4 .tick.a{background:var(--amber);}
+  .dl{padding:11px 0;border-bottom:1px solid var(--hair-soft);display:flex;gap:11px;}
+  .dl:first-of-type{padding-top:0;}.dl:last-child{border-bottom:none;padding-bottom:0;}
+  .dl .dp{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.04em;padding:2px 7px;border-radius:5px;height:fit-content;white-space:nowrap;text-transform:uppercase;background:var(--green-wash);color:var(--green-deep);border:1px solid #BFE6D2;}
+  .dl .dt{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+  .dl .dt b{color:var(--ink);font-weight:600;}
+  .q{display:flex;gap:11px;margin-bottom:13px;font-size:12.8px;color:var(--ink-soft);line-height:1.5;}
+  .q:last-child{margin-bottom:0;}
+  .q .qn{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-wash);border:1px solid var(--amber-line);border-radius:5px;padding:1px 6px;height:fit-content;white-space:nowrap;}
+  .q b{color:var(--ink);font-weight:600;}
+
+  .colophon{margin-top:34px;padding-top:18px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:0.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media (max-width:900px){.modules{grid-template-columns:1fr;}.panels{grid-template-columns:1fr;}}
+  @media (max-width:820px){body{padding:28px 16px 52px;}.mast h1{font-size:26px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="index-journey-library.html">← Journey Map Library</a>
+  <header class="mast">
+    <div>
+      <div class="mast-eyebrow">Reference · Platform Foundation · Order of Operations</div>
+      <h1>Platform Bootstrap<br>&amp; <span>IaC Delivery</span></h1>
+      <div class="mast-sub">The foundation beneath every journey — how the platform is bootstrapped across providers, the order its infrastructure repos come online, and the pipeline every IaC repo runs. GitHub Actions federate into AWS via <b>OIDC</b>; Terraform state lives in a <b>central state account</b>.</div>
+    </div>
+    <div class="mast-meta">
+      <b>Layer</b> · Platform / IaC<br>
+      <b>Providers</b> · GitHub · AWS (phase 1)<br>
+      <b>Auth</b> · OIDC federation<br>
+      <b>Status</b> · Draft for alignment
+    </div>
+  </header>
+
+  <div class="precond">
+    <span class="pk">Reads as</span>
+    <span><b>Bootstrap once, then everything else.</b> The <code>platform-bootstrap</code> repo is run by hand to seed identities and state. After that, the infrastructure repos run their own pipelines in dependency order.</span>
+  </div>
+
+  <!-- ============ 01 BOOTSTRAP ============ -->
+  <div class="section-head">
+    <span class="n">01</span>
+    <h2>Platform Bootstrap</h2>
+    <span class="tag manual">manual · by hand</span>
+  </div>
+  <div class="section-sub">One repo, not two. The task isn't "bootstrap GitHub" or "bootstrap AWS" — it's <b>bootstrap the platform</b>; GitHub and AWS are just the first two providers, each a module. Combining them makes the one true cross-provider dependency explicit: the AWS OIDC trust <b>consumes</b> the GitHub org identity the GitHub module produces. Thin, pure IaC, <b>local state</b> (it can't use the state bucket it hasn't created yet).</div>
+
+  <div class="bootstrap">
+    <div class="boot-top">
+      <div class="boot-repo"><span class="dotm"></span>platform-bootstrap</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="chip manual">⚙ manual apply</span>
+        <span class="chip state">local state</span>
+      </div>
+    </div>
+    <div class="boot-desc">Provider-modular. The GitHub module runs essentially once; the AWS module is parameterized per account so onboarding account&nbsp;#7 never re-touches GitHub. Its only job is to create the identities, org structure, state, and the single seed role that lets <code>iam-deployment-roles-and-profiles</code> build the real pipeline roles.</div>
+
+    <div class="modules">
+      <!-- GitHub module -->
+      <div class="mod gh">
+        <h3><span>module · github</span><span class="cadence once">run once</span></h3>
+        <div class="cap">Establishes org structure &amp; the deploy identity Actions federate from.</div>
+        <ul class="creates">
+          <li><b>Dev org &amp; Prod org</b> — Dev org validates org settings before Prod</li>
+          <li><b>core-org-settings repo</b> in the Prod org (governs both orgs)</li>
+          <li><b>GH deploy service account</b> — the identity that federates into AWS via OIDC</li>
+        </ul>
+        <span class="xref link"><b>outputs →</b> org / deploy identity, consumed by the AWS module's OIDC trust</span>
+      </div>
+
+      <!-- AWS module -->
+      <div class="mod aws">
+        <h3><span>module · aws</span><span class="cadence repeat">per account</span></h3>
+        <div class="cap">Federation &amp; state are central; the assumable role lives in each target account.</div>
+        <div class="subgrp">
+          <div class="sglbl">in the state / devops account</div>
+          <ul class="creates">
+            <li><b>Terraform state bucket</b> (+ lock) — central state for every environment</li>
+            <li><b>GitHub OIDC provider</b> — the single federation entry point; trusts Actions from the <b>Prod org</b>. No long-lived keys.</li>
+          </ul>
+        </div>
+        <div class="subgrp">
+          <div class="sglbl">in each target account · dev · nonprod · prod</div>
+          <ul class="creates">
+            <li><b>Assumable deploy / seed role</b> — trusted by the devops identity via cross-account assume-role. The one bootstrap role whose sole job is to run <code>iam-deployment-roles-and-profiles</code>, which then builds the full pipeline role set.</li>
+          </ul>
+        </div>
+        <span class="xref link"><b>consumes ←</b> GitHub Prod-org identity as the OIDC subject / trust condition</span>
+      </div>
+    </div>
+
+    <!-- trust flow -->
+    <div class="trust">
+      <div class="tstep gh">GitHub Actions<span>Prod org</span></div>
+      <div class="tarrow"><span>OIDC</span></div>
+      <div class="tstep dev">OIDC provider + state bucket<span>state / devops account</span></div>
+      <div class="tarrow"><span>assume-role</span></div>
+      <div class="tstep acct">Deploy / seed role<span>dev · nonprod · prod account</span></div>
+    </div>
+
+    <div class="gate-bar">✅ <b>Gate — bootstrap complete for all providers.</b> Only now can any Section&nbsp;02 repo run.</div>
+  </div>
+
+  <!-- ============ 02 DAG ============ -->
+  <div class="section-head">
+    <span class="n">02</span>
+    <h2>Order of Operations — Infrastructure Repos</h2>
+  </div>
+  <div class="section-sub">Ordinary IaC repos that run the standard pipeline (Section&nbsp;03). Left→right is dependency order: the AWS chain flows <b>through</b> the deployment roles. The GitHub settings repo (bottom row) depends only on bootstrap, so it <b>proceeds concurrently</b> with the entire AWS chain — the two rows run in parallel.</div>
+
+  <div class="dag-scroll">
+    <div class="dag">
+      <div class="dnode iam">
+        <div class="di">1</div>
+        <div class="rn">iam-deployment-<br>roles-and-profiles</div>
+        <div class="rd">Builds the full set of pipeline roles &amp; instance profiles used to deploy everything else.</div>
+        <div class="dep"><b>needs</b> · bootstrap seed role</div>
+      </div>
+      <div class="darrow"></div>
+      <div class="dnode aws">
+        <div class="di">2</div>
+        <div class="rn">core-networking</div>
+        <div class="rd">VPCs, public/private subnets, EKS &amp; DB networking for every account.</div>
+        <div class="dep"><b>needs</b> · deployment roles</div>
+      </div>
+      <div class="darrow"></div>
+      <div class="dnode aws">
+        <div class="di">3</div>
+        <div class="rn">core-eks</div>
+        <div class="rd">Core EKS cluster build-out. Assumes the deployment role to provision.</div>
+        <div class="dep"><b>needs</b> · roles + networking</div>
+      </div>
+      <div class="darrow"></div>
+      <div class="dnode aws">
+        <div class="di">4</div>
+        <div class="rn">eks-services</div>
+        <div class="rd">Add-on services deployed onto EKS, outside of AWS infrastructure.</div>
+        <div class="dep"><b>needs</b> · core-eks</div>
+      </div>
+    </div>
+
+    <div class="dag-parallel">
+      <div class="dnode org">
+        <div class="rn">core-org-settings</div>
+        <div class="rd">Manages GitHub org settings — applies to the Dev org, then the Prod org (Dev → Prod variant, Section&nbsp;03).</div>
+        <div class="dep"><b>needs</b> · GitHub bootstrap only · independent of the AWS chain</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="li"><span class="sw" style="background:var(--green)"></span> foundational — everything deploys through it</div>
+      <div class="li"><span class="sw" style="background:var(--amber)"></span> AWS infrastructure</div>
+      <div class="li"><span class="sw" style="background:var(--blue)"></span> GitHub settings</div>
+    </div>
+  </div>
+
+  <!-- ============ 03 PIPELINE ============ -->
+  <div class="section-head">
+    <span class="n">03</span>
+    <h2>The IaC Delivery Pipeline</h2>
+  </div>
+  <div class="section-sub">Every Section&nbsp;02 repo shares one shape. <code>main</code> promotes to the lowest environment; a <b>semantic-version tag</b> (<code>vX.Y.Z</code>) is a release, and promotes through the higher environments, each gated by manual approval. <b>Static checks collapse to one button</b> in the parallel stage; a <b>post-apply</b> stage handles imperative glue Terraform can't express.</div>
+
+  <div class="pipe-block">
+    <!-- main -->
+    <div class="branch-row">
+      <span class="branch-tag main">branch: main → dev</span>
+      <span class="branch-note">↳ every merge to main deploys the dev environment</span>
+    </div>
+    <div class="flow">
+      <div class="stg">
+        <div class="par">
+          <div class="plab">parallel</div>
+          <div class="box"><div class="bn">plan</div><div class="bt">Plan · dev</div><div class="bs">check run — what changes</div></div>
+          <div class="box"><div class="bn">test</div><div class="bt">Pre-deploy tests</div><div class="bs">infra logic via mocks</div></div>
+          <div class="box checks"><div class="bn">1 button</div><div class="bt">Static checks</div>
+            <div class="check-tags"><span>fmt/validate</span><span>tflint</span><span>tfsec/checkov</span><span>OPA/conftest</span><span>gitleaks</span><span>infracost</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box"><div class="bn">publish</div><div class="bt">Publish plan</div><div class="bs">e.g. JFrog</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate</div><div class="bt">Approval</div><div class="bs">manual</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply"><div class="bn">apply</div><div class="bt">Apply · dev</div><div class="bs">apply the plan</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box hook"><div class="bn">post-apply</div><div class="bt">Post-Apply Hooks</div><div class="bs">out-of-band — kubectl, API calls · scaffold</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div><div class="bs">smoke + E2E</div></div></div>
+    </div>
+
+    <!-- tag -->
+    <div class="branch-row">
+      <span class="branch-tag tag">semver tag · vX.Y.Z → nonprod → prod</span>
+      <span class="branch-note">↳ a semantic-version tag is a release — promotes through nonprod, then prod, gated each time</span>
+    </div>
+
+    <div class="env-divider">nonprod</div>
+    <div class="flow">
+      <div class="stg">
+        <div class="par">
+          <div class="plab">parallel</div>
+          <div class="box"><div class="bn">plan</div><div class="bt">Plan · nonprod</div></div>
+          <div class="box"><div class="bn">test</div><div class="bt">Pre-deploy tests</div></div>
+          <div class="box checks"><div class="bn">1 button</div><div class="bt">Static checks</div>
+            <div class="check-tags"><span>lint</span><span>security</span><span>policy</span><span>cost</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box"><div class="bn">publish</div><div class="bt">Publish plan</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate</div><div class="bt">Approval</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply"><div class="bn">apply</div><div class="bt">Apply · nonprod</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box hook"><div class="bn">post-apply</div><div class="bt">Post-Apply Hooks</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div></div></div>
+    </div>
+
+    <div class="env-divider">prod</div>
+    <div class="flow">
+      <div class="stg">
+        <div class="par">
+          <div class="plab">parallel</div>
+          <div class="box"><div class="bn">plan</div><div class="bt">Plan · prod</div></div>
+          <div class="box"><div class="bn">test</div><div class="bt">Pre-deploy tests</div></div>
+          <div class="box checks"><div class="bn">1 button</div><div class="bt">Static checks</div>
+            <div class="check-tags"><span>lint</span><span>security</span><span>policy</span><span>cost</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box"><div class="bn">publish</div><div class="bt">Publish plan</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate</div><div class="bt">Approval</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply prod"><div class="bn">apply</div><div class="bt">Apply · prod</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box hook"><div class="bn">post-apply</div><div class="bt">Post-Apply Hooks</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ 04 ORG VARIANT ============ -->
+  <div class="section-head">
+    <span class="n">04</span>
+    <h2>Variant — core-org-settings · Dev → Prod Org</h2>
+  </div>
+  <div class="section-sub">Same pipeline shape, but the two "environments" are GitHub orgs, not AWS accounts. <code>main</code> applies to the <b>Dev org</b>; a <b>semver tag</b> promotes to the <b>Prod org</b> — a straight dev→prod promotion, all-or-nothing at each. No AWS post-apply hooks, but the stage stays for org-side glue (e.g. GitHub API calls outside Terraform). <b>A finer rollout strategy (ring / canary across repos) is TBD.</b></div>
+
+  <div class="pipe-block">
+    <div class="branch-row">
+      <span class="branch-tag org">main → Dev org · semver tag → Prod org</span>
+      <span class="branch-note">↳ two discrete org targets — rollout strategy within an org is a later decision</span>
+    </div>
+    <div class="flow">
+      <div class="stg">
+        <div class="par">
+          <div class="plab">parallel</div>
+          <div class="box"><div class="bn">plan</div><div class="bt">Plan</div><div class="bs">settings diff</div></div>
+          <div class="box"><div class="bn">test</div><div class="bt">Pre-deploy tests</div></div>
+          <div class="box checks"><div class="bn">1 button</div><div class="bt">Static checks</div>
+            <div class="check-tags"><span>lint</span><span>policy</span><span>secrets</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box"><div class="bn">publish</div><div class="bt">Publish plan</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate</div><div class="bt">Approval</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply"><div class="bn">apply</div><div class="bt">Apply · Dev org</div><div class="bs">validate settings</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box hook"><div class="bn">post-apply</div><div class="bt">Post-Apply Hooks</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div></div></div>
+      <div class="conn wide"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate · tag</div><div class="bt">Approval</div><div class="bs">promote</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply prod"><div class="bn">apply</div><div class="bt">Apply · Prod org</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box hook"><div class="bn">post-apply</div><div class="bt">Post-Apply Hooks</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ 05 OSS TOOLS ============ -->
+  <div class="section-head">
+    <span class="n">05</span>
+    <h2>Pipeline — Off-the-Shelf / OSS Tools</h2>
+    <span class="tag scaffold">scaffold</span>
+  </div>
+  <div class="section-sub">For upstream software we deploy but don't author — <code>external-dns</code>, <code>cert-manager</code>, and the like. We own no source, so the front of the pipeline is <b>supply-chain</b> work: pin an upstream version, mirror artifacts into JFrog, scan, then deploy the pinned copy. It keeps the same <b>approve → apply → verify</b> spine and the same env promotion (<code>main</code>→dev, <b>semver tag</b>→nonprod→prod). Shape is proposed — <b>to be refined</b>.</div>
+
+  <div class="scaffold-note"><span class="sk">scaffold</span><span>Draft shape for alignment. Open items below; a representative single-env flow is shown — it promotes through envs like Section&nbsp;03.</span></div>
+
+  <div class="pipe-block">
+    <div class="flow">
+      <div class="stg"><div class="box"><div class="bn">pin</div><div class="bt">Pin upstream</div><div class="bs">lock chart + image version (Renovate PR)</div></div></div>
+      <div class="conn"></div>
+      <div class="stg">
+        <div class="par">
+          <div class="plab">parallel</div>
+          <div class="box checks"><div class="bn">supply chain</div><div class="bt">Mirror &amp; scan</div>
+            <div class="check-tags"><span>chart→JFrog</span><span>images→JFrog</span><span>Xray/trivy</span><span>sign/attest</span></div>
+          </div>
+          <div class="box checks"><div class="bn">validate</div><div class="bt">Render &amp; validate</div>
+            <div class="check-tags"><span>helm template</span><span>values lint</span><span>OPA/policy</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box"><div class="bn">publish</div><div class="bt">Publish diff</div><div class="bs">what changes in-cluster</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate</div><div class="bt">Approval</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply"><div class="bn">apply</div><div class="bt">Apply</div><div class="bs">helm upgrade / Argo sync</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box hook"><div class="bn">post-apply</div><div class="bt">Post-Apply Hooks</div><div class="bs">kubectl / readiness</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div><div class="bs">smoke — records created? certs issued?</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ 06 CUSTOM SOFTWARE ============ -->
+  <div class="section-head">
+    <span class="n">06</span>
+    <h2>Pipeline — Custom Software</h2>
+    <span class="tag scaffold">scaffold</span>
+  </div>
+  <div class="section-sub">For software we build and own. The front of the pipeline is a full <b>build → test → package → sign → publish</b> SDLC; the back reuses the same <b>approve → deploy → verify</b> spine. The published image version is the <b>semver tag</b>. Ties into the existing journey maps — deploy lands like <code>P2·05</code> and prod goes through the <code>P2·07</code> compliance gate. Shape is proposed — <b>to be refined</b>.</div>
+
+  <div class="scaffold-note"><span class="sk">scaffold</span><span>Draft shape for alignment. Deploy mechanism (GitOps app-of-apps) and prod gate are owned by the Phase&nbsp;2 journeys — see open items.</span></div>
+
+  <div class="pipe-block">
+    <div class="flow">
+      <div class="stg">
+        <div class="par">
+          <div class="plab">parallel</div>
+          <div class="box build"><div class="bn">build</div><div class="bt">Build</div><div class="bs">compile / assemble</div></div>
+          <div class="box"><div class="bn">test</div><div class="bt">Unit tests</div></div>
+          <div class="box checks"><div class="bn">1 button</div><div class="bt">Lint / SAST</div>
+            <div class="check-tags"><span>lint</span><span>SAST</span><span>deps/SCA</span><span>secrets</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box checks"><div class="bn">package</div><div class="bt">Package &amp; scan</div>
+        <div class="check-tags"><span>containerize</span><span>SBOM</span><span>image scan</span><span>cosign</span></div>
+      </div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box build"><div class="bn">publish</div><div class="bt">Publish</div><div class="bs">image → JFrog · version = semver</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box"><div class="bn">manifest</div><div class="bt">Update manifest</div><div class="bs">bump app-of-apps</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box approve"><div class="bn">gate</div><div class="bt">Approval</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box apply"><div class="bn">deploy</div><div class="bt">Deploy</div><div class="bs">Argo sync (per env)</div></div></div>
+      <div class="conn"></div>
+      <div class="stg"><div class="box test"><div class="bn">verify</div><div class="bt">Post-deploy tests</div><div class="bs">smoke + integration / E2E</div></div></div>
+    </div>
+  </div>
+
+  <!-- ============ PANELS ============ -->
+  <div class="panels">
+    <div class="panel">
+      <h4><span class="tick"></span>Stage definitions</h4>
+      <div class="dl"><span class="dp">Plan</span><div class="dt">Check run against live infra — what will change and how.</div></div>
+      <div class="dl"><span class="dp">Pre-deploy</span><div class="dt"><b>Pre-deploy tests.</b> Validate any logic inside the IaC itself, via mocks, before applying.</div></div>
+      <div class="dl"><span class="dp">Static</span><div class="dt"><b>Static checks — one button.</b> Bundles fmt/validate, tflint, security scan (tfsec/Checkov), policy-as-code (OPA/Conftest), secret scan (gitleaks), and cost (Infracost). Runs in parallel with Plan and Pre-deploy.</div></div>
+      <div class="dl"><span class="dp">Publish</span><div class="dt">Persist the plan output somewhere durable (e.g. JFrog) for the approver.</div></div>
+      <div class="dl"><span class="dp">Approval</span><div class="dt">Manual gate before any apply.</div></div>
+      <div class="dl"><span class="dp">Apply</span><div class="dt">Apply the published plan output.</div></div>
+      <div class="dl"><span class="dp">Post-apply</span><div class="dt"><b>Post-Apply Hooks — new.</b> Imperative glue Terraform can't express — e.g. <code>kubectl</code> against the fresh cluster, provider API calls, readiness waits. Scaffolded even when empty.</div></div>
+      <div class="dl"><span class="dp">Post-deploy</span><div class="dt"><b>Post-deploy tests.</b> Smoke + E2E validation of what was just provisioned.</div></div>
+    </div>
+
+    <div class="panel">
+      <h4><span class="tick a"></span>Open questions</h4>
+      <div class="q"><span class="qn">Q1</span><div><b>Bootstrap credentials.</b> A combined apply needs GitHub org-admin <i>and</i> AWS admin creds in one run. Acceptable, or split the modules back out if different teams own each / to keep privileged creds from coexisting?</div></div>
+      <div class="q"><span class="qn">Q2</span><div><b>Post-apply boundary.</b> What legitimately belongs in Post-Apply Hooks vs. being pushed into a controller/GitOps? Guardrails so it doesn't become a dumping ground for un-tested imperative steps.</div></div>
+      <div class="q"><span class="qn">Q3</span><div><b>State key convention.</b> Within the central state account — bucket/key/workspace layout per repo × account.</div></div>
+      <div class="q"><span class="qn">Q4</span><div><b>Static-checks blocking policy.</b> Which checks hard-fail the pipeline vs. report-only (e.g. Infracost, some policy rules)?</div></div>
+      <div class="q"><span class="qn">Q5</span><div><b>OSS &amp; custom pipelines (scaffolds).</b> Where do they live, and how do they meet the GitOps app-of-apps and the <code>P2·07</code> prod compliance gate? Plus upstream-bump trigger (Renovate) and signing/attestation policy.</div></div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>AI PLATFORM ENGINEERING · FOUNDATION · PLATFORM BOOTSTRAP &amp; IaC DELIVERY</span>
+    <span>DRAFT FOR ALIGNMENT · OIDC · CENTRAL STATE · FUTURE STATE</span>
+  </div>
+</div>
+</body>
+</html>
